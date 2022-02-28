@@ -1,18 +1,11 @@
 # Core
-
-- Who is working on what?∗
-
-```
-from: [authors author, commits commits files file]
-select: [a.name, file.name]
-where: commit.date > yesterday
-group: author
-```
-
-- What are they working on right now?∗
-- How much work [have] people done?∗
-- Who changed this [code], focused on person?∗
-- Who to assign a code review to? / Who has the knowledge to do the code review? 
+Name                                                        | Example
+------------------------------------------------------------|---------------------------------------------
+Who is working on what?                                     | [whoonwhat.yaml](../examples/whoonwhat.yaml)
+What are they working on right now?                         | [whoonlast.yaml](../examples/whoonlast.yaml)
+How much work [have] people done?∗                          | [howmuchwork.yaml](../examples/howmuchwork.yaml)
+Who changed this [file], focused on person?∗                | [TODO]()
+Who has the knowledge to do the code review based on [file]?|  [TODO]()
 
 # Clang
 
