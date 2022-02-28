@@ -1,0 +1,7 @@
+# What are they working on right now?
+from: [authors author, commits commit, files file]
+select: [author.name, file.name]
+where: commit.date > yesterday and author.id = commit.author and file.id in commit.files
+group: author
+order: commit.date DESC
+limit: 1
