@@ -1,4 +1,4 @@
-# Core
+# Git
 Name                                                        | Example
 ------------------------------------------------------------|---------------------------------------------
 Who is working on what?                                     | [whoonwhat.yaml](../examples/whoonwhat.yaml)

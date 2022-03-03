@@ -1,5 +1,5 @@
 # How much work [have] people done?
 from: [authors author, commits commit]
 select: [author.name, count(commit)]
-where: commit.date > yesterday and author.id = commit.author
+where: author.id = commit.author
 group: author
