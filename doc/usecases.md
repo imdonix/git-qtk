@@ -4,8 +4,8 @@ Name                                                        | Example
 Who is working on what?                                     | [whoonwhat.yaml](../examples/whoonwhat.yaml)
 What are they working on right now?                         | [whoonlast.yaml](../examples/whoonlast.yaml)
 How much work [have] people done?∗                          | [howmuchwork.yaml](../examples/howmuchwork.yaml)
-Who changed this [file], focused on person?∗                | [TODO]()
-Who has the knowledge to do the code review based on [file]?|  [TODO]()
+Who changed this [file], focused on person?∗                | [whochanged.yaml](../examples/whochanged.yaml)
+Who has the knowledge to do the code review based on [file]?|  [whotoask.yaml](../examples/whotoask.yaml)
 
 # Clang
 
