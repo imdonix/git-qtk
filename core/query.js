@@ -3,7 +3,7 @@ const Database = require('./database')
 const { getRepoFromURL } = require('./utils')
 const Git = require('nodegit')
 
-const repo = "https://github.com/imdonix/watcher"
+const repo = "https://github.com/git/git"
 
 const params = {
     script : {
@@ -57,12 +57,32 @@ class Query
     
     async fetch()
     {
-        //let repo = new Git.Repository()
+        let visited = new Set()
+        let queue = new Array()
 
-        this.repo.getHeadCommit()
-        .then(commit => {
-            console.log(commit.author())
-        })
+        let head = await this.repo.getHeadCommit()
+        queue.push(head)
+        while(queue.length > 0)
+        {
+            let commit = queue.shift()
+            let sha = commit.sha()
+
+            if(!visited.has(sha))
+            {
+                visited.add(sha)
+                this.process(commit)
+
+                let parents = await commit.getParents()
+                queue.push(...parents)
+            }
+        }
+
+        console.log(`${visited.size} commit are parsed`)
+    }
+
+    process(commit)
+    {
+
     }
 
     validate()
