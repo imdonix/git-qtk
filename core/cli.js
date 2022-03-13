@@ -1,11 +1,8 @@
-const params = {
-    script : {
-        processor: input,
-        required : true,
-        keys: ["s", "script"]
-    }
-}
+const { params } = require('./query')
 
+const processors = {
+    input: inputProcessor
+}
 
 module.exports = function cli(args)
 {
@@ -14,24 +11,18 @@ module.exports = function cli(args)
     while(args.length > 0)
     {
         let key = args.shift()
-        let param = findParam(key.substring(1));
-        if(param)
+        let par = findParam(key.substring(1));
+        if(par)
         {
-            params[param].processor(query, param, args)
+            let type = params[par].type
+            processors[type](query, par, args)
         }
-    }
-
-    let missing = checkRequired(query)
-    if(missing)
-    {
-        let prettify = params[missing].keys.map(key => `-${key}`).join(' or ')
-        console.error(`You must give the paramater: ${prettify}`)
     }
 
     return query;
 }
 
-function input(query, param, args)
+function inputProcessor(query, param, args)
 {
     if(args.length > 0)
     {
@@ -55,20 +46,4 @@ function findParam(key)
     }
 
     return null;
-}
-
-function checkRequired(current)
-{
-    for (const par in params) 
-    {
-        if(params[par].required)
-        {
-            if(!(par in current))
-            {
-                return par
-            }
-        }
-    }
-
-    return null
 }

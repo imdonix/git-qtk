@@ -1,4 +1,3 @@
-module.exports = function query()
-{
-    console.log("outside")
-}
+const { Query } = require('./core/query')
+
+module.exports = Query;
