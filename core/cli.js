@@ -9,7 +9,7 @@ const params = {
 
 module.exports = function cli(args)
 {
-    let current = new Object();
+    let query = new Object();
 
     while(args.length > 0)
     {
@@ -17,29 +17,26 @@ module.exports = function cli(args)
         let param = findParam(key.substring(1));
         if(param)
         {
-            params[param].processor(current, param, args)
+            params[param].processor(query, param, args)
         }
     }
 
-    let missing = checkRequired(current)
+    let missing = checkRequired(query)
     if(missing)
     {
         let prettify = params[missing].keys.map(key => `-${key}`).join(' or ')
         console.error(`You must give the paramater: ${prettify}`)
     }
-    else
-    {
-        console.log(current)
-        //TODO
-    }
+
+    return query;
 }
 
-function input(current, param, args)
+function input(query, param, args)
 {
     if(args.length > 0)
     {
         let val = args.shift();
-        current[param] = val;
+        query[param] = val;
     }
     else
     {

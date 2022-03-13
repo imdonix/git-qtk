@@ -1,3 +1,4 @@
-const cli = require('./cli')
-
-cli(process.argv)
+module.exports = function query()
+{
+    console.log("outside")
+}
