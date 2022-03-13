@@ -1,1 +1,3 @@
-console.log("hello world")
+const cli = require('./cli')
+
+cli(process.argv)
