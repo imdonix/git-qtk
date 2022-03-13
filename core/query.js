@@ -1,6 +1,9 @@
 
 const Database = require('./database')
-const parser = require('./parser')
+const { getRepoFromURL } = require('./utils')
+const Git = require('nodegit')
+
+const repo = "https://github.com/imdonix/watcher"
 
 const params = {
     script : {
@@ -31,10 +34,35 @@ class Query
             throw new Error(prettify)
         }
 
-        let db = new Database()
-        await parser(db)
+        this.db = new Database()
+        this.repo = await this.open()
+        await this.fetch();
 
-        return db.count()
+        return this.db.count()
+    }
+
+    async open()
+    {
+        let name = getRepoFromURL(repo)
+
+        return Git.Repository.open(name)
+        .catch(err => {
+            console.log(`Repository (${name}) not found! Cloning ${repo}...`)
+            return Git.Clone(repo, `./${name}`)
+            .catch(err => {
+                console.log(`Repository can't be cloned`)
+            })
+        })
+    }
+    
+    async fetch()
+    {
+        //let repo = new Git.Repository()
+
+        this.repo.getHeadCommit()
+        .then(commit => {
+            console.log(commit.author())
+        })
     }
 
     validate()
