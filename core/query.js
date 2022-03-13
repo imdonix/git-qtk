@@ -1,4 +1,7 @@
 
+const Database = require('./database')
+const parser = require('./parser')
+
 const params = {
     script : {
         type: 'string',
@@ -28,7 +31,10 @@ class Query
             throw new Error(prettify)
         }
 
-        return "ok"
+        let db = new Database()
+        await parser(db)
+
+        return db.count()
     }
 
     validate()
@@ -48,7 +54,6 @@ class Query
     
         return problems
     }
-
 }
 
 
