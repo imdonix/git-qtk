@@ -1,7 +1,8 @@
 const { params } = require('./query')
 
 const processors = {
-    input: inputProcessor
+    string : inputProcessor,
+    bool : toggleProcessor
 }
 
 module.exports = function cli(args)
@@ -33,6 +34,11 @@ function inputProcessor(query, param, args)
     {
         console.error(`You must give a value for the "${param}" parameter`)
     }
+}
+
+function toggleProcessor(query, param, args)
+{
+    query[param] = true;
 }
 
 function findParam(key)

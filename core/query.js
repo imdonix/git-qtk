@@ -1,8 +1,13 @@
 
 const params = {
     script : {
-        type: 'input',
+        type: 'string',
         keys: ['s', 'script'],
+        required : true
+    },
+    clean : {
+        type: 'bool',
+        keys: ['c', 'clean'],
         required : true
     }
 }
