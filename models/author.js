@@ -2,6 +2,11 @@ const Model = require('../core/model')
 
 class Author extends Model
 {
+    name()
+    { 
+        return "author" 
+    }
+
     model()
     {
         return {

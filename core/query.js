@@ -4,7 +4,7 @@ const Database = require('./database')
 const { getRepoFromURL } = require('./utils')
 const Git = require('nodegit')
 
-const repo = "https://github.com/git/git"
+const repo = "https://github.com/Ericsson/CodeCompass"
 
 const params = {
     script : {
@@ -36,7 +36,6 @@ class Query
         await this.fetch();
 
         this.db.log()
-        return this.db.count()
     }
 
     async open()
