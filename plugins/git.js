@@ -7,6 +7,7 @@ class Git extends Plugin
 
     constructor()
     {
+        super()
         this.auth = new Author()
     }
 

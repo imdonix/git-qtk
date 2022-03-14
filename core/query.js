@@ -41,6 +41,8 @@ class Query
         this.repo = await this.open()
         await this.fetch();
 
+
+        this.db.log()
         return this.db.count()
     }
 
@@ -86,7 +88,7 @@ class Query
 
     process(commit)
     {
-        for (const plugin of this.plugins) 
+        for (const [key, plugin] of Object.entries(this.plugins)) 
         {
             plugin.parse(this.db, commit)
         }
@@ -118,8 +120,10 @@ function loadPlugins()
     const paths = fs.readdirSync(`${__dirname}/../plugins`)
     for (const file of paths) 
     {
-        plugins[file] = require(`${__dirname}/../plugins/${file}`)    
+        const Class = require(`${__dirname}/../plugins/${file}`)
+        plugins[file] = new Class()
     }
+
     return plugins
 }
 

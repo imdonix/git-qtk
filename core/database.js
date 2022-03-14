@@ -5,9 +5,14 @@ class Database
         this.db = Array()
     }
 
-    add(commit)
+    add(model, data)
     {
-        this.db.push(commit)
+        this.db.push([model, data])
+    }
+
+    log()
+    {
+        console.log(this.db)
     }
 
     count()
