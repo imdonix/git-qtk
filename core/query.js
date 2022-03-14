@@ -30,17 +30,10 @@ class Query
 
     async run()
     {
-        let missings = this.validate()
-        if(missings.length > 0)
-        {
-            let prettify = missings.map(par => params[par].keys.map(key => `-${key}`).join(' or ')).join(" and ")
-            throw new Error(prettify)
-        }
-
-        this.db = new Database()
-        this.repo = await this.open()
+        this.validate()
+        this.db = new Database(this.plugins)
+        await this.open()
         await this.fetch();
-
 
         this.db.log()
         return this.db.count()
@@ -50,15 +43,26 @@ class Query
     {
         let name = getRepoFromURL(repo)
 
-        return Git.Repository.open(name)
-        .catch(err => {
+        try
+        {
+            this.repo = await Git.Repository.open(name)
+            return
+        }
+        catch(err)
+        {
             console.log(`Repository (${name}) not found!`)
+        }
+
+        try
+        {
             console.log(`Cloning ${repo} ...`)
-            return Git.Clone(repo, `./${name}`)
-            .catch(err => {
-                console.log(`Repository can't be cloned`)
-            })
-        })
+            this.repo = await Git.Clone(repo, `./${name}`)
+            return
+        }
+        catch(err)
+        {
+            throw new Error("Repository can't be cloned")
+        }
     }
     
     async fetch()
@@ -109,7 +113,11 @@ class Query
             }
         }
     
-        return problems
+        if(problems.length > 0)
+        {
+            let prettify = problems.map(par => params[par].keys.map(key => `-${key}`).join(' or ')).join(" and ")
+            throw new Error(`Missing required parameters: ${prettify}`)
+        }
     }
 }
 

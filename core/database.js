@@ -1,6 +1,6 @@
 class Database
 {
-    constructor()
+    constructor(plugins)
     {
         this.db = Array()
     }

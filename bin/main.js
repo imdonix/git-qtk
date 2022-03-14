@@ -5,15 +5,9 @@ const { Query, params } = require('../core/query')
 let input = cli(process.argv)
 let query = new Query(input);
 
-let missings = query.validate()
-
-if(missings.length > 0)
+try
 {
-    let prettify = missings.map(par => params[par].keys.map(key => `-${key}`).join(' or ')).join(" and ")
-    console.error(`You must give the paramater: ${prettify}`)
-}
-else
-{
+    query.validate()
     query.run()
     .then(res => 
     {
@@ -23,4 +17,8 @@ else
     {
         console.error(err)
     })
+}
+catch(err)
+{
+    console.error(err.message)
 }
