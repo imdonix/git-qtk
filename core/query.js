@@ -25,7 +25,6 @@ class Query
     {
         this.query = input
         this.plugins = loadPlugins()
-        console.log(this.plugins)
     }
 
     async run()

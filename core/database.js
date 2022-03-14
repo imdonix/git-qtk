@@ -7,7 +7,6 @@ class Database
         {
             for (const model of plugin.models()) 
             {
-                console.log(model.name())  
                 this.models[model.name()] = new Map()
             }
         }
