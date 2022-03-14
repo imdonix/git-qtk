@@ -8,14 +8,14 @@ class Database
             for (const model of plugin.models()) 
             {
                 console.log(model.name())  
-                this.models[model] = new Map()
+                this.models[model.name()] = new Map()
             }
         }
     }
 
     add(model, data)
     {
-        this.models[model].set(data[model.key()], data)
+        this.models[model.name()].set(data[model.key()], data)
     }
 
     log()
