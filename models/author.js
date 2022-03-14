@@ -1,14 +1,24 @@
-class Author
+class Author extends Model
 {
-    constructor(signature)
+    model()
     {
-        this.email = signature.email()
-        this.name = signature.name()
+        return {
+            email : 'string',
+            name : 'string'
+        }
     }
 
     key()
     {
-        return this.email
+        return 'email'
+    }
+
+    parse(input)
+    { 
+        return {
+            email: input.email(),
+            name: input.name()
+        }
     }
 
 }
