@@ -1,3 +1,5 @@
+const Model = require('../core/model')
+
 class Author extends Model
 {
     model()

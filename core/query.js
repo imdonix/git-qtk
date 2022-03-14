@@ -1,4 +1,5 @@
 
+const fs = require('fs')
 const Database = require('./database')
 const { getRepoFromURL } = require('./utils')
 const Git = require('nodegit')
@@ -23,6 +24,8 @@ class Query
     constructor(input)
     {
         this.query = input
+        this.plugins = loadPlugins()
+        console.log(this.plugins)
     }
 
     async run()
@@ -47,7 +50,8 @@ class Query
 
         return Git.Repository.open(name)
         .catch(err => {
-            console.log(`Repository (${name}) not found! Cloning ${repo}...`)
+            console.log(`Repository (${name}) not found!`)
+            console.log(`Cloning ${repo} ...`)
             return Git.Clone(repo, `./${name}`)
             .catch(err => {
                 console.log(`Repository can't be cloned`)
@@ -82,7 +86,10 @@ class Query
 
     process(commit)
     {
-
+        for (const plugin of this.plugins) 
+        {
+            plugin.parse(this.db, commit)
+        }
     }
 
     validate()
@@ -104,6 +111,17 @@ class Query
     }
 }
 
+
+function loadPlugins()
+{
+    const plugins = new Object()
+    const paths = fs.readdirSync(`${__dirname}/../plugins`)
+    for (const file of paths) 
+    {
+        plugins[file] = require(`${__dirname}/../plugins/${file}`)    
+    }
+    return plugins
+}
 
 
 module.exports = { Query, params } 
