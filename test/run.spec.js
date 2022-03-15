@@ -2,20 +2,6 @@ const assert = require('assert');
 const { Query } = require('../app') 
 const Git = require('../plugins/git')
 
-describe('validate', () =>
-{
-    it('required', () =>
-    {
-        let query = new Query({})
-        try
-        {
-            query.validate()
-            assert.fail("Validation passed on a invalid query")
-        }
-        catch(err){}        
-    })
-})
-
 describe('run', () =>
 {
     let db;
