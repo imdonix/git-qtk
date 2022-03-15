@@ -4,18 +4,21 @@ const Database = require('./database')
 const { getRepoFromURL } = require('./utils')
 const Git = require('nodegit')
 
-const repo = "https://github.com/imdonix/example"
-
 const params = {
+    repository : {
+        type: 'string',
+        keys: ['r', 'repository'],
+        required : true  
+    },
     script : {
         type: 'string',
         keys: ['s', 'script'],
-        required : true
+        required : false
     },
     clean : {
         type: 'bool',
         keys: ['c', 'clean'],
-        required : true
+        required : false
     }
 }
 
@@ -38,12 +41,12 @@ class Query
         await this.fetch()
         await this.post()
 
-        //this.db.log()
+        this.db.log()
     }
 
     async open()
     {
-        let name = getRepoFromURL(repo)
+        let name = getRepoFromURL(this.query.repository)
 
         try
         {
@@ -96,7 +99,7 @@ class Query
     {
         for (const [_, plugin] of Object.entries(this.plugins)) 
         {
-            plugin.init()
+            plugin.init(this.db)
         }
     }
 
@@ -112,7 +115,7 @@ class Query
     {
         for (const [_, plugin] of Object.entries(this.plugins)) 
         {
-            plugin.post()
+            plugin.post(this.db)
         }
     }
 
