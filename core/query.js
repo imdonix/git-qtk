@@ -105,7 +105,7 @@ class Query
 
     async init()
     {
-        for (const [_, plugin] of Object.entries(this.plugins)) 
+        for (const plugin of this.plugins) 
         {
             plugin.init(this.db)
         }
@@ -113,7 +113,7 @@ class Query
 
     async process(commit)
     {
-        for (const [_, plugin] of Object.entries(this.plugins)) 
+        for (const plugin of this.plugins) 
         {
             await plugin.parse(this.db, commit)
         }
@@ -121,7 +121,7 @@ class Query
 
     async post()
     {
-        for (const [_, plugin] of Object.entries(this.plugins)) 
+        for (const plugin of this.plugins) 
         {
             plugin.post(this.db)
         }
@@ -158,12 +158,12 @@ class Query
 
 function loadPlugins()
 {
-    const plugins = new Object()
+    const plugins = new Array()
     const paths = fs.readdirSync(`${__dirname}/../plugins`)
     for (const file of paths) 
     {
         const Class = require(`${__dirname}/../plugins/${file}`)
-        plugins[file] = new Class()
+        plugins.push(new Class())
     }
 
     return plugins
