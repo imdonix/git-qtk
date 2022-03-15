@@ -8,4 +8,11 @@ function abs()
     throw new Error("Abstract method");
 }
 
-module.exports = { getRepoFromURL, abs }
+function emptyLogger()
+{
+    return {
+        log : () => {}
+    }
+}
+
+module.exports = { getRepoFromURL, abs, emptyLogger }

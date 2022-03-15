@@ -3,7 +3,7 @@ const cli = require('../core/cli')
 const { Query, params } = require('../core/query')
 
 let input = cli(process.argv)
-let query = new Query(input);
+let query = new Query(input, console);
 
 try
 {

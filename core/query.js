@@ -24,10 +24,11 @@ const params = {
 
 class Query
 {
-    constructor(input)
+    constructor(input, logger)
     {
         this.query = input
         this.plugins = loadPlugins()
+        this.logger = logger
     }
 
     async run()
@@ -55,18 +56,18 @@ class Query
         }
         catch(err)
         {
-            console.log(`Repository (${name}) not found!`)
+            this.logger.log(`Repository (${name}) not found!`)
         }
 
         try
         {
-            console.log(`Cloning ${repo} ...`)
-            this.repo = await Git.Clone(repo, `./${name}`)
+            this.logger.log(`Cloning ${this.query.repository} ...`)
+            this.repo = await Git.Clone(this.query.repository, `./${name}`)
             return
         }
         catch(err)
         {
-            throw new Error("Repository can't be cloned")
+            throw new Error(`Repository can't be cloned! ${err}`)
         }
     }
     
@@ -92,7 +93,7 @@ class Query
             }
         }
 
-        console.log(`${visited.size} commit are parsed`)
+        this.logger.log(`${visited.size} commit are parsed`)
     }
 
     async init()

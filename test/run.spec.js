@@ -1,6 +1,7 @@
 const assert = require('assert');
 const { Query } = require('../app') 
 const Git = require('../plugins/git')
+const { emptyLogger } = require('../core/utils')
 
 describe('run', () =>
 {
@@ -8,7 +9,7 @@ describe('run', () =>
     before((done) => {
         let query = new Query({
             repository: 'https://github.com/imdonix/example'
-        })
+        }, emptyLogger())
         query.run()
         .then(() =>
         {
