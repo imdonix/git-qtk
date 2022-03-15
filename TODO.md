@@ -1,2 +1,3 @@
 - Clean if -c
-- Master commit?
+- Master commit?ű
+- use Commit#history insted of parsing by one

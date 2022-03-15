@@ -1,12 +1,15 @@
+const { abs } = require('./utils')
+
+
 class Model
 {
-    name() { throw new Error("Abstract") }
+    name() { abs() }
 
-    model() { throw new Error("Abstract") }
+    model() { abs() }
 
-    key(){ throw new Error("Abstract") }
+    key(){ abs() }
 
-    parse(input) { throw new Error("Abstract") }
+    parse(input) { abs() }
 }
 
 module.exports = Model

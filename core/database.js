@@ -3,7 +3,7 @@ class Database
     constructor(plugins)
     {
         this.models = new Object()
-        for (const [key, plugin] of Object.entries(plugins)) 
+        for (const [_, plugin] of Object.entries(plugins)) 
         {
             for (const model of plugin.models()) 
             {
@@ -19,7 +19,7 @@ class Database
 
     log()
     {
-        for (const [key, model] of Object.entries(this.models))
+        for (const [_, model] of Object.entries(this.models))
         {
             console.log(model)
         }
