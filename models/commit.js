@@ -1,7 +1,5 @@
 const Model = require('../core/model')
 
-const Git = require('nodegit')
-
 class Commit extends Model
 {
     name()
@@ -13,7 +11,7 @@ class Commit extends Model
     {
         return {
             sha: 'string',
-            author : 'string',
+            author : 'author',
             date: 'Date',
             message: 'string'
         }
