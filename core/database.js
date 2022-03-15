@@ -17,6 +17,11 @@ class Database
         this.models[model.name()].set(data[model.key()], data)
     }
 
+    view(model)
+    {
+        return this.models[model.name()]
+    }
+
     log()
     {
         for (const [_, model] of Object.entries(this.models))
