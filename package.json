@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "mocha"
+    "test": "mocha",
+    "runtime" : "node ./bin/runtime.js"
   },
   "bin": {
     "git-qtk": "./bin/main.js"

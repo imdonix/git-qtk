@@ -29,6 +29,14 @@ class Query
         this.query = input
         this.plugins = loadPlugins()
         this.logger = logger
+        this.tracker = new Object()
+    }
+
+    async track(fun)
+    {
+        let start = Date.now()
+        await fun.bind(this)()
+        this.tracker[fun.name] = (Date.now() - start) / 1000
     }
 
     async run()
@@ -36,11 +44,10 @@ class Query
         this.validate()
         this.db = new Database(this.plugins)
 
-        await this.open()
-
-        await this.init()
-        await this.fetch()
-        await this.post()
+        await this.track(this.open)
+        await this.track(this.init)
+        await this.track(this.fetch)
+        await this.track(this.post)
 
         //this.db.log()
     }
@@ -161,6 +168,5 @@ function loadPlugins()
 
     return plugins
 }
-
 
 module.exports = { Query, params } 
