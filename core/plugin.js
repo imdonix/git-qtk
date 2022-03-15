@@ -4,11 +4,11 @@ class Plugin
 {
     models() { abs() }
 
-    init() { abs() }
+    async init() { abs() }
 
-    parse(db, commit) { abs() }
+    async parse(db, commit) { abs() }
 
-    post() { abs() }
+    async post() { abs() }
 }
 
 module.exports = Plugin

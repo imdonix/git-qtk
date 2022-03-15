@@ -13,7 +13,8 @@ class Commit extends Model
             sha: 'string',
             author : 'author',
             date: 'Date',
-            message: 'string'
+            message: 'string',
+            changes: 'array'
         }
     }
 
@@ -22,13 +23,14 @@ class Commit extends Model
         return 'sha'
     }
 
-    parse(input)
+    parse(input, set)
     { 
         return {
             sha: input.sha(),
             author: input.author().email(),
             date: input.date(),
-            message: input.message()
+            message: input.message(),
+            changes: [...set]
         }
     }
 
