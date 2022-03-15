@@ -32,7 +32,9 @@ class Query
         this.validate()
         this.db = new Database(this.plugins)
         await this.open()
-        await this.fetch();
+        await this.init()
+        await this.fetch()
+        await this.post()
 
         this.db.log()
     }
@@ -88,11 +90,27 @@ class Query
         console.log(`${visited.size} commit are parsed`)
     }
 
+    init()
+    {
+        for (const [_, plugin] of Object.entries(this.plugins)) 
+        {
+            plugin.init()
+        }
+    }
+
     process(commit)
     {
-        for (const [key, plugin] of Object.entries(this.plugins)) 
+        for (const [_, plugin] of Object.entries(this.plugins)) 
         {
             plugin.parse(this.db, commit)
+        }
+    }
+
+    post()
+    {
+        for (const [_, plugin] of Object.entries(this.plugins)) 
+        {
+            plugin.post()
         }
     }
 

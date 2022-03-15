@@ -1,8 +1,14 @@
+const { abs } = require('./utils')
+
 class Plugin
 {
-    models(){ new Error("Abstract") }
+    models() { abs() }
 
-    parse(db, commit) { new Error("Abstract") }
+    init() { abs() }
+
+    parse(db, commit) { abs() }
+
+    post() { abs() }
 }
 
 module.exports = Plugin
