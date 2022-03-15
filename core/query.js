@@ -41,7 +41,7 @@ class Query
         await this.fetch()
         await this.post()
 
-        this.db.log()
+        //this.db.log()
     }
 
     async open()
@@ -139,6 +139,11 @@ class Query
             let prettify = problems.map(par => params[par].keys.map(key => `-${key}`).join(' or ')).join(" and ")
             throw new Error(`Missing required parameters: ${prettify}`)
         }
+    }
+
+    view()
+    {
+        return this.db
     }
 }
 
