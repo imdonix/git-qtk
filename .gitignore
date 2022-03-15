@@ -1,4 +1,7 @@
+# Runtime tests
 example/
+CodeCompass/
+git/
 
 # Logs
 logs
