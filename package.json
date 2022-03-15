@@ -1,0 +1,34 @@
+{
+  "name": "git-qtk",
+  "version": "0.0.1",
+  "description": "A toolkit which provides you a quick and easy way to extract metadata from git-based repositories.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {  
+    "git-qtk": "./bin/main.js"  
+  },  
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imdonix/git-qtk.git"
+  },
+  "keywords": [
+    "git"
+  ],
+  "author": "imdonix",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/imdonix/git-qtk/issues"
+  },
+  "homepage": "https://github.com/imdonix/git-qtk#readme",
+  "dependencies": {
+    "nodegit": "^0.27.0",
+    "yaml": "^1.10.2"
+  },
+  "engines": {
+    "node": "14.19.0",
+    "npm": "6.14.16"
+  }
+}
