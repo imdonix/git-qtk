@@ -4,7 +4,7 @@ const Database = require('./database')
 const { getRepoFromURL } = require('./utils')
 const Git = require('nodegit')
 
-const repo = "https://github.com/Ericsson/CodeCompass"
+const repo = "https://github.com/imdonix/example"
 
 const params = {
     script : {
@@ -31,12 +31,14 @@ class Query
     {
         this.validate()
         this.db = new Database(this.plugins)
+
         await this.open()
+
         await this.init()
         await this.fetch()
         await this.post()
 
-        this.db.log()
+        //this.db.log()
     }
 
     async open()
@@ -80,7 +82,7 @@ class Query
             if(!visited.has(sha))
             {
                 visited.add(sha)
-                this.process(commit)
+                await this.process(commit)
 
                 let parents = await commit.getParents()
                 queue.push(...parents)
@@ -90,7 +92,7 @@ class Query
         console.log(`${visited.size} commit are parsed`)
     }
 
-    init()
+    async init()
     {
         for (const [_, plugin] of Object.entries(this.plugins)) 
         {
@@ -98,15 +100,15 @@ class Query
         }
     }
 
-    process(commit)
+    async process(commit)
     {
         for (const [_, plugin] of Object.entries(this.plugins)) 
         {
-            plugin.parse(this.db, commit)
+            await plugin.parse(this.db, commit)
         }
     }
 
-    post()
+    async post()
     {
         for (const [_, plugin] of Object.entries(this.plugins)) 
         {
