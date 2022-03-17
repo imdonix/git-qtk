@@ -49,7 +49,7 @@ class Query
         await this.track(this.fetch)
         await this.track(this.post)
 
-        //this.db.log()
+        this.db.log()
     }
 
     async open()
