@@ -195,8 +195,6 @@ class Query
                 throw new Error("You must give the selected object as: 'model'.'field'")
             }
         }
-
-        console.log(this.select)
     }
 
 
