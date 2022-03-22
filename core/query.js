@@ -119,15 +119,12 @@ class Query
         })        
     }
 
-    async init()
+    parseFrom()
     {
-
         if(!this.yaml.hasOwnProperty('from') || this.yaml['from'] == null )
         {
             throw new Error("The query must define: 'from'")
         }
-
-        
 
         this.from = new Map()
         const insert = (key, val) =>
@@ -158,9 +155,55 @@ class Query
                 insert(name, this.findModel(name))
             }
         }
+    }
 
-        console.log(this.from)
-        //Init tables
+    parseSelect()
+    {
+        if(!this.yaml.hasOwnProperty('select') || this.yaml['select'] == null )
+        {
+            throw new Error("The query must define: 'select'")
+        }
+
+        this.select = new Array()
+        const cs = this.yaml.select.split(',').map(str => str.trim())
+        for (const s of cs) 
+        {
+            const splitted = s.split('.')
+            const model = splitted[0]
+            const field = splitted[1]
+            if(splitted.length > 1)
+            {
+
+                if(this.from.has(model))
+                {
+                    if(this.from.get(model).has(field))
+                    {
+                        this.select.push([model, field])
+                    }
+                    else
+                    {
+                        throw new Error(`The model don't have '${field}' field'`)
+                    }
+                }
+                else
+                {
+                    throw new Error(`No model found with the name of '${model}'`)
+                }
+            }
+            else
+            {
+                throw new Error("You must give the selected object as: 'model'.'field'")
+            }
+        }
+
+        console.log(this.select)
+    }
+
+
+    async init()
+    {
+        this.parseFrom()
+        this.parseSelect()        
 
         for (const plugin of this.plugins) 
         {
