@@ -78,29 +78,39 @@ class Query
         }
     }
     
-    async fetch()
+    fetch()
     {
-        let visited = new Set()
-        let queue = new Array()
-
-        let head = await this.repo.getHeadCommit()
-        queue.push(head)
-        while(queue.length > 0)
+        return new Promise((res, rej) =>
         {
-            let commit = queue.shift()
-            let sha = commit.sha()
-
-            if(!visited.has(sha))
+            this.repo.getHeadCommit()
+            .then(head =>
             {
-                visited.add(sha)
-                await this.process(commit)
+                let visited = 0
+                let history = head.history(Git.Revwalk.SORT)
 
-                let parents = await commit.getParents()
-                queue.push(...parents)
-            }
-        }
+                history.on('commit', (commit) =>
+                {
+                    for (const plugin of this.plugins) 
+                    {
+                        plugin.parse(this.db, commit)
+                    }
+        
+                    visited++
+                })
 
-        this.logger.log(`${visited.size} commit are parsed`)
+                history.on('error', (err) => rej(err))
+        
+                history.on('end', () =>
+                {
+                    console.log("ok")
+                    this.logger.log(`${visited.size} commit are parsed`)
+                    res(visited)
+                })
+
+                history.start()
+            })
+            .catch(err => rej(err))
+        })        
     }
 
     async init()
@@ -108,14 +118,6 @@ class Query
         for (const plugin of this.plugins) 
         {
             plugin.init(this.db)
-        }
-    }
-
-    async process(commit)
-    {
-        for (const plugin of this.plugins) 
-        {
-            await plugin.parse(this.db, commit)
         }
     }
 
