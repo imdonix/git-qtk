@@ -3,6 +3,7 @@ const { Query } = require('../app')
 const Git = require('../plugins/git')
 const { emptyLogger } = require('../core/utils')
 
+/*
 describe('run', () =>
 {
     let db;
@@ -29,3 +30,4 @@ describe('run', () =>
         })
     }
   });
+  */
