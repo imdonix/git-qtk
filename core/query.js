@@ -203,6 +203,10 @@ class Query
         this.parseFrom()
         this.parseSelect()        
 
+        let before = this.plugins.length
+        this.plugins = filterUnusedPlugins(this.plugins, this.from)
+        this.logger.log(`${this.plugins.length} plugin will be used of ${before}`)
+
         for (const plugin of this.plugins) 
         {
             plugin.init(this.db)
@@ -280,6 +284,23 @@ function loadModels(plugins)
         models.push(...plugin.models())
     }
     return models
+}
+
+function filterUnusedPlugins(plugins, from)
+{
+    const filtered = new Array()
+    for (const plugin of plugins) 
+    {
+        for (const [key, value] of from) 
+        {
+            if(plugin.models().find(model => model == value))
+            {
+                filtered.push(plugin)
+                break;
+            }
+        }
+    }
+    return filtered
 }
 
 module.exports = { Query, params } 
