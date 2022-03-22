@@ -1,5 +1,6 @@
 
 const fs = require('fs')
+const yaml = require('yaml')
 const Database = require('./database')
 const { getRepoFromURL } = require('./utils')
 const Git = require('nodegit')
@@ -28,6 +29,7 @@ class Query
     {
         this.query = input
         this.plugins = loadPlugins()
+        this.models = loadModels(this.plugins)
         this.logger = logger
         this.tracker = new Object()
     }
@@ -44,16 +46,23 @@ class Query
         this.validate()
         this.db = new Database(this.plugins)
 
-        await this.track(this.open)
+        this.openQuery()
+
+        await this.track(this.openRepository)
         await this.track(this.init)
         await this.track(this.fetch)
         await this.track(this.post)
     }
 
-    async open()
+    openQuery()
+    {
+        const file = fs.readFileSync(this.query.script, 'utf8')
+        this.yaml = yaml.parse(file)
+    }
+
+    async openRepository()
     {
         let name = getRepoFromURL(this.query.repository)
-
         try
         {
             this.repo = await Git.Repository.open(name)
@@ -100,8 +109,7 @@ class Query
         
                 history.on('end', () =>
                 {
-                    console.log("ok")
-                    this.logger.log(`${visited.size} commit are parsed`)
+                    this.logger.log(`${visited} commit are parsed`)
                     res(visited)
                 })
 
@@ -113,6 +121,47 @@ class Query
 
     async init()
     {
+
+        if(!this.yaml.hasOwnProperty('from') || this.yaml['from'] == null )
+        {
+            throw new Error("The query must define: 'from'")
+        }
+
+        
+
+        this.from = new Map()
+        const insert = (key, val) =>
+        {
+            if(this.from.has(key))
+            {
+                throw new Error(`A model with this name (${key}) is already in the query.`)
+            }
+            else
+            {
+                this.from.set(key, val)
+            }
+        }
+
+        const cs = this.yaml.from.split(',').map(str => str.trim())
+        for (const o of cs) 
+        {
+            const splitted = o.split(' ').map(str => str.trim())
+            if(splitted.length > 1)
+            {
+                let model = splitted[0]
+                let name = splitted[1]
+                insert(name, this.findModel(model))
+            }
+            else
+            {
+                let name = splitted[0]
+                insert(name, this.findModel(name))
+            }
+        }
+
+        console.log(this.from)
+        //Init tables
+
         for (const plugin of this.plugins) 
         {
             plugin.init(this.db)
@@ -149,6 +198,19 @@ class Query
         }
     }
 
+    findModel(name)
+    {
+        let i = this.models.findIndex(model => model.name() == name)
+        if(i >= 0 )
+        {
+            return this.models[i]
+        }
+        else
+        {
+            throw new Error(`No model exist with the name of '${name}'`)
+        }
+    }
+
     view()
     {
         return this.db
@@ -167,6 +229,16 @@ function loadPlugins()
     }
 
     return plugins
+}
+
+function loadModels(plugins)
+{
+    const models = new Array()
+    for (const plugin of plugins)
+    {
+        models.push(...plugin.models())
+    }
+    return models
 }
 
 module.exports = { Query, params } 
