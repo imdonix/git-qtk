@@ -10,6 +10,11 @@ class Model
     key(){ abs() }
 
     parse(input) { abs() }
+
+    has(field)
+    {
+        return this.model().hasOwnProperty(field)
+    }
 }
 
 module.exports = Model

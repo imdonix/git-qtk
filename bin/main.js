@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-const cli = require('../core/cli')
+const {cli, prettyPrint } = require('../core/cli')
 const { Query, params } = require('../core/query')
 
 let input = cli(process.argv)
@@ -11,7 +11,7 @@ try
     query.run()
     .then(res => 
     {
-        console.log(res)
+        prettyPrint(res)
     })
     .catch(err => 
     {

@@ -1,8 +1,10 @@
 
 const fs = require('fs')
+const yaml = require('yaml')
 const Database = require('./database')
 const { getRepoFromURL } = require('./utils')
 const Git = require('nodegit')
+const runner = require('./runner')
 
 const params = {
     repository : {
@@ -28,6 +30,7 @@ class Query
     {
         this.query = input
         this.plugins = loadPlugins()
+        this.models = loadModels(this.plugins)
         this.logger = logger
         this.tracker = new Object()
     }
@@ -35,8 +38,9 @@ class Query
     async track(fun)
     {
         let start = Date.now()
-        await fun.bind(this)()
+        let res = await fun.bind(this)()
         this.tracker[fun.name] = (Date.now() - start) / 1000
+        return res
     }
 
     async run()
@@ -44,16 +48,24 @@ class Query
         this.validate()
         this.db = new Database(this.plugins)
 
-        await this.track(this.open)
+        this.openQuery()
+
+        await this.track(this.openRepository)
         await this.track(this.init)
         await this.track(this.fetch)
         await this.track(this.post)
+        return await this.track(runner)
     }
 
-    async open()
+    openQuery()
+    {
+        const file = fs.readFileSync(this.query.script, 'utf8')
+        this.yaml = yaml.parse(file)
+    }
+
+    async openRepository()
     {
         let name = getRepoFromURL(this.query.repository)
-
         try
         {
             this.repo = await Git.Repository.open(name)
@@ -100,8 +112,7 @@ class Query
         
                 history.on('end', () =>
                 {
-                    console.log("ok")
-                    this.logger.log(`${visited.size} commit are parsed`)
+                    this.logger.log(`${visited} commit are parsed`)
                     res(visited)
                 })
 
@@ -111,8 +122,94 @@ class Query
         })        
     }
 
+    parseFrom()
+    {
+        if(!this.yaml.hasOwnProperty('from') || this.yaml['from'] == null )
+        {
+            throw new Error("The query must define: 'from'")
+        }
+
+        this.from = new Map()
+        const insert = (key, val) =>
+        {
+            if(this.from.has(key))
+            {
+                throw new Error(`A model with this name (${key}) is already in the query.`)
+            }
+            else
+            {
+                this.from.set(key, val)
+            }
+        }
+
+        const cs = this.yaml.from.split(',').map(str => str.trim())
+        for (const o of cs) 
+        {
+            const splitted = o.split(' ').map(str => str.trim())
+            if(splitted.length > 1)
+            {
+                let model = splitted[0]
+                let name = splitted[1]
+                insert(name, this.findModel(model))
+            }
+            else
+            {
+                let name = splitted[0]
+                insert(name, this.findModel(name))
+            }
+        }
+    }
+
+    parseSelect()
+    {
+        if(!this.yaml.hasOwnProperty('select') || this.yaml['select'] == null )
+        {
+            throw new Error("The query must define: 'select'")
+        }
+
+        this.select = new Array()
+        const cs = this.yaml.select.split(',').map(str => str.trim())
+        for (const s of cs) 
+        {
+            const splitted = s.split('.')
+            const model = splitted[0]
+            const field = splitted[1]
+            if(splitted.length > 1)
+            {
+
+                if(this.from.has(model))
+                {
+                    if(this.from.get(model).has(field))
+                    {
+                        this.select.push([model, field])
+                    }
+                    else
+                    {
+                        throw new Error(`The model don't have '${field}' field'`)
+                    }
+                }
+                else
+                {
+                    throw new Error(`No model found with the name of '${model}'`)
+                }
+            }
+            else
+            {
+                throw new Error("You must give the selected object as: 'model'.'field'")
+            }
+        }
+    }
+
+
     async init()
     {
+        this.parseFrom()
+        this.parseSelect()        
+
+        let before = this.plugins.length
+        this.plugins = filterUnusedPlugins(this.plugins, this.from)
+        this.logger.log(`${this.plugins.length} plugin will be used of ${before}`)
+
         for (const plugin of this.plugins) 
         {
             plugin.init(this.db)
@@ -149,6 +246,19 @@ class Query
         }
     }
 
+    findModel(name)
+    {
+        let i = this.models.findIndex(model => model.name() == name)
+        if(i >= 0 )
+        {
+            return this.models[i]
+        }
+        else
+        {
+            throw new Error(`No model exist with the name of '${name}'`)
+        }
+    }
+
     view()
     {
         return this.db
@@ -167,6 +277,33 @@ function loadPlugins()
     }
 
     return plugins
+}
+
+function loadModels(plugins)
+{
+    const models = new Array()
+    for (const plugin of plugins)
+    {
+        models.push(...plugin.models())
+    }
+    return models
+}
+
+function filterUnusedPlugins(plugins, from)
+{
+    const filtered = new Array()
+    for (const plugin of plugins) 
+    {
+        for (const [key, value] of from) 
+        {
+            if(plugin.models().find(model => model == value))
+            {
+                filtered.push(plugin)
+                break;
+            }
+        }
+    }
+    return filtered
 }
 
 module.exports = { Query, params } 
