@@ -66,6 +66,8 @@ function prettyPrint(output)
             }
             return obj
         })
+        .reduce((res, cur) => Object.assign(res, cur), new Object())
+        
         console.log(line)
     }
 }
