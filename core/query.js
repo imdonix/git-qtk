@@ -4,6 +4,7 @@ const yaml = require('yaml')
 const Database = require('./database')
 const { getRepoFromURL } = require('./utils')
 const Git = require('nodegit')
+const runner = require('./runner')
 
 const params = {
     repository : {
@@ -37,8 +38,9 @@ class Query
     async track(fun)
     {
         let start = Date.now()
-        await fun.bind(this)()
+        let res = await fun.bind(this)()
         this.tracker[fun.name] = (Date.now() - start) / 1000
+        return res
     }
 
     async run()
@@ -52,6 +54,7 @@ class Query
         await this.track(this.init)
         await this.track(this.fetch)
         await this.track(this.post)
+        return await this.track(runner)
     }
 
     openQuery()

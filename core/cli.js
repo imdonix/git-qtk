@@ -5,7 +5,7 @@ const processors = {
     bool : toggleProcessor
 }
 
-module.exports = function cli(args)
+function cli(args)
 {
     let query = new Object();
 
@@ -53,3 +53,21 @@ function findParam(key)
 
     return null;
 }
+
+function prettyPrint(output)
+{
+    for (const record of output) 
+    {
+        let line = record.map(selector => {
+            const obj = new Object()
+            for (const [key, value] of Object.entries(selector[1])) 
+            {
+                obj[`${selector[0]}.${key}`] = value
+            }
+            return obj
+        })
+        console.log(line)
+    }
+}
+
+module.exports = { cli, prettyPrint }
