@@ -2,7 +2,7 @@
 const fs = require('fs')
 const yaml = require('yaml')
 const Database = require('./database')
-const { getRepoFromURL } = require('./utils')
+const { getRepoFromURL, WILDCARD_ANY } = require('./utils')
 const Git = require('nodegit')
 const runner = require('./runner')
 
@@ -167,10 +167,16 @@ class Query
             throw new Error("The query must define: 'select'")
         }
 
-        this.select = new Array()
+        this.select = new Set()
         const cs = this.yaml.select.split(',').map(str => str.trim())
         for (const s of cs) 
         {
+            if(s == WILDCARD_ANY)
+            {
+                this.select.add(WILDCARD_ANY)
+                break;
+            }
+
             const splitted = s.split('.')
             const model = splitted[0]
             const field = splitted[1]
@@ -181,7 +187,7 @@ class Query
                 {
                     if(this.from.get(model).has(field))
                     {
-                        this.select.push([model, field])
+                        this.select.add(`${model}.${field}`)
                     }
                     else
                     {
@@ -197,6 +203,7 @@ class Query
             {
                 throw new Error("You must give the selected object as: 'model'.'field'")
             }
+            
         }
     }
 

@@ -15,4 +15,6 @@ function emptyLogger()
     }
 }
 
-module.exports = { getRepoFromURL, abs, emptyLogger }
+const WILDCARD_ANY = '$'
+
+module.exports = { getRepoFromURL, abs, emptyLogger, WILDCARD_ANY }

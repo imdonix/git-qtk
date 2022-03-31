@@ -1,4 +1,4 @@
 # Basic query
 from: commit c
-select: c.sha
-where: c.sha = 2 & 2 = 2 | true | klo = 2 > 2
+select: $
+where: c.sha = 2

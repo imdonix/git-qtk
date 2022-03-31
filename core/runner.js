@@ -1,3 +1,5 @@
+const { WILDCARD_ANY } = require('./utils')
+
 async function runner()
 {
 
@@ -25,14 +27,16 @@ async function runner()
         cache = acc
     }
 
-    return compose(cache)
+    let compossed = composse(cache)
+
+    return select(compossed, this.select)
 }
 
-function compose(output)
+function composse(input)
 {
     let records = new Array()
 
-    for (const record of output) 
+    for (const record of input) 
     {
         let line = record.map(selector => {
             const obj = new Object()
@@ -46,8 +50,25 @@ function compose(output)
         
         records.push(line)
     }
-    
+
     return records
+}
+
+function select(input, select)
+{
+    let selected = new Array()
+    let all = select.has(WILDCARD_ANY)
+
+    for (const record of input) 
+    {
+        selected.push(Object.fromEntries(Object.entries(record).filter(([key]) => 
+        {
+
+            return all || select.has(key)
+        })))
+    }
+
+    return selected
 }
 
 module.exports = runner
