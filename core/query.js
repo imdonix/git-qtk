@@ -220,12 +220,33 @@ class Query
         }
     }
 
+    parseLimit()
+    {
+        if(!this.yaml.hasOwnProperty('limit'))
+        {
+            this.limit = null
+        }
+        else
+        {
+            this.limit = parseInt(this.yaml['limit'])
+            if(this.limit == NaN)
+            {
+                throw new Error("Illegal limit value.")
+            }
+            if(this.limit <= 0)
+            {
+                throw new Error("The limit must be greater than 0")
+            }
+        }
+    }
+
 
     async init()
     {
         this.parseFrom()
         this.parseSelect()
         this.parseWhere()
+        this.parseLimit()
 
         let before = this.plugins.length
         this.plugins = filterUnusedPlugins(this.plugins, this.from)

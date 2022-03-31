@@ -1,4 +1,0 @@
-# Basic query
-from: commit c
-select: $
-where: sha == 2

@@ -27,8 +27,10 @@ async function runner()
         cache = acc
     }
 
+   
     let compossed = composse(cache)
-    let filtered = where(compossed, this.where)
+    let limited = limit(compossed, this.limit)
+    let filtered = where(limited, this.where)
 
     return select(filtered, this.select)
 }
@@ -90,6 +92,25 @@ function where(input, where)
     }
 
     return filtered
+}
+
+function limit(input, lim)
+{
+    if(limit == null)
+    {
+        return input
+    }
+    else
+    {
+        let limited = new Array()
+    
+        for (let i = 0; i < lim && i < input.length; i++) 
+        {
+            limited.push(input[i])
+        }
+    
+        return limited
+    }
 }
 
 module.exports = runner
