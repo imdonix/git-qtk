@@ -207,11 +207,25 @@ class Query
         }
     }
 
+    parseWhere()
+    {
+        //TODO Checks needed
+        if(!this.yaml.hasOwnProperty('select') || this.yaml['select'] == null )
+        {
+            this.where = 'true'
+        }
+        else
+        {
+            this.where = this.yaml['where']
+        }
+    }
+
 
     async init()
     {
         this.parseFrom()
-        this.parseSelect()        
+        this.parseSelect()
+        this.parseWhere()
 
         let before = this.plugins.length
         this.plugins = filterUnusedPlugins(this.plugins, this.from)
