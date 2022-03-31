@@ -1,3 +1,4 @@
 # Basic query
-from: author c, author a, commit cc
-select: c.name
+from: commit c
+select: $
+where: c.sha = 2
