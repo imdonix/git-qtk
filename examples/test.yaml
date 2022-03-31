@@ -1,0 +1,5 @@
+# Basic query
+from: file
+select: file.path
+where: true
+limit: 1

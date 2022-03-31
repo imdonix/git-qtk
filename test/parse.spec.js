@@ -141,4 +141,50 @@ describe('Validate query', () =>
             catch(err){} 
         })
     })
+
+    describe('when parsing the: limit', () => 
+    {
+        it('should work on a integer', () =>
+        {
+            let query = new Query(params, emptyLogger())
+            query.yaml = {limit: 1 }
+            query.parseLimit()   
+        })
+
+        it('should fail on a string', () =>
+        {
+            let query = new Query(params, emptyLogger())
+            query.yaml = {limit: 'a' }
+            try
+            {
+                query.parseLimit() 
+                assert.fail("Validation failed on a invalid query")
+            }
+            catch(err){} 
+        })
+
+        it('should fail on a negative number', () =>
+        {
+            let query = new Query(params, emptyLogger())
+            query.yaml = {limit: -1 }
+            try
+            {
+                query.parseLimit() 
+                assert.fail("Validation failed on a invalid query")
+            }
+            catch(err){} 
+        })
+
+        it('should fail on zero', () =>
+        {
+            let query = new Query(params, emptyLogger())
+            query.yaml = {limit: -1 }
+            try
+            {
+                query.parseLimit() 
+                assert.fail("Validation failed on a invalid query")
+            }
+            catch(err){} 
+        })
+    })
 })
