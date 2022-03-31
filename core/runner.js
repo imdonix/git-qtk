@@ -25,17 +25,29 @@ async function runner()
         cache = acc
     }
 
-    return cache
+    return compose(cache)
 }
 
-function f(n)
+function compose(output)
 {
-    let arr = []
-    for (let i = 0; i < n; i++) 
+    let records = new Array()
+
+    for (const record of output) 
     {
-        arr.push(["A","d","a","t"])
+        let line = record.map(selector => {
+            const obj = new Object()
+            for (const [key, value] of Object.entries(selector[1])) 
+            {
+                obj[`${selector[0]}.${key}`] = value
+            }
+            return obj
+        })
+        .reduce((res, cur) => Object.assign(res, cur), new Object())
+        
+        records.push(line)
     }
-    return arr
+    
+    return records
 }
 
 module.exports = runner

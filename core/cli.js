@@ -54,22 +54,4 @@ function findParam(key)
     return null;
 }
 
-function prettyPrint(output)
-{
-    for (const record of output) 
-    {
-        let line = record.map(selector => {
-            const obj = new Object()
-            for (const [key, value] of Object.entries(selector[1])) 
-            {
-                obj[`${selector[0]}.${key}`] = value
-            }
-            return obj
-        })
-        .reduce((res, cur) => Object.assign(res, cur), new Object())
-        
-        console.log(line)
-    }
-}
-
-module.exports = { cli, prettyPrint }
+module.exports = { cli }

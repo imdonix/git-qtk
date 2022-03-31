@@ -1,3 +1,4 @@
 # Basic query
-from: author c, author a, commit cc
-select: c.name
+from: commit c
+select: c.sha
+where: c.sha = 2 & 2 = 2 | true | klo = 2 > 2
