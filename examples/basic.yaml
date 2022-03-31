@@ -1,4 +1,4 @@
 # Basic query
 from: commit c
 select: $
-where: c.sha = 2
+where: sha == 2

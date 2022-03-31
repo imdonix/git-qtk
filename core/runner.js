@@ -28,8 +28,9 @@ async function runner()
     }
 
     let compossed = composse(cache)
+    let filtered = where(compossed, this.where)
 
-    return select(compossed, this.select)
+    return select(filtered, this.select)
 }
 
 function composse(input)
@@ -69,6 +70,26 @@ function select(input, select)
     }
 
     return selected
+}
+
+function where(input, where)
+{
+    let filtered = new Array()
+
+    function test(obj)
+    {
+        return eval.bind(obj)(where.toString())
+    }
+
+    for (const record of input) 
+    {
+        if(test(record))
+        {
+            filtered.push(record)
+        }
+    }
+
+    return filtered
 }
 
 module.exports = runner
