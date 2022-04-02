@@ -2,4 +2,4 @@
 from: commit c, author, file f
 select: c.sha, author.name, f.path
 where: (author.name == 'imdonix' && false) || (f.path == 'cry.c')
-limit: 2
+limit: 1

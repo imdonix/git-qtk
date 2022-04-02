@@ -105,7 +105,7 @@ function limit(input, lim)
     {
         let limited = new Array()
     
-        for (let i = 0; i < lim && i < input.length; i++) 
+        for (let i = 0; i <= lim && i < input.length; i++) 
         {
             limited.push(input[i])
         }
