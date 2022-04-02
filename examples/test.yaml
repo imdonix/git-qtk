@@ -1,5 +1,5 @@
-# Basic query
-from: file
-select: file.path
-where: true
-limit: 1
+# Query for testing
+from: commit c, author, file
+select: c.sha, author.name, file.path
+where: false
+limit: aa

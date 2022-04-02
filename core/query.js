@@ -210,7 +210,7 @@ class Query
     parseWhere()
     {
         //TODO Checks needed
-        if(!this.yaml.hasOwnProperty('select') || this.yaml['select'] == null )
+        if(!this.yaml.hasOwnProperty('where') || this.yaml['where'] == null )
         {
             this.where = 'true'
         }
@@ -229,10 +229,12 @@ class Query
         else
         {
             this.limit = parseInt(this.yaml['limit'])
-            if(this.limit == NaN)
+
+            if(Number.isNaN(this.limit))
             {
-                throw new Error("Illegal limit value.")
+                throw new Error("Limit must be an integer")
             }
+
             if(this.limit <= 0)
             {
                 throw new Error("The limit must be greater than 0")
