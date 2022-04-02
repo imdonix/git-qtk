@@ -158,6 +158,15 @@ class Query
                 insert(name, this.findModel(name))
             }
         }
+
+        this.fields = new Array()
+        for(const [key, model] of this.from)
+        {
+            for(const [field, type] of Object.entries(model.model()))
+            {
+                this.fields.push([`${key}.${field}`, type])
+            }
+        }
     }
 
     parseSelect()
@@ -209,14 +218,21 @@ class Query
 
     parseWhere()
     {
-        //TODO Checks needed
         if(!this.yaml.hasOwnProperty('where') || this.yaml['where'] == null )
         {
             this.where = 'true'
         }
         else
         {
-            this.where = this.yaml['where']
+            let expression = this.yaml['where']
+            for(const field of this.fields)
+            {
+                let name = field[0]
+                expression = expression.replace(name, `_['${name}']`)
+            }
+
+            console.log(expression)
+            this.where = expression
         }
     }
 

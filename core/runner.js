@@ -80,7 +80,8 @@ function where(input, where)
 
     function test(obj)
     {
-        return eval.bind(obj)(where.toString())
+        const _ = obj
+        return eval(where.toString())
     }
 
     for (const record of input) 
