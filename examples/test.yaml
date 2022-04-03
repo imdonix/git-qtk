@@ -1,5 +1,5 @@
-# Basic query
-from: file
-select: file.path
-where: true
+# Query for testing
+from: commit c, author, file f
+select: c.sha, author.name, f.path
+where: (author.name == 'imdonix' && false) || (f.path == 'cry.c')
 limit: 1

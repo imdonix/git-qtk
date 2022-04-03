@@ -25,6 +25,7 @@ async function run()
     }
 }
 
+/*
 run()
 .then(() =>
 {
@@ -34,3 +35,4 @@ run()
 {
     console.error(`Runtime mesurement failed: ${err}`)
 })
+*/

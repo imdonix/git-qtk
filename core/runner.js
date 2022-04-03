@@ -6,7 +6,13 @@ async function runner()
     let models = new Array()
     for (const [key, value] of this.from)
     {
-        let dbrep = new Array(...this.db.models[value.name()].values()) // we lose the key
+        let dbrep = new Array() // we lose the key
+
+        for (const it of this.db.models[value.name()].values()) 
+        {
+            dbrep.push(it)
+        }
+
         let extracted = dbrep.map(model => [[key, model]])
         models.push(extracted)
     }
@@ -80,7 +86,8 @@ function where(input, where)
 
     function test(obj)
     {
-        return eval.bind(obj)(where.toString())
+        const _ = obj
+        return eval(where.toString())
     }
 
     for (const record of input) 
@@ -96,7 +103,7 @@ function where(input, where)
 
 function limit(input, lim)
 {
-    if(limit == null)
+    if(lim == null)
     {
         return input
     }
@@ -104,7 +111,7 @@ function limit(input, lim)
     {
         let limited = new Array()
     
-        for (let i = 0; i < lim && i < input.length; i++) 
+        for (let i = 0; i <= lim && i < input.length; i++) 
         {
             limited.push(input[i])
         }

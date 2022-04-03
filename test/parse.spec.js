@@ -1,6 +1,7 @@
 const assert = require('assert');
 const { emptyLogger } = require('../core/utils')
 const { Query, params } = require('../core/query')
+const { parseFrom, parseSelect, parseWhere, parseLimit } = require('../core/parse')
 
 describe('Validate query', () =>
 {
@@ -13,7 +14,7 @@ describe('Validate query', () =>
 
             try
             {
-                query.parseFrom()
+                parseFrom(query)
                 assert.fail("Validation failed on a invalid query")
             }
             catch(err){} 
@@ -26,7 +27,7 @@ describe('Validate query', () =>
 
             try
             {
-                query.parseFrom()
+                parseFrom(query)
                 assert.fail("Validation failed on a invalid query")
             }
             catch(err){} 
@@ -35,7 +36,7 @@ describe('Validate query', () =>
 
             try
             {
-                query.parseFrom()
+                parseFrom(query)
                 assert.fail("Validation failed on a invalid query")
             }
             catch(err){} 
@@ -45,53 +46,53 @@ describe('Validate query', () =>
         {
             let query = new Query(params, emptyLogger())
             query.yaml = {from : 'author'}
-            query.parseFrom()
+            parseFrom(query)
         })
 
         it('should work for multiple model', () =>
         {
             let query = new Query(params, emptyLogger())
             query.yaml = {from : 'author, commit'}
-            query.parseFrom()
+            parseFrom(query)
         })
 
         it('should work for any whitespace', () =>
         {
             let query = new Query(params, emptyLogger())
             query.yaml = {from : 'author,     commit'}
-            query.parseFrom()
+            parseFrom(query)
             query.yaml = {from : '     author ,     commit'}
-            query.parseFrom()
+            parseFrom(query)
             query.yaml = {from : 'author,commit'}
-            query.parseFrom()
+            parseFrom(query)
         })
 
         it('should work for renaming a single model', () =>
         {
             let query = new Query(params, emptyLogger())
             query.yaml = {from : 'author a'}
-            query.parseFrom()
+            parseFrom(query)
         })
 
         it('should work for renaming a single model (mixed)', () =>
         {
             let query = new Query(params, emptyLogger())
             query.yaml = {from : 'author a, commit'}
-            query.parseFrom()
+            parseFrom(query)
         })
 
         it('should work for renaming a all model', () =>
         {
             let query = new Query(params, emptyLogger())
             query.yaml = {from : 'author a, commit b'}
-            query.parseFrom()
+            parseFrom(query)
         })
 
         it('should work for multiple same model with rename', () =>
         {
             let query = new Query(params, emptyLogger())
             query.yaml = {from : 'author a, author b'}
-            query.parseFrom()
+            parseFrom(query)
         })
     })
 
@@ -101,27 +102,27 @@ describe('Validate query', () =>
         {
             let query = new Query(params, emptyLogger())
             query.yaml = {from : 'author a', select: 'a.name'}
-            query.parseFrom()
-            query.parseSelect()
+            parseFrom(query)
+            parseSelect(query)
         })
 
         it('should work for multiple select', () =>
         {
             let query = new Query(params, emptyLogger())
             query.yaml = {from : 'author a', select: 'a.name, a.name'}
-            query.parseFrom()
-            query.parseSelect()
+            parseFrom(query)
+            parseSelect(query)
         })
 
         it('should fail on missing model', () =>
         {
             let query = new Query(params, emptyLogger())
             query.yaml = {from : 'author a', select: 'b.name'}
-            query.parseFrom()
+            parseFrom(query)
 
             try
             {
-                query.parseSelect()
+                parseSelect(query)
                 assert.fail("Validation failed on a invalid query")
             }
             catch(err){} 
@@ -131,11 +132,11 @@ describe('Validate query', () =>
         {
             let query = new Query(params, emptyLogger())
             query.yaml = {from : 'author a', select: 'a.namee'}
-            query.parseFrom()
+            parseFrom(query)
 
             try
             {
-                query.parseSelect()
+                parseSelect(query)
                 assert.fail("Validation failed on a invalid query")
             }
             catch(err){} 
@@ -148,7 +149,7 @@ describe('Validate query', () =>
         {
             let query = new Query(params, emptyLogger())
             query.yaml = {limit: 1 }
-            query.parseLimit()   
+            parseLimit(query)   
         })
 
         it('should fail on a string', () =>
@@ -157,7 +158,7 @@ describe('Validate query', () =>
             query.yaml = {limit: 'a' }
             try
             {
-                query.parseLimit() 
+                parseLimit(query) 
                 assert.fail("Validation failed on a invalid query")
             }
             catch(err){} 
@@ -169,7 +170,7 @@ describe('Validate query', () =>
             query.yaml = {limit: -1 }
             try
             {
-                query.parseLimit() 
+                parseLimit(query) 
                 assert.fail("Validation failed on a invalid query")
             }
             catch(err){} 
@@ -181,7 +182,7 @@ describe('Validate query', () =>
             query.yaml = {limit: -1 }
             try
             {
-                query.parseLimit() 
+                parseLimit(query) 
                 assert.fail("Validation failed on a invalid query")
             }
             catch(err){} 
