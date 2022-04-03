@@ -200,7 +200,7 @@ class Query
                     }
                     else
                     {
-                        throw new Error(`The model don't have '${field}' field'`)
+                        throw new Error(`The '${model}' model does not have '${field}' named field`)
                     }
                 }
                 else
@@ -224,7 +224,7 @@ class Query
         }
         else
         {
-            let expression = this.yaml['where']
+            let expression = this.yaml['where'].toString()
             for(const field of this.fields)
             {
                 let name = field[0]
@@ -268,7 +268,7 @@ class Query
 
         let before = this.plugins.length
         this.plugins = filterUnusedPlugins(this.plugins, this.from)
-        this.logger.log(`${this.plugins.length} plugin will be used of ${before}`)
+        this.logger.log(`${before} of ${this.plugins.length} plugin will be used`)
 
         for (const plugin of this.plugins) 
         {
