@@ -2,9 +2,10 @@
 const fs = require('fs')
 const yaml = require('yaml')
 const Database = require('./database')
-const { getRepoFromURL, WILDCARD_ANY } = require('./utils')
+const { getRepoFromURL } = require('./utils')
 const Git = require('nodegit')
 const runner = require('./runner')
+const { parseFrom, parseSelect, parseWhere, parseLimit } = require('./parse')
 
 const params = {
     repository : {
@@ -122,149 +123,12 @@ class Query
         })        
     }
 
-    parseFrom()
-    {
-        if(!this.yaml.hasOwnProperty('from') || this.yaml['from'] == null )
-        {
-            throw new Error("The query must define: 'from'")
-        }
-
-        this.from = new Map()
-        const insert = (key, val) =>
-        {
-            if(this.from.has(key))
-            {
-                throw new Error(`A model with this name (${key}) is already in the query.`)
-            }
-            else
-            {
-                this.from.set(key, val)
-            }
-        }
-
-        const cs = this.yaml.from.split(',').map(str => str.trim())
-        for (const o of cs) 
-        {
-            const splitted = o.split(' ').map(str => str.trim())
-            if(splitted.length > 1)
-            {
-                let model = splitted[0]
-                let name = splitted[1]
-                insert(name, this.findModel(model))
-            }
-            else
-            {
-                let name = splitted[0]
-                insert(name, this.findModel(name))
-            }
-        }
-
-        this.fields = new Array()
-        for(const [key, model] of this.from)
-        {
-            for(const [field, type] of Object.entries(model.model()))
-            {
-                this.fields.push([`${key}.${field}`, type])
-            }
-        }
-    }
-
-    parseSelect()
-    {
-        if(!this.yaml.hasOwnProperty('select') || this.yaml['select'] == null )
-        {
-            throw new Error("The query must define: 'select'")
-        }
-
-        this.select = new Set()
-        const cs = this.yaml.select.split(',').map(str => str.trim())
-        for (const s of cs) 
-        {
-            if(s == WILDCARD_ANY)
-            {
-                this.select.add(WILDCARD_ANY)
-                break;
-            }
-
-            const splitted = s.split('.')
-            const model = splitted[0]
-            const field = splitted[1]
-            if(splitted.length > 1)
-            {
-
-                if(this.from.has(model))
-                {
-                    if(this.from.get(model).has(field))
-                    {
-                        this.select.add(`${model}.${field}`)
-                    }
-                    else
-                    {
-                        throw new Error(`The '${model}' model does not have '${field}' named field`)
-                    }
-                }
-                else
-                {
-                    throw new Error(`No model found with the name of '${model}'`)
-                }
-            }
-            else
-            {
-                throw new Error("You must give the selected object as: 'model'.'field'")
-            }
-            
-        }
-    }
-
-    parseWhere()
-    {
-        if(!this.yaml.hasOwnProperty('where') || this.yaml['where'] == null )
-        {
-            this.where = 'true'
-        }
-        else
-        {
-            let expression = this.yaml['where'].toString()
-            for(const field of this.fields)
-            {
-                let name = field[0]
-                expression = expression.replace(name, `_['${name}']`)
-            }
-
-            console.log(expression)
-            this.where = expression
-        }
-    }
-
-    parseLimit()
-    {
-        if(!this.yaml.hasOwnProperty('limit'))
-        {
-            this.limit = null
-        }
-        else
-        {
-            this.limit = parseInt(this.yaml['limit'])
-
-            if(Number.isNaN(this.limit))
-            {
-                throw new Error("Limit must be an integer")
-            }
-
-            if(this.limit <= 0)
-            {
-                throw new Error("The limit must be greater than 0")
-            }
-        }
-    }
-
-
     async init()
     {
-        this.parseFrom()
-        this.parseSelect()
-        this.parseWhere()
-        this.parseLimit()
+        parseFrom(this)
+        parseSelect(this)
+        parseWhere(this)
+        parseLimit(this)
 
         let before = this.plugins.length
         this.plugins = filterUnusedPlugins(this.plugins, this.from)
