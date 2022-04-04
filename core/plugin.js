@@ -2,6 +2,8 @@ const { abs } = require('./utils')
 
 class Plugin
 {
+    functions() { abs() }
+
     models() { abs() }
 
     async init() { abs() }

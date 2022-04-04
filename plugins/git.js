@@ -67,6 +67,52 @@ class Git extends Plugin
             db.add(this.file, this.file.parse(cached))
         }
     }
+
+    functions()
+    {
+        return [length, trim, upper, lower]
+    }
 }
+
+function length(str)
+{
+    if(typeof(str) == 'string')
+    {
+        return str.length
+    }
+
+    throw new Error(`'length' can't be used on '${typeof(str)}'`)
+}
+
+function trim(str)
+{
+    if(typeof(str) == 'string')
+    {
+        return str.length
+    }
+
+    throw new Error(`'trim' can't be used on '${typeof(str)}'`)
+}
+
+function upper(str)
+{
+    if(typeof(str) == 'string')
+    {
+        return str.toUpperCase()
+    }
+
+    throw new Error(`'trim' can't be used on '${typeof(str)}'`)
+}
+
+function lower(str)
+{
+    if(typeof(str) == 'string')
+    {
+        return str.toLocaleLowerCase()
+    }
+
+    throw new Error(`'trim' can't be used on '${typeof(str)}'`)
+}
+
 
 module.exports = Git

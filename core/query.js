@@ -64,8 +64,6 @@ class Query
         return await this.track(runner)
     }
 
-
-
     openQuery()
     {
         const file = fs.readFileSync(this.query.script, 'utf8')
@@ -96,7 +94,28 @@ class Query
             throw new Error(`Repository can't be cloned! ${err}`)
         }
     }
-    
+
+    async init()
+    {
+        parseFrom(this)
+        parseSelect(this)
+        parseWhere(this)
+        parseLimit(this)
+
+        let before = this.plugins.length
+        this.plugins = filterUnusedPlugins(this.plugins, this.from)
+        this.logger.log(`${before} of ${this.plugins.length} plugin will be used`)
+
+        this.functions = new Array()
+        for (const plugin of this.plugins) 
+        {
+            plugin.init(this.db)
+            this.functions.push(...plugin.functions())
+        }
+
+        console.log(this.functions)
+    }
+
     fetch()
     {
         return new Promise((res, rej) =>
@@ -129,23 +148,6 @@ class Query
             })
             .catch(err => rej(err))
         })        
-    }
-
-    async init()
-    {
-        parseFrom(this)
-        parseSelect(this)
-        parseWhere(this)
-        parseLimit(this)
-
-        let before = this.plugins.length
-        this.plugins = filterUnusedPlugins(this.plugins, this.from)
-        this.logger.log(`${before} of ${this.plugins.length} plugin will be used`)
-
-        for (const plugin of this.plugins) 
-        {
-            plugin.init(this.db)
-        }
     }
 
     async post()
