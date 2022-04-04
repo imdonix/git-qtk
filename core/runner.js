@@ -72,7 +72,6 @@ function select(input, select)
     {
         selected.push(Object.fromEntries(Object.entries(record).filter(([key]) => 
         {
-
             return all || select.has(key)
         })))
     }

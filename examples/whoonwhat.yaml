@@ -1,5 +1,5 @@
 # Who is working on what
-from: [authors author, commits commit files file]
-select: [author.name, file.name]
-where: commit.date > yesterday and author.id = commit.author and file.id in commit.files
-group: author
+# API // 1.0
+from: author a, commit c, file f
+select: a.name, f.path
+where: a.email == c.author && f.path == c.changes
