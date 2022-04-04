@@ -40,28 +40,36 @@ class Query
     {
         let start = Date.now()
         let res = await fun.bind(this)()
-        this.tracker[fun.name] = (Date.now() - start) / 1000
+        let time = Math.ceil((Date.now() - start) / 1000)
+        this.tracker[fun.name] = time 
         return res
     }
 
-    async run()
+    async load()
     {
         this.validate()
         this.db = new Database(this.plugins)
 
-        this.openQuery()
+        this.yaml = this.openQuery()
 
         await this.track(this.openRepository)
         await this.track(this.init)
         await this.track(this.fetch)
         await this.track(this.post)
+        return this.tracker
+    }
+
+    async run()
+    {
         return await this.track(runner)
     }
+
+
 
     openQuery()
     {
         const file = fs.readFileSync(this.query.script, 'utf8')
-        this.yaml = yaml.parse(file)
+        return yaml.parse(file)
     }
 
     async openRepository()
