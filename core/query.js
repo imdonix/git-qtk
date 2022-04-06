@@ -153,6 +153,7 @@ class Query
                 history.on('end', () =>
                 {
                     this.logger.log(`${visited} commit are parsed`)
+                    this.tracker['commits'] = visited
                     res(visited)
                 })
 
