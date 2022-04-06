@@ -1,4 +1,4 @@
-const { WILDCARD_ANY, repalceAll } = require('./utils')
+const { WILDCARD_ANY } = require('./utils')
 
 function parseFrom(query)
 {
@@ -106,12 +106,12 @@ function parseWhere(query)
         for(const field of query.fields)
         {
             let name = field[0]
-            expression = expression.replace(name, `_['${name}']`)
+            expression = expression.replace(new RegExp(`${name}`, 'g'), `_['${name}']`)
         }
 
         for(const [key, _] of Object.entries(query.functions))
         {
-            expression = repalceAll(expression,`${key}(`, `$.${key}(` )
+            expression = expression.replace(new RegExp(`${key}\\(`, 'g'), `$.${key}(` )
         }
 
         console.log(expression)

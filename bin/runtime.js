@@ -4,7 +4,8 @@ const { Query }= require('../core/query')
 const runtimeTests = [
     'https://github.com/imdonix/example',
     'https://github.com/Ericsson/CodeCompass',
-    'https://github.com/git/git'
+    'https://github.com/git/git',
+    'https://github.com/llvm/llvm-project'
 ]
 
 async function run()
@@ -25,7 +26,7 @@ async function run()
     }
 }
 
-/*
+
 run()
 .then(() =>
 {
@@ -35,4 +36,3 @@ run()
 {
     console.error(`Runtime mesurement failed: ${err}`)
 })
-*/
