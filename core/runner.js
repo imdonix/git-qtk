@@ -2,7 +2,6 @@ const { WILDCARD_ANY } = require('./utils')
 
 async function runner()
 {
-
     let models = new Array()
     for (const [key, value] of this.from)
     {
@@ -36,7 +35,7 @@ async function runner()
    
     let compossed = composse(cache)
     let limited = limit(compossed, this.limit)
-    let filtered = where(limited, this.where)
+    let filtered = where(limited, this.where, this.functions)
 
     return select(filtered, this.select)
 }
@@ -79,13 +78,16 @@ function select(input, select)
     return selected
 }
 
-function where(input, where)
+function where(input, where, funs)
 {
-    let filtered = new Array()
+    const filtered = new Array()
 
+    console.log(funs)
+    
     function test(obj)
     {
         const _ = obj
+        const $ = funs
         return eval(where.toString())
     }
 

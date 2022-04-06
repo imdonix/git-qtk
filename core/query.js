@@ -53,7 +53,7 @@ class Query
         this.yaml = this.openQuery()
 
         await this.track(this.openRepository)
-        await this.track(this.init)
+        await this.track(this.setup)
         await this.track(this.fetch)
         await this.track(this.post)
         return this.tracker
@@ -95,25 +95,37 @@ class Query
         }
     }
 
-    async init()
+    async setup()
     {
         parseFrom(this)
+
+        let before = this.plugins.length
+        this.plugins = filterUnusedPlugins(this.plugins, this.from)
+
+        this.functions = new Object()
+        for (const plugin of this.plugins) 
+        {
+            for (const f of plugin.functions()) 
+            {
+                this.functions[f.name] = f
+            }
+        }
+
         parseSelect(this)
         parseWhere(this)
         parseLimit(this)
 
-        let before = this.plugins.length
-        this.plugins = filterUnusedPlugins(this.plugins, this.from)
         this.logger.log(`${before} of ${this.plugins.length} plugin will be used`)
 
-        this.functions = new Array()
+        this.init()
+    }
+
+    init()
+    {
         for (const plugin of this.plugins) 
         {
             plugin.init(this.db)
-            this.functions.push(...plugin.functions())
         }
-
-        console.log(this.functions)
     }
 
     fetch()

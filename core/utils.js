@@ -15,6 +15,19 @@ function emptyLogger()
     }
 }
 
+function repalceAll(str, from, to)
+{
+    let prev;
+    do
+    {
+        prev = str
+        str = str.replace(from, to)
+    }
+    while(prev != str)
+
+    return str
+}
+
 const WILDCARD_ANY = '$'
 
-module.exports = { getRepoFromURL, abs, emptyLogger, WILDCARD_ANY }
+module.exports = { repalceAll, getRepoFromURL, abs, emptyLogger, WILDCARD_ANY }

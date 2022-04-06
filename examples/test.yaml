@@ -1,4 +1,4 @@
 # Query for testing
 from: author a
 select: $
-where: a.email == 'sorganov@gmail.com'
+where: a.email == llower.a(lower('tamas.donix@gmail.com'))
