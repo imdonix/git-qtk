@@ -6,8 +6,8 @@ const { Query }= require('../core/query')
 const tests = [
     'https://github.com/imdonix/example',
     'https://github.com/Ericsson/CodeCompass',
-    //'https://github.com/git/git',
-    //'https://github.com/llvm/llvm-project'
+    'https://github.com/git/git',
+    'https://github.com/llvm/llvm-project'
 ]
 
 const examples = path.join(__dirname, '../examples/basic');
