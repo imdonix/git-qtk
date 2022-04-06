@@ -1,6 +1,6 @@
 function getRepoFromURL(url)
 {
-    return url.substring(url.lastIndexOf('/')+1)
+    return url.substring(url.lastIndexOf('/')+1).replace('.git', '')
 }
 
 function abs()
