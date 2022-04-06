@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node app.js",
     "test": "mocha",
-    "runtime" : "node --max_old_space_size 8192 ./bin/runtime.js"
+    "runtime" : "node --max_old_space_size=8192 ./bin/runtime.js"
   },
   "bin": {
     "git-qtk": "./bin/main.js"
