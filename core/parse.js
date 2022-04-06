@@ -114,7 +114,6 @@ function parseWhere(query)
             expression = expression.replace(new RegExp(`${key}\\(`, 'g'), `$.${key}(` )
         }
 
-        console.log(expression)
         query.where = expression
     }
 }

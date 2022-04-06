@@ -81,8 +81,6 @@ function select(input, select)
 function where(input, where, funs)
 {
     const filtered = new Array()
-
-    console.log(funs)
     
     function test(obj)
     {
