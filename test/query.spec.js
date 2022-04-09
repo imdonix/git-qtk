@@ -2,7 +2,7 @@ const assert = require('assert');
 const { LOG } = require('../core/utils')
 const { Query, params } = require('../core/query')
 
-describe('Validate cli parameters', () =>
+describe('check valid query inputs', () =>
 {
     it('should fail for missing all required parameters', () =>
     {

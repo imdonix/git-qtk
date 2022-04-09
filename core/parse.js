@@ -61,7 +61,7 @@ function parseSelect(query)
         //Check wildcards
         if(candidate == WILDCARD.ANY)
         {
-            query.select.add(WILDCARD_ANY)
+            query.select.add(WILDCARD.ANY)
             break;
         }
 
@@ -96,8 +96,6 @@ function parseWhere(query)
 
         expression = insFieldBinding(query, expression)
         expression = insFunctionBinding(query, expression)
-
-        console.log(expression)
 
         query.where = expression
     }

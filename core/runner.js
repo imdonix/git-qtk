@@ -31,8 +31,6 @@ async function runner()
 
         cache = acc
     }
-
-    console.log(cache)
    
     let compossed = composse(cache)
     let limited = limit(compossed, this.limit, this.functions)

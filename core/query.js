@@ -1,23 +1,27 @@
 
 const fs = require('fs')
 const yaml = require('yaml')
-const Database = require('./database')
-const { getRepoFromURL } = require('./utils')
 const Git = require('nodegit')
+
+const Database = require('./database')
 const runner = require('./runner')
+const { getRepoFromURL } = require('./utils')
 const { parseFrom, parseSelect, parseWhere, parseLimit } = require('./parse')
 
 const params = {
+    
     repository : {
         type: 'string',
         keys: ['r', 'repository'],
         required : true  
     },
+    
     script : {
         type: 'string',
         keys: ['s', 'script'],
-        required : false
+        required : true
     },
+
     clean : {
         type: 'bool',
         keys: ['c', 'clean'],
@@ -50,18 +54,15 @@ class Query
         this.validate()
         this.db = new Database(this.plugins)
 
+        console.log("OK")
         this.yaml = this.openQuery()
+        
 
         await this.track(this.openRepository)
         await this.track(this.setup)
         await this.track(this.fetch)
         await this.track(this.post)
         return this.tracker
-    }
-
-    async run()
-    {
-        return await this.track(runner)
     }
 
     openQuery()
@@ -104,6 +105,11 @@ class Query
         parseLimit(this)
 
         this.init()
+    }
+
+    async run()
+    {
+        return await this.track(runner)
     }
 
     init()

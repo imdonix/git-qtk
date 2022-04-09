@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "mocha",
+    "test": "mocha --timeout 10000",
     "runtime" : "node --max_old_space_size=8192 ./bin/runtime.js"
   },
   "bin": {
