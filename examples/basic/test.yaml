@@ -2,3 +2,5 @@
 from: commit c
 select: length(c.sha) + (54), 2, (k = 2) + k, k, $
 where: length(c.sha) == 40
+order: c.date+1 ASC
+limit: 2

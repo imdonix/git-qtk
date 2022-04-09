@@ -33,11 +33,11 @@ async function runner()
     }
    
     let compossed = composse(cache)
-    let limited = limit(compossed, this.limit, this.functions)
-    let filtered = where(limited, this.where, this.functions)
+    let filtered = where(compossed, this.where, this.functions)
     let ordered = order(filtered, this.order, this.functions)
-
-    return select(ordered, this.select, this.functions)
+    let limited = limit(ordered, this.limit, this.functions)
+    
+    return select(limited, this.select, this.functions)
 }
 
 function composse(input)
