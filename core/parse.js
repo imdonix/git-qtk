@@ -56,42 +56,33 @@ function parseSelect(query)
 
     query.select = new Set()
     const cs = query.yaml.select.split(',').map(str => str.trim())
-    for (const s of cs) 
+    for (const candidate of cs) 
     {
-        if(s == WILDCARD_ANY)
+        //Check wildcards
+        if(candidate == WILDCARD_ANY)
         {
             query.select.add(WILDCARD_ANY)
             break;
         }
 
-        const splitted = s.split('.')
-        const model = splitted[0]
-        const field = splitted[1]
-        if(splitted.length > 1)
+        //Remove function from model
+        let check = candidate
+        let funInd = candidate.lastIndexOf('(')
+        if(funInd > 0)
         {
+            let funLInd = candidate.indexOf(')')
+            check = candidate.substring(funInd + 1, funLInd)
+        }
 
-            if(query.from.has(model))
-            {
-                if(query.from.get(model).has(field))
-                {
-                    query.select.add(`${model}.${field}`)
-                }
-                else
-                {
-                    throw new Error(`The '${model}' model does not have '${field}' named field`)
-                }
-            }
-            else
-            {
-                throw new Error(`No model found with the name of '${model}'`)
-            }
-        }
-        else
-        {
-            throw new Error("You must give the selected object as: 'model'.'field'")
-        }
-        
+
+        let exp = candidate
+        exp = insFieldBinding(query, exp)
+        exp = insFunctionBinding(query, exp)
+        query.select.add([exp, candidate])
+
     }
+
+    console.log(query.select)
 }
 
 function parseWhere(query)
@@ -103,16 +94,11 @@ function parseWhere(query)
     else
     {
         let expression = query.yaml['where'].toString()
-        for(const field of query.fields)
-        {
-            let name = field[0]
-            expression = expression.replace(new RegExp(`${name}`, 'g'), `_['${name}']`)
-        }
 
-        for(const [key, _] of Object.entries(query.functions))
-        {
-            expression = expression.replace(new RegExp(`${key}\\(`, 'g'), `$.${key}(` )
-        }
+        expression = insFieldBinding(query, expression)
+        expression = insFunctionBinding(query, expression)
+
+        console.log(expression)
 
         query.where = expression
     }
@@ -140,5 +126,25 @@ function parseLimit(query)
     }
 }
 
+function insFunctionBinding(query, expression)
+{
+    for(const [key, _] of Object.entries(query.functions))
+    {
+        expression = expression.replace(new RegExp(`${key}\\(`, 'g'), `$.${key}(` )
+    }
+
+    return expression
+}
+
+function insFieldBinding(query, expression)
+{
+    for(const field of query.fields)
+    {
+        let name = field[0]
+        expression = expression.replace(new RegExp(`${name}`, 'g'), `_['${name}']`)
+    }
+
+    return expression
+}
 
 module.exports = { parseFrom, parseSelect, parseWhere, parseLimit }

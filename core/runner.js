@@ -32,12 +32,13 @@ async function runner()
         cache = acc
     }
 
+    console.log(cache)
    
     let compossed = composse(cache)
-    let limited = limit(compossed, this.limit)
+    let limited = limit(compossed, this.limit, this.functions)
     let filtered = where(limited, this.where, this.functions)
 
-    return select(filtered, this.select)
+    return select(filtered, this.select, this.functions)
 }
 
 function composse(input)
@@ -62,20 +63,37 @@ function composse(input)
     return records
 }
 
-function select(input, select)
+function select(input, select, funs)
 {
-    let selected = new Array()
-    let all = select.has(WILDCARD_ANY)
-
-    for (const record of input) 
+    if(select.has(WILDCARD_ANY))
     {
-        selected.push(Object.fromEntries(Object.entries(record).filter(([key]) => 
-        {
-            return all || select.has(key)
-        })))
+        return input
     }
+    else
+    {
+        let selected = new Array()
+    
+        function sel(obj, se)
+        {
+            const _ = obj
+            const $ = funs
+            return eval(se.toString())
+        }
 
-    return selected
+        for (const record of input) 
+        {
+            const res = new Object()
+
+            for(const se of select)
+            {
+                res[se[1]] = sel(record, se[0])
+            }
+
+            selected.push(res)
+        }
+    
+        return selected
+    }
 }
 
 function where(input, where, funs)
