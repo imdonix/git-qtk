@@ -54,7 +54,6 @@ class Query
         this.validate()
         this.db = new Database(this.plugins)
 
-        console.log("OK")
         this.yaml = this.openQuery()
         
 
@@ -74,15 +73,31 @@ class Query
     async openRepository()
     {
         let name = getRepoFromURL(this.query.repository)
-        try
+
+        if(!this.query.clean)
         {
-            this.repo = await Git.Repository.open(name)
-            return
+            try
+            {
+                this.repo = await Git.Repository.open(name)
+                return
+            }
+            catch(err)
+            {
+                this.logger.log(`Repository '${name}' not found!`)
+            }
         }
-        catch(err)
+        else
         {
-            this.logger.log(`Repository (${name}) not found!`)
-        }
+            try
+            {
+                fs.rmSync(`./${name}`, { recursive: true, force: true })
+                this.logger.log(`Repository '${name}' deleted!`)
+            }
+            catch(err)
+            {
+                this.logger.log(`Repository '${name}' not found!`)
+            }
+        }       
 
         try
         {
