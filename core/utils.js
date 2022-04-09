@@ -18,4 +18,9 @@ const WILDCARD = {
     ANY: '$'
 }
 
-module.exports = { getRepoFromURL, abs, LOG, WILDCARD }
+const OPERATOR = {
+    LESS: (a,b) => a < b,
+    MORE: (a,b) => a > b,
+}
+
+module.exports = { getRepoFromURL, abs, LOG, WILDCARD, OPERATOR }

@@ -33,10 +33,11 @@ async function runner()
     }
    
     let compossed = composse(cache)
-    let limited = limit(compossed, this.limit, this.functions)
-    let filtered = where(limited, this.where, this.functions)
-
-    return select(filtered, this.select, this.functions)
+    let filtered = where(compossed, this.where, this.functions)
+    let ordered = order(filtered, this.order, this.functions)
+    let limited = limit(ordered, this.limit, this.functions)
+    
+    return select(limited, this.select, this.functions)
 }
 
 function composse(input)
@@ -71,7 +72,7 @@ function select(input, select, funs)
     {
         let selected = new Array()
     
-        function sel(obj, se)
+        function f(obj, se)
         {
             const _ = obj
             const $ = funs
@@ -84,7 +85,7 @@ function select(input, select, funs)
 
             for(const se of select)
             {
-                res[se[1]] = sel(record, se[0])
+                res[se[1]] = f(record, se[0])
             }
 
             selected.push(res)
@@ -98,7 +99,7 @@ function where(input, where, funs)
 {
     const filtered = new Array()
     
-    function test(obj)
+    function f(obj)
     {
         const _ = obj
         const $ = funs
@@ -107,7 +108,7 @@ function where(input, where, funs)
 
     for (const record of input) 
     {
-        if(test(record))
+        if(f(record))
         {
             filtered.push(record)
         }
@@ -118,21 +119,31 @@ function where(input, where, funs)
 
 function limit(input, lim)
 {
-    if(lim == null)
+    if(lim != null)
     {
-        return input
+        input.length = lim
     }
-    else
+
+    return input
+}
+
+function order(input, order, funs)
+{
+    if(order != null)
     {
-        let limited = new Array()
-    
-        for (let i = 0; i <= lim && i < input.length; i++) 
+        const [exp, pre] = order
+
+        function f(obj)
         {
-            limited.push(input[i])
+            const _ = obj
+            const $ = funs
+            return eval(exp.toString())
         }
     
-        return limited
+        input.sort((a,b) => pre(f(a), f(b)) ? 1 : -1)
     }
+
+    return input
 }
 
 module.exports = runner

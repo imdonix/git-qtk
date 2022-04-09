@@ -1,4 +1,4 @@
-const { WILDCARD } = require('./utils')
+const { WILDCARD, OPERATOR } = require('./utils')
 
 function parseFrom(query)
 {
@@ -123,6 +123,52 @@ function parseLimit(query)
     }
 }
 
+function parseOrder(query)
+{
+    if(!query.yaml.hasOwnProperty('order') || query.yaml['order'] == null)
+    {
+        query.order = null
+    }
+    else
+    {
+        const inp = query.yaml['order'].toString()
+        
+        let expression = inp
+        let op = OPERATOR.LESS
+
+        const splitted = inp.split(' ')
+        if(splitted.length == 1)
+        {}
+        else if(splitted.length == 2)
+        {
+            expression = splitted[0]
+
+            const key = splitted[1]
+            if(key == 'ASC' )
+            {
+                op = OPERATOR.MORE
+            }
+            else if(key == 'DESC')
+            {
+                op = OPERATOR.LESS
+            }
+            else
+            {
+                throw new Error("The order must be 'DESC' or 'ASC'")
+            }
+        }
+        else
+        {
+            throw new Error("The order must be set as 'model.field DESC/ASC'")
+        }
+
+        expression = insFieldBinding(query, expression)
+        expression = insFunctionBinding(query, expression)
+        query.order = [expression, op]
+        
+    }
+}
+
 function insFunctionBinding(query, expression)
 {
     for(const [key, _] of Object.entries(query.functions))
@@ -144,4 +190,4 @@ function insFieldBinding(query, expression)
     return expression
 }
 
-module.exports = { parseFrom, parseSelect, parseWhere, parseLimit }
+module.exports = { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder }

@@ -1,7 +1,7 @@
 const assert = require('assert');
-const { LOG } = require('../core/utils')
+const { LOG, OPERATOR } = require('../core/utils')
 const { Query, params, usePlugins } = require('../core/query')
-const { parseFrom, parseSelect, parseWhere, parseLimit } = require('../core/parse')
+const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder } = require('../core/parse')
 
 describe('Validate query', () =>
 {
@@ -280,5 +280,59 @@ describe('Validate query', () =>
             }
             catch(err){} 
         })
+    })
+
+    describe('when parsing the: order', () => 
+    {
+        it('should work on a model', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a', order: 'a.name' }
+            parseFrom(query)
+            usePlugins(query)
+            parseOrder(query)
+
+            assert.equal(query.order[0], "_['a.name']")
+            assert.equal(query.order[1], OPERATOR.LESS)
+        })
+
+        it('should work on a order modifier', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a', order: 'a.name ASC' }
+            parseFrom(query)
+            usePlugins(query)
+            parseOrder(query)
+
+            assert.equal(query.order[0],"_['a.name']")
+            assert.equal(query.order[1], OPERATOR.MORE)
+        })
+
+        it('should work if missing', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a', }
+            parseFrom(query)
+            usePlugins(query)
+            parseOrder(query)
+
+            assert.equal(query.order, null)
+        })
+
+        it('should fail on invalid modifier', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a', order: 'a.name LAJOS' }
+            parseFrom(query)
+            usePlugins(query)
+            
+            try
+            {
+                parseOrder(query)
+                assert.fail()
+            }
+            catch(err){}
+        })
+
     })
 })
