@@ -1,4 +1,4 @@
-const { WILDCARD_ANY } = require('./utils')
+const { WILDCARD } = require('./utils')
 
 function parseFrom(query)
 {
@@ -59,7 +59,7 @@ function parseSelect(query)
     for (const candidate of cs) 
     {
         //Check wildcards
-        if(candidate == WILDCARD_ANY)
+        if(candidate == WILDCARD.ANY)
         {
             query.select.add(WILDCARD_ANY)
             break;
@@ -82,7 +82,6 @@ function parseSelect(query)
 
     }
 
-    console.log(query.select)
 }
 
 function parseWhere(query)

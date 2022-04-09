@@ -1,4 +1,4 @@
-const { WILDCARD_ANY } = require('./utils')
+const { WILDCARD } = require('./utils')
 
 async function runner()
 {
@@ -65,7 +65,7 @@ function composse(input)
 
 function select(input, select, funs)
 {
-    if(select.has(WILDCARD_ANY))
+    if(select.has(WILDCARD.ANY))
     {
         return input
     }

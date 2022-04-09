@@ -8,13 +8,14 @@ function abs()
     throw new Error("Abstract method");
 }
 
-function emptyLogger()
-{
-    return {
-        log : () => {}
+const LOG = {
+    VOID : {
+        log: () => {}
     }
 }
 
-const WILDCARD_ANY = '$'
+const WILDCARD = {
+    ANY: '$'
+}
 
-module.exports = { getRepoFromURL, abs, emptyLogger, WILDCARD_ANY }
+module.exports = { getRepoFromURL, abs, LOG, WILDCARD }

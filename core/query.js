@@ -98,24 +98,10 @@ class Query
     async setup()
     {
         parseFrom(this)
-
-        let before = this.plugins.length
-        this.plugins = filterUnusedPlugins(this.plugins, this.from)
-
-        this.functions = new Object()
-        for (const plugin of this.plugins) 
-        {
-            for (const f of plugin.functions()) 
-            {
-                this.functions[f.name] = f
-            }
-        }
-
+        usePlugins(this, this.logger)
         parseSelect(this)
         parseWhere(this)
         parseLimit(this)
-
-        this.logger.log(`${before} of ${this.plugins.length} plugin will be used`)
 
         this.init()
     }
@@ -253,4 +239,21 @@ function filterUnusedPlugins(plugins, from)
     return filtered
 }
 
-module.exports = { Query, params } 
+function usePlugins(query)
+{
+    let before = query.plugins.length
+    query.plugins = filterUnusedPlugins(query.plugins, query.from)
+
+    query.functions = new Object()
+    for (const plugin of query.plugins) 
+    {
+        for (const fun of plugin.functions()) 
+        {
+            query.functions[fun.name] = fun
+        }
+    }
+
+    query.logger.log(`${before} of ${query.plugins.length} plugin will be used`)
+}
+
+module.exports = { Query, params, usePlugins } 
