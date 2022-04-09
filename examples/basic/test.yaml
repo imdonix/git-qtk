@@ -1,0 +1,4 @@
+# Get all commit's hashes from a repository
+from: commit c
+select: length(c.sha) + (54), 2, (k = 2) + k, k, $
+where: length(c.sha) == 40

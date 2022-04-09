@@ -1,4 +1,5 @@
 #! /usr/bin/env node
+const { Promise } = require('nodegit');
 const {cli } = require('../core/cli')
 const { Query } = require('../core/query')
 
@@ -8,7 +9,8 @@ let query = new Query(input, console);
 try
 {
     query.validate()
-    query.load()
+    Promise.resolve()
+    .then(() => query.load())   
     .then(tracker => 
     {
         console.log(`Opening : ${tracker.openRepository}s`)

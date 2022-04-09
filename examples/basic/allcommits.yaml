@@ -1,0 +1,3 @@
+# Get all commit's hashes from a repository
+from: commit c
+select: c.sha

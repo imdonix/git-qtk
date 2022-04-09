@@ -1,12 +1,12 @@
 const assert = require('assert');
-const { emptyLogger } = require('../core/utils')
+const { LOG } = require('../core/utils')
 const { Query, params } = require('../core/query')
 
-describe('Validate cli parameters', () =>
+describe('check valid query inputs', () =>
 {
     it('should fail for missing all required parameters', () =>
     {
-        let query = new Query({}, emptyLogger())
+        let query = new Query({}, LOG.VOID)
         try
         {
             query.validate()
@@ -17,7 +17,7 @@ describe('Validate cli parameters', () =>
 
     it('should fail for missing some required parameters', () =>
     {
-        let query = new Query({script : ''}, emptyLogger())
+        let query = new Query({script : ''}, LOG.VOID)
         try
         {
             query.validate()
@@ -28,7 +28,7 @@ describe('Validate cli parameters', () =>
 
     it('should pass if all required parameter is given', () =>
     {
-        let query = new Query(params, emptyLogger())
+        let query = new Query(params, LOG.VOID)
         try
         {
             query.validate()

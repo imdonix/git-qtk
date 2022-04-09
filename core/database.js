@@ -19,7 +19,15 @@ class Database
 
     view(model)
     {
-        return this.models[model.name()]
+        if(typeof model == 'string')
+        {
+            return this.models[model]
+        }
+        else
+        {
+            return this.models[model.name()]
+        }
+        
     }
 
     log()

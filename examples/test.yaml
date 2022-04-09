@@ -1,4 +1,0 @@
-# Query for testing
-from: author a
-select: $
-where: a.email == 'sorganov@gmail.com'

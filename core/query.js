@@ -1,23 +1,27 @@
 
 const fs = require('fs')
 const yaml = require('yaml')
-const Database = require('./database')
-const { getRepoFromURL } = require('./utils')
 const Git = require('nodegit')
+
+const Database = require('./database')
 const runner = require('./runner')
+const { getRepoFromURL } = require('./utils')
 const { parseFrom, parseSelect, parseWhere, parseLimit } = require('./parse')
 
 const params = {
+    
     repository : {
         type: 'string',
         keys: ['r', 'repository'],
         required : true  
     },
+    
     script : {
         type: 'string',
         keys: ['s', 'script'],
-        required : false
+        required : true
     },
+
     clean : {
         type: 'bool',
         keys: ['c', 'clean'],
@@ -50,18 +54,15 @@ class Query
         this.validate()
         this.db = new Database(this.plugins)
 
+        console.log("OK")
         this.yaml = this.openQuery()
+        
 
         await this.track(this.openRepository)
-        await this.track(this.init)
+        await this.track(this.setup)
         await this.track(this.fetch)
         await this.track(this.post)
         return this.tracker
-    }
-
-    async run()
-    {
-        return await this.track(runner)
     }
 
     openQuery()
@@ -95,25 +96,28 @@ class Query
         }
     }
 
-    async init()
+    async setup()
     {
         parseFrom(this)
+        usePlugins(this, this.logger)
         parseSelect(this)
         parseWhere(this)
         parseLimit(this)
 
-        let before = this.plugins.length
-        this.plugins = filterUnusedPlugins(this.plugins, this.from)
-        this.logger.log(`${before} of ${this.plugins.length} plugin will be used`)
+        this.init()
+    }
 
-        this.functions = new Array()
+    async run()
+    {
+        return await this.track(runner)
+    }
+
+    init()
+    {
         for (const plugin of this.plugins) 
         {
             plugin.init(this.db)
-            this.functions.push(...plugin.functions())
         }
-
-        console.log(this.functions)
     }
 
     fetch()
@@ -141,6 +145,7 @@ class Query
                 history.on('end', () =>
                 {
                     this.logger.log(`${visited} commit are parsed`)
+                    this.tracker['commits'] = visited
                     res(visited)
                 })
 
@@ -240,4 +245,21 @@ function filterUnusedPlugins(plugins, from)
     return filtered
 }
 
-module.exports = { Query, params } 
+function usePlugins(query)
+{
+    let before = query.plugins.length
+    query.plugins = filterUnusedPlugins(query.plugins, query.from)
+
+    query.functions = new Object()
+    for (const plugin of query.plugins) 
+    {
+        for (const fun of plugin.functions()) 
+        {
+            query.functions[fun.name] = fun
+        }
+    }
+
+    query.logger.log(`${before} of ${query.plugins.length} plugin will be used`)
+}
+
+module.exports = { Query, params, usePlugins } 
