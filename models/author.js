@@ -10,8 +10,8 @@ class Author extends Model
     model()
     {
         return {
-            email : 'string',
-            name : 'string'
+            email : ['string', 'The author email address'],
+            name : ['string', 'The author name']
         }
     }
 

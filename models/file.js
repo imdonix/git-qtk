@@ -10,9 +10,9 @@ class File extends Model
     model()
     {
         return {
-            path: 'string',
-            created : 'commit',
-            modified: 'commit'
+            path: ['string', 'Full path to the file'],
+            created : ['string', 'The SHA of the commit when the file is created' ],
+            modified: ['string', 'The SHA of the commit when the file is last changed']
         }
     }
 

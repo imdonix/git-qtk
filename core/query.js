@@ -5,7 +5,7 @@ const Git = require('nodegit')
 
 const Database = require('./database')
 const runner = require('./runner')
-const { getRepoFromURL } = require('./utils')
+const { getRepoFromURL, loadModels, loadPlugins } = require('./utils')
 const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder } = require('./parse')
 
 const params = {
@@ -19,14 +19,14 @@ const params = {
     
     script : {
         type: 'string',
-        description: "The script relative path to run",
+        description: "Relative path to the script",
         keys: ['s', 'script'],
         required : true
     },
 
     clean : {
         type: 'bool',
-        description: "Delete the local repository and clone a clean one from url",
+        description: "Force cloning a clean the repository",
         keys: ['c', 'clean'],
         required : false
     }
@@ -221,30 +221,6 @@ class Query
     {
         return this.db
     }
-}
-
-
-function loadPlugins()
-{
-    const plugins = new Array()
-    const paths = fs.readdirSync(`${__dirname}/../plugins`)
-    for (const file of paths) 
-    {
-        const Class = require(`${__dirname}/../plugins/${file}`)
-        plugins.push(new Class())
-    }
-
-    return plugins
-}
-
-function loadModels(plugins)
-{
-    const models = new Array()
-    for (const plugin of plugins)
-    {
-        models.push(...plugin.models())
-    }
-    return models
 }
 
 function filterUnusedPlugins(plugins, from)

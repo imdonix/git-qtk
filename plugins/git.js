@@ -15,6 +15,11 @@ class Git extends Plugin
         this.file = new File()
     }
 
+    name()
+    {
+        return 'Git'
+    }
+
     models()
     {
         return [ this.auth, this.commit, this.file ]

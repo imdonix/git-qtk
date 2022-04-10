@@ -1,3 +1,5 @@
+const fs = require('fs')
+
 function getRepoFromURL(url)
 {
     return url.substring(url.lastIndexOf('/')+1).replace('.git', '')
@@ -6,6 +8,29 @@ function getRepoFromURL(url)
 function abs()
 {
     throw new Error("Abstract method");
+}
+
+function loadPlugins()
+{
+    const plugins = new Array()
+    const paths = fs.readdirSync(`${__dirname}/../plugins`)
+    for (const file of paths) 
+    {
+        const Class = require(`${__dirname}/../plugins/${file}`)
+        plugins.push(new Class())
+    }
+
+    return plugins
+}
+
+function loadModels(plugins)
+{
+    const models = new Array()
+    for (const plugin of plugins)
+    {
+        models.push(...plugin.models())
+    }
+    return models
 }
 
 const LOG = {
@@ -24,4 +49,4 @@ const OPERATOR = {
     MORE: (a,b) => a > b,
 }
 
-module.exports = { getRepoFromURL, abs, LOG, WILDCARD, OPERATOR }
+module.exports = { loadPlugins, loadModels, getRepoFromURL, abs, LOG, WILDCARD, OPERATOR }

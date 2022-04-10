@@ -1,8 +1,6 @@
 ## Documentations
 - Add basic documentation to readme
-- Add -help
 - Add -examples
-- Add -v
 
 ## Feature
 - Master commit as input
