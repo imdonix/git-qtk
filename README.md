@@ -1,20 +1,40 @@
 # Git Query Toolkit
 
-This toolkit provides you a quick and easy way to extract metadata from git-based repositories. 
-The toolkit contains:
+This toolkit provides you a quick and easy way to extract metadata from git-based repositories.  
+Tools:
 
 - Git history parser.
 - Query tool.
 - The Git Plugin.
 - Command line interface.
 
-# Get Started
+## Get Started
 
-1. Download and Install [node.js v14.x](https://nodejs.dev/download/)
+1. Install [node.js v14.x](https://nodejs.dev/download/)
 2. Install the toolkit via npm `npm i https://github.com/imdonix/git-qtk --global`
-    - You may have to set the Execution policy on windows to Bypass `Set-ExecutionPolicy -ExecutionPolicy Bypass`
-3. Run `git-qtk -v`
+3. Check: `git-qtk -v`
+4. Create a script file: `nano test.yaml`
+``` yaml
+from: commit c
+select: c.sha
+```
+5. Run `git-qtk -s .\test.yaml -r https://github.com/imdonix/example`
 
-## Add-ons
+## Testing
 
-An add-on is extends the features of the query language.
+### Unit tests
+Unit tests are implemented with the mocha framework
+`npm test`
+
+### Runtime measurement
+The runtime measurement will run multiple scripts on multiple repositories.  
+`npm run runtime` -> `./mesurement.csv`
+
+
+## Plugins
+
+- Plugins are specialized parsers for the toolkit.
+- You can list all the built in plugin with: `git-qtk -plugin`
+
+
+
