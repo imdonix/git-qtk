@@ -1,52 +1,146 @@
 #! /usr/bin/env node
 const Table = require('cli-table');
+const fs = require('fs')
+const path = require('path')
+const yaml = require('yaml')
 const { Promise } = require('nodegit');
 const { cli } = require('../core/cli')
-const { Query } = require('../core/query')
+const { Query, params } = require('../core/query')
+const { loadPlugins } = require('../core/utils')
 
-let input = cli(process.argv)
-let query = new Query(input, console);
+const global = {
+    version : {
+        type: 'bool',
+        description: "Version of the toolkit",
+        keys: ['v', 'version']
+    },
 
-try
+    help : {
+        type: 'bool',
+        description: "Help guide",
+        keys: ['h', 'help']
+    },
+
+    plugin : {
+        type: 'bool',
+        description: "List all the built in plugins",
+        keys: ['p', 'plugin']
+    },
+
+    example : {
+        type: 'bool',
+        description: "List the example queries",
+        keys: ['e', 'example']
+    }
+}
+
+const merge = {...global, ...params}
+const input = cli(process.argv, merge)
+
+if(input.version)
 {
-    query.validate()
-    Promise.resolve()
-    .then(() => query.load())   
-    .then(tracker => 
+    const package = JSON.parse(fs.readFileSync(`${__dirname}/../package.json`, 'utf8'))
+    console.log(`v${package.version}`)
+}
+else if(input.help)
+{
+    const table = new Table({
+        head: ['option', 'key', 'description' ]
+    });
+
+    for (const [key, value] of Object.entries(merge)) 
     {
-        console.log(`Opening : ${tracker.openRepository}s`)
-        console.log(`Parsing : ${tracker.setup + tracker.fetch + tracker.post}s`)
+        const realkey = value.keys.map(k => `-${k}`).join(', ')
+        table.push([key, realkey, value.description])
+    }
 
-        return query.run()
-    })
-    .then(res => {
-
-        console.log(`Query : ${query.tracker.runner}s`)
-        if(res.length > 0)
+    console.log(table.toString())
+}
+else if(input.plugin)
+{
+    const plugins = loadPlugins()
+    for (const plugin of plugins) 
+    {
+        for (const model of plugin.models()) 
         {
-            const template = res[0]
             const table = new Table({
-                head: Object.keys(template)
+                head: [plugin.name(), 'model', 'key', 'type', 'description' ]
             });
 
-            for(const rec of res)
+            for (const [field, type] of Object.entries(model.model())) 
             {
-                table.push(Object.values(rec))
+                table.push(['*', model.name(), field, type[0], type[1]])
             }
-    
+
             console.log(table.toString())
+
         }
-        else
-        {
-            console.log('The query result is empty!')
-        }
-    })
-    .catch(err => 
-    {
-        console.error(err)
-    })
+    }
 }
-catch(err)
+else if(input.example)
 {
-    console.error(err.message)
+    const examples = path.join(__dirname, '../examples/basic');
+    const all = fs.readdirSync(examples)
+    for (const examplePath of all) 
+    {
+        const table = new Table();
+
+        const file = fs.readFileSync(path.join(__dirname, '../examples/basic' , examplePath), 'utf8')
+        const example = yaml.parse(file)
+
+        for (const kp of Object.entries(example)) 
+        {
+            table.push(kp)
+        }
+
+        console.log(table.toString())
+    }
+}
+else
+{
+    const query = new Query(input, console);
+
+    try
+    {
+        query.validate()
+        Promise.resolve()
+        .then(() => query.load())   
+        .then(tracker => 
+        {
+            console.log(`Opening : ${tracker.openRepository}s`)
+            console.log(`Parsing : ${tracker.setup + tracker.fetch + tracker.post}s`)
+    
+            return query.run()
+        })
+        .then(res => {
+    
+            console.log(`Query : ${query.tracker.runner}s`)
+            if(res.length > 0)
+            {
+                const template = res[0]
+                const table = new Table({
+                    head: Object.keys(template)
+                });
+    
+                for(const rec of res)
+                {
+                    table.push(Object.values(rec))
+                }
+        
+                console.log(table.toString())
+            }
+            else
+            {
+                console.log('The query result is empty!')
+            }
+        })
+        .catch(err => 
+        {
+            console.error(err)
+        })
+    }
+    catch(err)
+    {
+        console.error(err.message)
+    }
 }

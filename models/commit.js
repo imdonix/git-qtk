@@ -10,11 +10,11 @@ class Commit extends Model
     model()
     {
         return {
-            sha: 'string',
-            author : 'author',
-            date: 'Date',
-            message: 'string',
-            changes: 'array'
+            sha: ['string', "The commit's SHA"],
+            author : ['string', "The author email address"],
+            date: ['Date', "The commit date"],
+            message: ['string', 'The commit message'],
+            changes: ['Array', 'List of the changed files']
         }
     }
 
