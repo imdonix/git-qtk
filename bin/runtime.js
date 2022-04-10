@@ -29,22 +29,23 @@ function tracker2log(repo,query,tracker)
     return res.join(';').concat('\n')
 }
 
+let output = 'repository;query;commits;open;setup;fetch;post;runner\n'
+let count = 0
 
 async function run()
 {
     const all = await readdir(examples)
-    let output = 'repository;query;commits;open;setup;fetch;post;runner\n'
 
     for (const runtime of tests) 
-    {
-        console.log(`[${getRepoFromURL(runtime)}] Tests started`);
-        
+    {       
         for(const file of all)
         {
-            console.log(`[${getRepoFromURL(runtime)}] Running '${file}'`);
+            count++
+
+            console.log(`(${count}) [${getRepoFromURL(runtime)}] Running '${file}'`);
             
             let logger = {
-                log : (msg) => console.log(`[${getRepoFromURL(runtime)}] ${msg}`)
+                log : (msg) => console.log(`(${count}) [${getRepoFromURL(runtime)}] --> ${msg}`)
             }
 
             let query = new Query({
@@ -57,21 +58,22 @@ async function run()
     
             output = output.concat(tracker2log(runtime, file, query.tracker))
 
-            console.log(`[${getRepoFromURL(runtime)}] Query '${file}' finished`);
+            console.log(`(${count}) [${getRepoFromURL(runtime)}] Query '${file}' finished`);
+            console.log(`-----`);
         }
-
-        console.log(`[${getRepoFromURL(runtime)}] Tests finished`);       
     }
-
-    await writeFile(outfile, output)
 }
 
 run()
 .then(() =>
 {
-    console.log("Runtime mesurement finished")
+    console.log("[RM] finished successfully!")
 })
 .catch((err) => 
 {
-    console.error(`Runtime mesurement failed: ${err}`)
+    console.error(`[RM] failed with \\ ${err}`)
+})
+.finally(async () => {
+    await writeFile(outfile, output)
+    console.log(`[RM] tracked result: '${outfile}'`)
 })
