@@ -70,18 +70,31 @@ class Git extends Plugin
 
     functions()
     {
-        return [length, trim, upper, lower]
+        return [trim, short]
     }
 }
 
-function length(str)
+function short(obj)
 {
-    if(typeof(str) == 'string')
+    if(typeof obj == 'string')
     {
-        return str.length
+        return obj.substring(0, 6).toUpperCase()
     }
+    else if(typeof obj.getMonth === 'function')
+    {
 
-    throw new Error(`'length' can't be used on '${typeof(str)}'`)
+        let mm = obj.getMonth() + 1; // getMonth() is zero-based
+        let dd = obj.getDate();
+
+        return [obj.getFullYear(),
+                (mm>9 ? '' : '0') + mm,
+                (dd>9 ? '' : '0') + dd
+                ].join('.');
+    }
+    else
+    {
+        return obj
+    }
 }
 
 function trim(str)
@@ -93,26 +106,5 @@ function trim(str)
 
     throw new Error(`'trim' can't be used on '${typeof(str)}'`)
 }
-
-function upper(str)
-{
-    if(typeof(str) == 'string')
-    {
-        return str.toUpperCase()
-    }
-
-    throw new Error(`'trim' can't be used on '${typeof(str)}'`)
-}
-
-function lower(str)
-{
-    if(typeof(str) == 'string')
-    {
-        return str.toLocaleLowerCase()
-    }
-
-    throw new Error(`'trim' can't be used on '${typeof(str)}'`)
-}
-
 
 module.exports = Git
