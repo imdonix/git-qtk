@@ -154,25 +154,25 @@ describe('Validate query', () =>
         it('should work with functions', () =>
         {
             let query = new Query(params, LOG.VOID)
-            query.yaml = {from : 'author a', select: 'length(a.name)'}
+            query.yaml = {from : 'author a', select: 'short(a.name)'}
             parseFrom(query)
             usePlugins(query)
             parseSelect(query)
 
-            assert.equal(query.select.keys().next().value[0], "$.length(_['a.name'])")
-            assert.equal(query.select.keys().next().value[1], 'length(a.name)')
+            assert.equal(query.select.keys().next().value[0], "$.short(_['a.name'])")
+            assert.equal(query.select.keys().next().value[1], 'short(a.name)')
         })
 
         it('should work with functions (multiple)', () =>
         {
             let query = new Query(params, LOG.VOID)
-            query.yaml = {from : 'author a', select: 'length(length(a.name + 1))'}
+            query.yaml = {from : 'author a', select: 'short(short(a.name + 1))'}
             parseFrom(query)
             usePlugins(query)
             parseSelect(query)
 
-            assert.equal(query.select.keys().next().value[0], "$.length($.length(_['a.name'] + 1))")
-            assert.equal(query.select.keys().next().value[1], 'length(length(a.name + 1))')
+            assert.equal(query.select.keys().next().value[0], "$.short($.short(_['a.name'] + 1))")
+            assert.equal(query.select.keys().next().value[1], 'short(short(a.name + 1))')
 
         })
 
@@ -216,23 +216,23 @@ describe('Validate query', () =>
         it('should handle functions', () =>
         {
             let query = new Query(params, LOG.VOID)
-            query.yaml = { from: 'author a', where : "length('lajos')" }
+            query.yaml = { from: 'author a', where : "short('lajos')" }
             parseFrom(query)
             usePlugins(query)
             parseWhere(query)
 
-            assert.equal(query.where, "$.length('lajos')")  
+            assert.equal(query.where, "$.short('lajos')")  
         })
 
         it('should handle functions & fields mixed', () =>
         {
             let query = new Query(params, LOG.VOID)
-            query.yaml = { from: 'author a', where : "length(a.name)" }
+            query.yaml = { from: 'author a', where : "short(a.name)" }
             parseFrom(query)
             usePlugins(query)
             parseWhere(query)
 
-            assert.equal(query.where, "$.length(_['a.name'])")  
+            assert.equal(query.where, "$.short(_['a.name'])")  
         })
     })
 
