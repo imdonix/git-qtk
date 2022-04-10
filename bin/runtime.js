@@ -2,6 +2,7 @@ const { readdir, writeFile } = require('fs/promises')
 const path = require('path');
 const { getRepoFromURL } = require('../core/utils')
 const { Query }= require('../core/query')
+const { WILDCARD } = require('../core/utils')
 
 const tests = [
     'https://github.com/imdonix/example',
@@ -26,10 +27,10 @@ function tracker2log(repo,query,tracker)
         tracker.runner
     ]
 
-    return res.join(';').concat('\n')
+    return res.join(WILDCARD.SEP).concat(WILDCARD.NL)
 }
 
-let output = 'repository;query;commits;open;setup;fetch;post;runner\n'
+let output = 'repository;query;commits;open;setup;fetch;post;runner'.concat(WILDCARD.NL)
 let count = 0
 
 async function run()

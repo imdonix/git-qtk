@@ -6,7 +6,7 @@ const yaml = require('yaml')
 const { Promise } = require('nodegit');
 const { cli } = require('../core/cli')
 const { Query, params } = require('../core/query')
-const { loadPlugins } = require('../core/utils')
+const { loadPlugins, WILDCARD } = require('../core/utils')
 
 const global = {
     version : {
@@ -31,6 +31,12 @@ const global = {
         type: 'bool',
         description: "List the example queries",
         keys: ['e', 'example']
+    },
+
+    csv : {
+        type: 'string',
+        description: "Pipe the output to the given csv file",
+        keys: ['csv']
     }
 }
 
@@ -45,7 +51,7 @@ if(input.version)
 else if(input.help)
 {
     const table = new Table({
-        head: ['option', 'key', 'description' ]
+        head: ['option', 'key(s)', 'description' ]
     });
 
     for (const [key, value] of Object.entries(merge)) 
@@ -118,16 +124,29 @@ else
             if(res.length > 0)
             {
                 const template = res[0]
-                const table = new Table({
-                    head: Object.keys(template)
-                });
-    
-                for(const rec of res)
+
+                if(input.csv)
                 {
-                    table.push(Object.values(rec))
+                    let str = Object.keys(template).join(WILDCARD.SEP).concat(WILDCARD.NL)
+                    for(const rec of res)
+                    {
+                        str = str.concat(Object.values(rec).join(WILDCARD.SEP).concat(WILDCARD.NL))
+                    }
+                    fs.writeFileSync(input.csv, str)
                 }
+                else
+                {
+                    const table = new Table({
+                        head: Object.keys(template)
+                    });
         
-                console.log(table.toString())
+                    for(const rec of res)
+                    {
+                        table.push(Object.values(rec))
+                    }
+            
+                    console.log(table.toString())
+                }
             }
             else
             {
