@@ -15,7 +15,8 @@ const LOG = {
 }
 
 const WILDCARD = {
-    ANY: '$'
+    ANY: '$',
+    SEP: ';'
 }
 
 const OPERATOR = {

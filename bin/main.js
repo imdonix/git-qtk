@@ -2,9 +2,19 @@
 const Table = require('cli-table');
 const { Promise } = require('nodegit');
 const { cli } = require('../core/cli')
-const { Query } = require('../core/query')
+const { Query, params } = require('../core/query')
 
-let input = cli(process.argv)
+const global = {
+    help : {
+        type: 'string',
+        description: "The repository relative 'URL' or 'folder name' where you want to run the query",
+        keys: ['h', 'help'],
+        required : true  
+    },
+}
+
+
+let input = cli(process.argv, params)
 let query = new Query(input, console);
 
 try

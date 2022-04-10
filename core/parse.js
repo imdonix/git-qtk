@@ -20,7 +20,7 @@ function parseFrom(query)
         }
     }
 
-    const cs = query.yaml.from.split(',').map(str => str.trim())
+    const cs = query.yaml.from.split(WILDCARD.SEP).map(str => str.trim())
     for (const o of cs) 
     {
         const splitted = o.split(' ').map(str => str.trim())
@@ -55,7 +55,7 @@ function parseSelect(query)
     }
 
     query.select = new Set()
-    const cs = query.yaml.select.split(',').map(str => str.trim())
+    const cs = query.yaml.select.split(WILDCARD.SEP).map(str => str.trim())
     for (const candidate of cs) 
     {
         //Check wildcards

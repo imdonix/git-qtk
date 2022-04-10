@@ -52,18 +52,18 @@ describe('Validate query', () =>
         it('should work for multiple model', () =>
         {
             let query = new Query(params, LOG.VOID)
-            query.yaml = {from : 'author, commit'}
+            query.yaml = {from : 'author; commit'}
             parseFrom(query)
         })
 
         it('should work for any whitespace', () =>
         {
             let query = new Query(params, LOG.VOID)
-            query.yaml = {from : 'author,     commit'}
+            query.yaml = {from : 'author;     commit'}
             parseFrom(query)
-            query.yaml = {from : '     author ,     commit'}
+            query.yaml = {from : '     author ;     commit'}
             parseFrom(query)
-            query.yaml = {from : 'author,commit'}
+            query.yaml = {from : 'author;commit'}
             parseFrom(query)
         })
 
@@ -112,7 +112,7 @@ describe('Validate query', () =>
         it('should work for multiple select', () =>
         {
             let query = new Query(params, LOG.VOID)
-            query.yaml = {from : 'author a', select: 'a.name, a.name'}
+            query.yaml = {from : 'author a', select: 'a.name; a.name'}
             parseFrom(query)
             usePlugins(query)
             parseSelect(query)

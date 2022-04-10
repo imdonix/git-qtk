@@ -12,18 +12,21 @@ const params = {
     
     repository : {
         type: 'string',
+        description: "The repository relative 'URL' or 'folder name' where you want to run the query",
         keys: ['r', 'repository'],
         required : true  
     },
     
     script : {
         type: 'string',
+        description: "The script relative path to run",
         keys: ['s', 'script'],
         required : true
     },
 
     clean : {
         type: 'bool',
+        description: "Delete the local repository and clone a clean one from url",
         keys: ['c', 'clean'],
         required : false
     }
