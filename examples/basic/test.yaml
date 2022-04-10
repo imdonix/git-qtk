@@ -1,6 +1,5 @@
 # Get all commit's hashes from a repository
 from: commit c
-select: length(c.sha) + (54), 2, (k = 2) + k, k, $
-where: length(c.sha) == 40
+select: length(c.sha) + (54), 2, (k = 2) + k, k, c.sha
+where: length(c.sha) == 40 && c.changes.indexOf('cry.c') >= 0
 order: c.date+1 ASC
-limit: 2

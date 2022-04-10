@@ -8,7 +8,6 @@
 - Master commit as input
 - Add Group by to query
 - Add Join on to query
-- Add human readable result to console
 - Add csv output for console
 
 ## Performace
