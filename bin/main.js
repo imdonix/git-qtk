@@ -1,6 +1,8 @@
 #! /usr/bin/env node
 const Table = require('cli-table');
 const fs = require('fs')
+const path = require('path')
+const yaml = require('yaml')
 const { Promise } = require('nodegit');
 const { cli } = require('../core/cli')
 const { Query, params } = require('../core/query')
@@ -23,6 +25,12 @@ const global = {
         type: 'bool',
         description: "List all the built in plugins",
         keys: ['p', 'plugin']
+    },
+
+    example : {
+        type: 'bool',
+        description: "List the example queries",
+        keys: ['e', 'example']
     }
 }
 
@@ -67,6 +75,25 @@ else if(input.plugin)
             console.log(table.toString())
 
         }
+    }
+}
+else if(input.example)
+{
+    const examples = path.join(__dirname, '../examples/basic');
+    const all = fs.readdirSync(examples)
+    for (const examplePath of all) 
+    {
+        const table = new Table();
+
+        const file = fs.readFileSync(path.join(__dirname, '../examples/basic' , examplePath), 'utf8')
+        const example = yaml.parse(file)
+
+        for (const kp of Object.entries(example)) 
+        {
+            table.push(kp)
+        }
+
+        console.log(table.toString())
     }
 }
 else

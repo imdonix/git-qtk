@@ -1,7 +1,3 @@
-## Documentations
-- Add basic documentation to readme
-- Add -examples
-
 ## Feature
 - Master commit as input
 - Add Group by to query
