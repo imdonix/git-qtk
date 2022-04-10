@@ -121,7 +121,7 @@ function limit(input, lim)
 {
     if(lim != null)
     {
-        input.length = lim
+        input.length = Math.min(input.length, lim)
     }
 
     return input
