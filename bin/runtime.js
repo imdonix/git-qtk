@@ -12,7 +12,7 @@ const tests = [
 ]
 
 const examples = path.join(__dirname, '../examples');
-const outfile = path.join(__dirname, '../mesurement.csv');
+const outfile = path.join(__dirname, '../measurement.csv');
 
 function tracker2log(repo,query,tracker)
 {
