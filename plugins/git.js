@@ -92,7 +92,6 @@ function short(obj)
     }
     else if(typeof obj.getMonth === 'function')
     {
-
         let mm = obj.getMonth() + 1; // getMonth() is zero-based
         let dd = obj.getDate();
 
@@ -117,7 +116,7 @@ function trim(str)
     throw new Error(`'trim' can't be used on '${typeof(str)}'`)
 }
 
-function count(acc, _)
+function count(acc, obj)
 {
     if(acc == null)
     {

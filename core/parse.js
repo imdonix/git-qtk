@@ -68,6 +68,7 @@ function parseSelect(query)
         let exp = candidate
         exp = insFieldBinding(query, exp)
         exp = insFunctionBinding(query, exp)
+        exp = insReductorBinding(query, exp)
         query.select.add([exp, candidate])
 
     }
@@ -183,21 +184,34 @@ function insFunctionBinding(query, expression)
 {
     for(const [key, _] of Object.entries(query.functions))
     {
-        expression = expression.replace(new RegExp(`${key}\\(`, 'g'), `$.${key}(` )
+        expression = expression.replace(new RegExp(`${key}\\(`, 'g'), `${WILDCARD.SP}f.${key}(` )
     }
 
     return expression
 }
+
+
+function insReductorBinding(query, expression)
+{
+    for(const [key, _] of Object.entries(query.reductors))
+    {
+        expression = expression.replace(new RegExp(`${key}\\(`, 'g'), `${WILDCARD.SP}r.${key}(${WILDCARD.SP}tmp,` )
+    }
+
+    return expression
+}
+
 
 function insFieldBinding(query, expression)
 {
     for(const field of query.fields)
     {
         let name = field[0]
-        expression = expression.replace(new RegExp(`${name}`, 'g'), `_['${name}']`)
+        expression = expression.replace(new RegExp(`${name}`, 'g'), `${WILDCARD.SP}o['${name}']`)
     }
 
     return expression
 }
+
 
 module.exports = { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup }
