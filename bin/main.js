@@ -85,13 +85,13 @@ else if(input.plugin)
 }
 else if(input.example)
 {
-    const examples = path.join(__dirname, '../examples/basic');
+    const examples = path.join(__dirname, '../examples');
     const all = fs.readdirSync(examples)
     for (const examplePath of all) 
     {
         const table = new Table();
 
-        const file = fs.readFileSync(path.join(__dirname, '../examples/basic' , examplePath), 'utf8')
+        const file = fs.readFileSync(path.join(__dirname, '../examples' , examplePath), 'utf8')
         const example = yaml.parse(file)
 
         for (const kp of Object.entries(example)) 
