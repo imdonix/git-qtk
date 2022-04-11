@@ -35,8 +35,9 @@ async function runner()
     let compossed = composse(cache)
     let filtered = where(compossed, this.where, this.functions)
     let ordered = order(filtered, this.order, this.functions)
-    let limited = limit(ordered, this.limit, this.functions)
-    
+    let grouped = group(ordered, this.group, this.functions)
+    let limited = limit(grouped, this.limit, this.functions)
+
     return select(limited, this.select, this.functions)
 }
 
@@ -60,6 +61,11 @@ function composse(input)
     }
 
     return records
+}
+
+function group(input, group, funs)
+{
+    return input
 }
 
 function select(input, select, funs)

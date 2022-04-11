@@ -65,16 +65,6 @@ function parseSelect(query)
             break;
         }
 
-        //Remove function from model
-        let check = candidate
-        let funInd = candidate.lastIndexOf('(')
-        if(funInd > 0)
-        {
-            let funLInd = candidate.indexOf(')')
-            check = candidate.substring(funInd + 1, funLInd)
-        }
-
-
         let exp = candidate
         exp = insFieldBinding(query, exp)
         exp = insFunctionBinding(query, exp)
@@ -113,7 +103,7 @@ function parseLimit(query)
 
         if(Number.isNaN(query.limit))
         {
-            throw new Error("Limit must be an integer")
+            throw new Error("Limit must be an positive integer")
         }
 
         if(query.limit <= 0)
@@ -169,6 +159,26 @@ function parseOrder(query)
     }
 }
 
+function parseGroup(query)
+{
+    if(!query.yaml.hasOwnProperty('group') || query.yaml['group'] == null)
+    {
+        query.group = null
+    }
+    else
+    {
+        const selector = query.yaml['group'].toString()
+        if(query.fields.find(field => field[0] == selector))
+        {
+            query.group = selector
+        }
+        else
+        {
+            throw new Error(`You can only group by a 'model'.'field' (${selector})`)
+        }
+    }
+}
+
 function insFunctionBinding(query, expression)
 {
     for(const [key, _] of Object.entries(query.functions))
@@ -190,4 +200,4 @@ function insFieldBinding(query, expression)
     return expression
 }
 
-module.exports = { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder }
+module.exports = { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup }

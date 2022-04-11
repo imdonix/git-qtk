@@ -3,3 +3,4 @@ from: commit c
 select: c.sha + ('hah'); 2; (k = 2) + k; k; short(c.sha); short(c.date)
 where: c.sha.length == 40 && c.changes.indexOf('cry.c') >= 0
 order: c.date+1 ASC
+group: c.sha

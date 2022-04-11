@@ -6,7 +6,7 @@ const Git = require('nodegit')
 const Database = require('./database')
 const runner = require('./runner')
 const { getRepoFromURL, loadModels, loadPlugins } = require('./utils')
-const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder } = require('./parse')
+const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup } = require('./parse')
 
 const params = {
     
@@ -118,10 +118,12 @@ class Query
     {
         parseFrom(this)
         usePlugins(this, this.logger)
+        
         parseSelect(this)
         parseWhere(this)
         parseLimit(this)
         parseOrder(this)
+        parseGroup(this)
 
         this.init()
     }
