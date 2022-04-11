@@ -11,7 +11,7 @@ const tests = [
     //'https://github.com/llvm/llvm-project'
 ]
 
-const examples = path.join(__dirname, '../examples/basic');
+const examples = path.join(__dirname, '../examples');
 const outfile = path.join(__dirname, '../mesurement.csv');
 
 function tracker2log(repo,query,tracker)
