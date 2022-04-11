@@ -65,6 +65,26 @@ function composse(input)
 
 function group(input, group, funs)
 {
+    if(group != null)
+    {
+        const acc = new Map()
+        for (const record of input) 
+        {
+            const key = record[group]
+            const arr = acc.get(key)
+            if(arr != undefined)
+            {
+                arr.push(record)
+            }
+            else
+            {
+                acc.set(key, [record])
+            }
+        }
+
+        return acc
+    }
+    
     return input
 }
 
