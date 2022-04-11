@@ -35,10 +35,10 @@ async function runner()
     let compossed = composse(cache)
     let filtered = where(compossed, this.where, this.functions)
     let ordered = order(filtered, this.order, this.functions)
-    let grouped = group(ordered, this.group, this.functions)
+    let grouped = group(ordered, this.group)
     let limited = limit(grouped, this.limit, this.functions)
 
-    return select(limited, this.select, this.functions)
+    return select(limited, this.select, this.group, this.functions)
 }
 
 function composse(input)
@@ -63,7 +63,7 @@ function composse(input)
     return records
 }
 
-function group(input, group, funs)
+function group(input, group)
 {
     if(group != null)
     {
@@ -72,6 +72,7 @@ function group(input, group, funs)
         {
             const key = record[group]
             const arr = acc.get(key)
+            
             if(arr != undefined)
             {
                 arr.push(record)
@@ -88,8 +89,32 @@ function group(input, group, funs)
     return input
 }
 
-function select(input, select, funs)
+function select(input, select, group, funs)
 {
+    function f(obj, se)
+    {
+        const _ = obj
+        const $ = funs
+        return eval(se.toString())
+    }
+
+
+    if(group != null)
+    {
+        const reducted = new Array()
+        
+        for (const [key, value] of input.entries()) 
+        {
+            for(const record of value)
+            {
+                reducted.push(record)
+            }
+        }
+
+        input = reducted
+    }
+
+
     if(select.has(WILDCARD.ANY))
     {
         return input
@@ -97,13 +122,6 @@ function select(input, select, funs)
     else
     {
         let selected = new Array()
-    
-        function f(obj, se)
-        {
-            const _ = obj
-            const $ = funs
-            return eval(se.toString())
-        }
 
         for (const record of input) 
         {
