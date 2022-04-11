@@ -118,7 +118,7 @@ class Query
     {
         parseFrom(this)
         usePlugins(this, this.logger)
-        
+
         parseSelect(this)
         parseWhere(this)
         parseLimit(this)
@@ -253,6 +253,15 @@ function usePlugins(query)
         for (const fun of plugin.functions()) 
         {
             query.functions[fun.name] = fun
+        }
+    }
+
+    query.reductors = new Object()
+    for (const plugin of query.plugins) 
+    {
+        for (const fun of plugin.reductors()) 
+        {
+            query.reductors[fun.name] = fun
         }
     }
 

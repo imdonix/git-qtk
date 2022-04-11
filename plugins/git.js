@@ -77,6 +77,11 @@ class Git extends Plugin
     {
         return [trim, short]
     }
+
+    reductors()
+    {
+        return [count]
+    }
 }
 
 function short(obj)
@@ -110,6 +115,16 @@ function trim(str)
     }
 
     throw new Error(`'trim' can't be used on '${typeof(str)}'`)
+}
+
+function count(acc, _)
+{
+    if(acc == null)
+    {
+        acc = 0
+    }
+
+    return acc + 1
 }
 
 module.exports = Git
