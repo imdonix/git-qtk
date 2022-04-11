@@ -1,5 +1,0 @@
-# How much work [have] people done?
-from: [authors author, commits commit]
-select: [author.name, count(commit)]
-where: author.id = commit.author
-group: author

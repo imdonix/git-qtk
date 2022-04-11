@@ -1,0 +1,5 @@
+name: How much work [have] people done
+from: author a; commit c
+select: a.name; count(c.sha)
+where: a.email == c.author
+group: a.name

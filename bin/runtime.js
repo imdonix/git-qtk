@@ -11,8 +11,8 @@ const tests = [
     //'https://github.com/llvm/llvm-project'
 ]
 
-const examples = path.join(__dirname, '../examples/basic');
-const outfile = path.join(__dirname, '../mesurement.csv');
+const examples = path.join(__dirname, '../examples');
+const outfile = path.join(__dirname, '../measurement.csv');
 
 function tracker2log(repo,query,tracker)
 {
@@ -57,8 +57,10 @@ async function run()
             await query.load()
             await query.run()
     
-            output = output.concat(tracker2log(runtime, file, query.tracker))
+            const out = tracker2log(runtime, file, query.tracker)
+            output = output.concat(out)
 
+            console.log(`(${count}) [${getRepoFromURL(runtime)}] --> ${out}`);
             console.log(`(${count}) [${getRepoFromURL(runtime)}] Query '${file}' finished`);
             console.log(`-----`);
         }

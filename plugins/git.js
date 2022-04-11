@@ -77,6 +77,11 @@ class Git extends Plugin
     {
         return [trim, short]
     }
+
+    reductors()
+    {
+        return [count]
+    }
 }
 
 function short(obj)
@@ -87,7 +92,6 @@ function short(obj)
     }
     else if(typeof obj.getMonth === 'function')
     {
-
         let mm = obj.getMonth() + 1; // getMonth() is zero-based
         let dd = obj.getDate();
 
@@ -110,6 +114,16 @@ function trim(str)
     }
 
     throw new Error(`'trim' can't be used on '${typeof(str)}'`)
+}
+
+function count(acc, obj)
+{
+    if(acc == null)
+    {
+        acc = 0
+    }
+
+    return acc + 1
 }
 
 module.exports = Git

@@ -1,5 +1,6 @@
 name: Get all commit's hashes from a repository
 from: commit c
-select: c.sha + ('hah'); 2; (k = 2) + k; k; short(c.sha); short(c.date)
+select: c.author; count(c.date); c.date; 3 == 2; $
 where: c.sha.length == 40 && c.changes.indexOf('cry.c') >= 0
 order: c.date+1 ASC
+group: c.author

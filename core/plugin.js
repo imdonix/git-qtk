@@ -6,6 +6,8 @@ class Plugin
 
     functions() { abs() }
 
+    reductors() { abs() }
+
     models() { abs() }
 
     async init() { abs() }

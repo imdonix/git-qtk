@@ -12,7 +12,7 @@ describe('running an query on example repository', () =>
     before((done) => {
         let query = new Query({
             repository: 'https://github.com/imdonix/example', 
-            script: './examples/basic/allcommits.yaml'}, LOG.VOID)
+            script: './examples/allcommits.yaml'}, LOG.VOID)
 
         
         query.validate()

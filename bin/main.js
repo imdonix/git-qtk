@@ -48,7 +48,7 @@ if(input.version)
     const package = JSON.parse(fs.readFileSync(`${__dirname}/../package.json`, 'utf8'))
     console.log(`v${package.version}`)
 }
-else if(input.help)
+else if(input.help || Object.keys(input).length == 0)
 {
     const table = new Table({
         head: ['option', 'key(s)', 'description' ]

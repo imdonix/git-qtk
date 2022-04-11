@@ -35,9 +35,10 @@ async function runner()
     let compossed = composse(cache)
     let filtered = where(compossed, this.where, this.functions)
     let ordered = order(filtered, this.order, this.functions)
-    let limited = limit(ordered, this.limit, this.functions)
-    
-    return select(limited, this.select, this.functions)
+    let grouped = group(ordered, this.group)
+    let limited = limit(grouped, this.limit, this.functions)
+
+    return select(limited, this.select, this.group, this.functions, this.reductors, this.fields)
 }
 
 function composse(input)
@@ -62,47 +63,14 @@ function composse(input)
     return records
 }
 
-function select(input, select, funs)
-{
-    if(select.has(WILDCARD.ANY))
-    {
-        return input
-    }
-    else
-    {
-        let selected = new Array()
-    
-        function f(obj, se)
-        {
-            const _ = obj
-            const $ = funs
-            return eval(se.toString())
-        }
-
-        for (const record of input) 
-        {
-            const res = new Object()
-
-            for(const se of select)
-            {
-                res[se[1]] = f(record, se[0])
-            }
-
-            selected.push(res)
-        }
-    
-        return selected
-    }
-}
-
 function where(input, where, funs)
 {
     const filtered = new Array()
     
     function f(obj)
     {
-        const _ = obj
-        const $ = funs
+        const __o = obj
+        const __f = funs
         return eval(where.toString())
     }
 
@@ -117,6 +85,51 @@ function where(input, where, funs)
     return filtered
 }
 
+function order(input, order, funs)
+{
+    if(order != null)
+    {
+        const [exp, pre] = order
+
+        function f(obj)
+        {
+            const __o = obj
+            const __f = funs
+            return eval(exp.toString())
+        }
+    
+        input.sort((a,b) => pre(f(a), f(b)) ? 1 : -1)
+    }
+
+    return input
+}
+
+function group(input, group)
+{
+    if(group != null)
+    {
+        const acc = new Map()
+        for (const record of input) 
+        {
+            const key = record[group]
+            const arr = acc.get(key)
+            
+            if(arr != undefined)
+            {
+                arr.push(record)
+            }
+            else
+            {
+                acc.set(key, [record])
+            }
+        }
+
+        return acc
+    }
+    
+    return input
+}
+
 function limit(input, lim)
 {
     if(lim != null)
@@ -127,23 +140,97 @@ function limit(input, lim)
     return input
 }
 
-function order(input, order, funs)
+function select(input, select, group, funs, reductors, fields)
 {
-    if(order != null)
-    {
-        const [exp, pre] = order
+    const selected = new Array()
+    const reduced = new Array()
+    const flatview = new Array()
 
-        function f(obj)
-        {
-            const _ = obj
-            const $ = funs
-            return eval(exp.toString())
-        }
+    function f(obj, se)
+    {
+        const __o = obj
+        const __f = funs
+        return eval(se.toString())
+    }
     
-        input.sort((a,b) => pre(f(a), f(b)) ? 1 : -1)
+    function r(reducted, obj)
+    {
+        const __o = obj
+        const __f = funs
+        const __r = reductors
+
+        for (const r of reducted) 
+        {
+            const __tmp = r[1]
+            r[1] = eval(r[0][0].toString())
+        }
     }
 
-    return input
+    if(group != null)
+    {
+        for (const sel of select) 
+        {
+            if(sel[0].indexOf(`${WILDCARD.SP}r`) >= 0)
+            {
+                reduced.push([sel, null])
+            }
+        }
+
+        for (const [_, value] of input.entries()) 
+        {    
+            for(const record of value)
+            {
+                r(reduced, record)
+            }
+
+            if(value.length > 0)
+            {
+                let record = value[0]
+                record[reduced[0][1]] = r[1]
+                flatview.push(record)
+            }
+
+            input = flatview
+        }      
+
+    }
+
+    let ind = select.indexOf('$')
+    if(ind >= 0)
+    {
+        select.splice(ind)
+        if(input.length > 0)
+        {
+            for (const key of fields) 
+            {
+                select.push([`${WILDCARD.SP}o['${key[0]}']`,key[0]])
+            }
+        }
+    }    
+
+    for (const record of input) 
+    {
+        const res = new Object()
+
+        for(const se of select)
+        {
+            const found = reduced.find(r => r[0][0] == se[0])
+            if(found)
+            {
+                res[se[1]] = found[1]
+            }
+            else
+            {
+                res[se[1]] = f(record, se[0])
+            }
+            
+        }
+
+        selected.push(res)
+    }
+
+    return selected
+    
 }
 
 module.exports = runner

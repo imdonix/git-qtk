@@ -1,6 +1,5 @@
 ## Feature
 - Master commit as input
-- Add Group by to query
 - Add Join on to query
 
 ## Performace
