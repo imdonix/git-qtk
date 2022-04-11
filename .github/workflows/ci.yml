@@ -26,4 +26,4 @@ jobs:
         run: npm run runtime
       - uses: actions/upload-artifact@v3
         with:
-          path: mesurement.csv
+          path: measurement.csv
