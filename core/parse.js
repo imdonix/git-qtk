@@ -54,23 +54,21 @@ function parseSelect(query)
         throw new Error("The query must define: 'select'")
     }
 
-    query.select = new Set()
+    query.select = new Array()
     const cs = query.yaml.select.split(WILDCARD.SEP).map(str => str.trim())
     for (const candidate of cs) 
     {
         //Check wildcards
         if(candidate == WILDCARD.ANY)
         {
-            query.select.add(WILDCARD.ANY)
-            break;
+            query.select.push(WILDCARD.ANY)
         }
 
         let exp = candidate
         exp = insFieldBinding(query, exp)
         exp = insFunctionBinding(query, exp)
         exp = insReductorBinding(query, exp)
-        query.select.add([exp, candidate])
-
+        query.select.push([exp, candidate])
     }
 
 }

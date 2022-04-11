@@ -38,7 +38,7 @@ async function runner()
     let grouped = group(ordered, this.group)
     let limited = limit(grouped, this.limit, this.functions)
 
-    return select(limited, this.select, this.group, this.functions, this.reductors)
+    return select(limited, this.select, this.group, this.functions, this.reductors, this.fields)
 }
 
 function composse(input)
@@ -140,7 +140,7 @@ function limit(input, lim)
     return input
 }
 
-function select(input, select, group, funs, reductors)
+function select(input, select, group, funs, reductors, fields)
 {
     const selected = new Array()
     const reduced = new Array()
@@ -195,7 +195,24 @@ function select(input, select, group, funs, reductors)
 
     }
 
-    console.log(input)
+    console.log(fields)
+
+    let ind = select.indexOf('$')
+    if(ind >= 0)
+    {
+        select.splice(ind)
+        if(input.length > 0)
+        {
+            for (const key of fields) 
+            {
+                select.push([`${WILDCARD.SP}o['${key[0]}']`,key[0]])
+            }
+        }
+    }
+
+    console.log(select)
+
+    
 
     for (const record of input) 
     {
