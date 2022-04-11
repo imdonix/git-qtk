@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { LOG, OPERATOR } = require('../core/utils')
+const { LOG, OPERATOR, WILDCARD } = require('../core/utils')
 const { Query, params, usePlugins } = require('../core/query')
 const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder } = require('../core/parse')
 
@@ -106,7 +106,7 @@ describe('Validate query', () =>
             usePlugins(query)
             parseSelect(query)
 
-            assert.equal(1, query.select.size)
+            assert.equal(1, query.select.length)
         })
 
         it('should work for multiple select', () =>
@@ -117,7 +117,7 @@ describe('Validate query', () =>
             usePlugins(query)
             parseSelect(query)
 
-            assert.equal(2, query.select.size)
+            assert.equal(2, query.select.length)
         })
 
         it('should fail on missing model', () =>
@@ -159,8 +159,8 @@ describe('Validate query', () =>
             usePlugins(query)
             parseSelect(query)
 
-            assert.equal(query.select.keys().next().value[0], "$.short(_['a.name'])")
-            assert.equal(query.select.keys().next().value[1], 'short(a.name)')
+            assert.equal(query.select[0][0], `${WILDCARD.SP}f.short(${WILDCARD.SP}o['a.name'])`)
+            assert.equal(query.select[0][1], 'short(a.name)')
         })
 
         it('should work with functions (multiple)', () =>
@@ -171,8 +171,8 @@ describe('Validate query', () =>
             usePlugins(query)
             parseSelect(query)
 
-            assert.equal(query.select.keys().next().value[0], "$.short($.short(_['a.name'] + 1))")
-            assert.equal(query.select.keys().next().value[1], 'short(short(a.name + 1))')
+            assert.equal(query.select[0][0], `${WILDCARD.SP}f.short(${WILDCARD.SP}f.short(${WILDCARD.SP}o['a.name'] + 1))`)
+            assert.equal(query.select[0][1], 'short(short(a.name + 1))')
 
         })
 
@@ -210,7 +210,7 @@ describe('Validate query', () =>
             usePlugins(query)
             parseWhere(query)
 
-            assert.equal(query.where, "_['a.name']")
+            assert.equal(query.where, `${WILDCARD.SP}o['a.name']`)
         })
 
         it('should handle functions', () =>
@@ -221,7 +221,7 @@ describe('Validate query', () =>
             usePlugins(query)
             parseWhere(query)
 
-            assert.equal(query.where, "$.short('lajos')")  
+            assert.equal(query.where, `${WILDCARD.SP}f.short('lajos')`)  
         })
 
         it('should handle functions & fields mixed', () =>
@@ -232,7 +232,7 @@ describe('Validate query', () =>
             usePlugins(query)
             parseWhere(query)
 
-            assert.equal(query.where, "$.short(_['a.name'])")  
+            assert.equal(query.where, `${WILDCARD.SP}f.short(${WILDCARD.SP}o['a.name'])`)  
         })
     })
 
@@ -292,7 +292,7 @@ describe('Validate query', () =>
             usePlugins(query)
             parseOrder(query)
 
-            assert.equal(query.order[0], "_['a.name']")
+            assert.equal(query.order[0], `${WILDCARD.SP}o['a.name']`)
             assert.equal(query.order[1], OPERATOR.LESS)
         })
 
@@ -304,7 +304,7 @@ describe('Validate query', () =>
             usePlugins(query)
             parseOrder(query)
 
-            assert.equal(query.order[0],"_['a.name']")
+            assert.equal(query.order[0],`${WILDCARD.SP}o['a.name']`)
             assert.equal(query.order[1], OPERATOR.MORE)
         })
 

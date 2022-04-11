@@ -195,8 +195,6 @@ function select(input, select, group, funs, reductors, fields)
 
     }
 
-    console.log(fields)
-
     let ind = select.indexOf('$')
     if(ind >= 0)
     {
@@ -208,11 +206,7 @@ function select(input, select, group, funs, reductors, fields)
                 select.push([`${WILDCARD.SP}o['${key[0]}']`,key[0]])
             }
         }
-    }
-
-    console.log(select)
-
-    
+    }    
 
     for (const record of input) 
     {
