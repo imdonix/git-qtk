@@ -1,5 +1,12 @@
 const fs = require('fs')
 
+function wrap(body, params)
+{
+    const header = `(${params.join(',')})`
+    const f = eval(`${header} => { return ${body} }`)
+    return f
+}
+
 function getRepoFromURL(url)
 {
     return url.substring(url.lastIndexOf('/')+1).replace('.git', '')
@@ -51,4 +58,4 @@ const OPERATOR = {
     MORE: (a,b) => a > b,
 }
 
-module.exports = { loadPlugins, loadModels, getRepoFromURL, abs, LOG, WILDCARD, OPERATOR }
+module.exports = { wrap, loadPlugins, loadModels, getRepoFromURL, abs, LOG, WILDCARD, OPERATOR }
