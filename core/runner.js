@@ -216,7 +216,7 @@ function select(input, select, group, funs, reductors, fields)
             }
             else
             {
-                res[se[1]] = preds[se[0]](record, se[0])
+                res[se[1]] = preds[se[0]](record, funs)
             }
             
         }
