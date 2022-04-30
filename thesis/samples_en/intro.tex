@@ -2,14 +2,19 @@
 \label{ch:intro}
 
 \section{Version control systems}
-In modern software development where not only a single person is working on a code base, there is need for version control systems. These tools help software teams to manage changes to source code over time. So they could work faster and smarter, which reduce the development time and cost of a software product. \newline
+In modern software development where not only a single person is working on a code base, there is need for version control systems. These tools help software teams to manage changes to source code over time. So they could work faster and smarter, which reduce the development time and cost of a software product.
 
 \section{Git}
-Git has became the most popular version control system with the platforms like Github\cite{Github}, GitLab\cite{Gitlab} and others. It was originally created by Linus Torvalds \cite{linus} for development of the Linux kernel with other kernel developers. Git is a distributed, unlike most most of the client-server based tools, every Git directory on every computer is containing the full history with full version tracking abilities which will be important later on.\newline
+Git has became the most popular version control system with the platforms like Github\cite{Github}, GitLab\cite{Gitlab} and others. It was originally created by Linus Torvalds \cite{linus} for development of the Linux kernel with other kernel developers. Git is a distributed, unlike most most of the client-server based tools, every Git directory on every computer is containing the full history with full version tracking abilities which will be important later on.
 
 \section{How git works}
-A Git repository is a history of commits, these are contains all the file changes which is needed to reconstruct the a specified version of the repository. The commits also contain meta data from the author, commit massage and the date of when it's created.
-The meta data is not needed for technical reason, Git would be able to function without it, but it can store a lot of useful information for developer and for the project management.\newline
+A Git repository is a history of commits, these contains all the file changes which is needed to reconstruct the a specified version of the repository. The commits also contain meta data from the author, commit massage and the date of it's creation.
+The meta data is not needed for technical reason, Git would be able to function without it, but it can store a lot of useful information for developer and for the project management.
 
 \section{The task description}
-The topic of my thesis is a toolkit which can help to extract the meta data of a repository and query it. The goal is to provide a core tool which ables the user to specify which data is needed from the repository history and provide a query tool where the user can easily specify what he want's from the the parsed history. Another important requirement is that the parsing and query should fast event for large repositories with more than \(~50000)\ commits  
+The topic of my thesis is a toolkit which can help to extract the meta data from a repository and query it by a SQL like way. The goal is to provide a core tool kit which ables the user to specify which data is needed from the repository history and provide a query tool where the user can easily specify what he want's from the the parsed history. Another important requirement is that the parsing and query should fast event for large repositories with more than \(~50000\) commits  
+
+\section{Motivation}
+The motivation behind the idea is that the information is already there in the repository but the core Git tool only provide very basic ways to search in the history.\newline
+A new person who join the team can have a lot of question regarding to the project, some of the information can be found in the history but if not then the history can lead the person to the most experienced developer where he can find his answers.\newline
+Another common scenario on a software project is that the project managers want to track how the software is evolving this can be predicted very well by the history based on how much feature, bug-fix, refactor commits are presented. In this way they would be able to distribute the work better between the developers.
