@@ -52,8 +52,40 @@ The repository is version controlled with Git, and the project is available publ
 
 \textbf{npm install https://github.com/imdonix/git-qtk.git --global}
 
+\section{The query language} (0.5)
+
+TODO
+
+\subsection{From} (0.5)
+
+TODO
+
+\subsection{Select} (0.5)
+
+TODO
+
+\subsection{Where} (0.5)
+
+TODO
+
+\subsection{Limit} (0.5)
+
+TODO
+
+\subsection{Order} (0.5)
+
+TODO
+
+\subsection{Group} (0.5)
+
+TODOs
+
+\subsection{Join} (0.5)
+
+TODOs
+
 \section{How to use the Toolkit}
-The toolkit intended to be used as a library for software which provide information about the progress of a project, the performance of the co-workers and much more. But in the development phase a CLI tool is also available so implementing the specified queries can be down easily .
+The toolkit intended to be used as a library for software which provide information about the progress of a project, the performance of the co-workers and much more. But in the development phase a CLI tool is also available so implementing the specified queries can be down easily.
 
 \subsection{As a CLI tool}
 After installing the tool globally it can be tested by running the next command, this will provide all the functionally available with the CLI Tool:
@@ -64,53 +96,89 @@ The version of the tool can be queried with the \textbf{-v} or \textbf{-version}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.6\textwidth,height=100px]{version}
+	\includegraphics[width=150px]{version}
 	\caption{Querying the version of the toolkit}
 	\label{fig:fig-version}
 \end{figure}
+
+This will also check that a new version of the toolkit is available in the GitHub repository\cite{repo}. 
 
 \newpage
 \subsubsection{Help}
 All the available command will be displayed with description when running the program with the \textbf{-h} or \textbf{-help} flag.
 
-This will also check that a new version of the toolkit is available in the GitHub repository\cite{repo}
-
 \begin{figure}[H]
 	\centering
-	\includegraphics{help}
+	\includegraphics[width=350px]{help}
 	\caption{Help of the tool}
 	\label{fig:fig-help}
 \end{figure}
 
+\subsubsection{Plugin}
+With the \textbf{-p} or \textbf{-plugin} flag you will be able to access all the models provided by the tool kit.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=300px]{plugin}
+	\caption{List of the models provided by built in plugins}
+	\label{fig:fig-plugin}
+\end{figure}
+
+\subsubsection{Examples}
+To get example queries as reference you can use the \textbf{-e} or \textbf{-example} flag.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=300px]{examplee}
+	\caption{An example query}
+	\label{fig:fig-example}
+\end{figure}
+
+\subsubsection{Running a query}
+To run a query on a specified repository must provide the following information for the tool kit:
+
+\begin{itemize}
+	\item \textbf{-r} or -\textbf{repository} to specify which repository history should be parsed. You can give a local folder relative path or a full URL which will be cloned.
+	\item \textbf{-s} or -\textbf{script} to specify which query you want to run. You can give a relative path to the query file.
+\end{itemize}
+
+This will run the query on the given repository an the result will be printed to the standard output by default.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=420px]{query}
+	\caption{Part of the output}
+	\label{fig:fig-query}
+\end{figure}
 
 
-\subsection{As a Node.js library} (2)
+\subsection{As a Node.js library}
+
+TODO
 
 \subsection{Extending with plugins} (2)
 
-\section{The query language} (0.5)
-
-\subsection{From} (0.5)
-
-\subsection{Select} (0.5)
-
-\subsection{Where} (0.5)
-
-\subsection{Limit} (0.5)
-
-\subsection{Order} (0.5)
-
-\subsection{Group} (0.5)
+TODO
 
 \section{Use cases / Examples} (0.5)
 
+TODO
+
 \subsection{Use case A} (0.5)
+
+TODO
 
 \subsection{Use case B} (0.5)
 
+TODO
+
 \subsection{Use case C} (0.5)
 
+TODO
+
 \section{Enumerations and lists}
+
+TODO
 
 Etiam vel odio ante. Etiam pulvinar nibh quis massa auctor congue. Pellentesque quis odio vitae sapien molestie vestibulum sit amet et quam. Pellentesque vel dui eget enim hendrerit finibus at sit amet libero. Quisque sollicitudin ultrices enim, nec porta magna imperdiet vitae. Cras condimentum nunc dui, eget molestie nunc accumsan vel.
 
