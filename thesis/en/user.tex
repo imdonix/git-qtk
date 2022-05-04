@@ -299,7 +299,7 @@ You can use all the flags (not CLI exclusive) which is mentioned in the \textit{
 An example would be:
 
 \begin{lstlisting}
-
+	const asd = 1
 \end{lstlisting}
 
 In this way the toolkit will clone or use the repository in the root directory of the app, this can be changed with \textbf{root} pramameter.
@@ -307,26 +307,98 @@ As you can see the parse and the query can be called separatly in this way you a
 But note that the fist query script will determine which \textit{Plugin}s are used for the histroy parsing, and if you try to run a script which
 use an unused \textit{Plugin} it will throw an \textit{Error}. With the \textbf{useall} pramameter you can force the parser to use all \textit{Plugin}s.
 
+\subsubsection{Extending with plugins}
 
-\subsubsection{Extending with plugins} (2)
+\textit{Plugin}s are the parsers for which is used by the global HP (History parser). 
+By default the \textit{Git} plugin is provided to the user, but the users are able to create their own plugin.
+\newline
+This can be done by inheriting from the \textit{Plugin} class and also creating their \textit{Model}s and passing it as a parameter for the \textit{Query}.
 
-TODO
+The plugin has a few function which has to be implemeted:
+\begin{itemize}
+	\item \textit{name()} - the name of the plugin as a string
+	\item \textit{functions()} - a list of the functions which are injected into the statements
+	\item \textit{reductors()} - a list of the reductors which are injected into the statements
+	\item \textit{models()} - a list of the instantiated models
+ 
+	\item \textit{init()} - run at the start of the parsing
+	\item \textit{parse(db, commit)} - run for each commit
+	\item \textit{post()} - run at the end of the parsing
+\end{itemize}
+
+A \textit{Model} is represent a structure how the data should be stored in the database.
+The model requires to implemet these:
+\begin{itemize}
+	\item \textit{name()} - the name of the model
+	\item \textit{model()} - the model definition as a name-type object 
+	\item \textit{key()} - the unique key of the model
+	\item \textit{parse(input)} - the processor which creates the actual database object
+\end{itemize}
+
+An example for a custom plugin:\newline
+Task: We want to create a plugin which can track the size of each commit. 
+Solution:\newline
+
+First lets create the structure for the database object:
+comsize.js
+\begin{lstlisting}
+	const asd = 1
+\end{lstlisting}
+
+
+Now have to create the actual plugin:
+size.js
+\begin{lstlisting}
+	const asd = 1
+\end{lstlisting}
+
+And now we are able to pass the newly created plugin to the \textit{Query}:
+main.js
+\begin{lstlisting}
+	const asd = 1
+\end{lstlisting}
+
+By running the following program for any repository we will get a result which looks like this:
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=420px]{query}
+	\caption{Part of the output}
+	\label{fig:fig-query}
+\end{figure}
+
 
 \section{Use cases / Examples} (0.5)
 
-TODO
+In this section, you will able to see some real world examples which only use the Git plugin.
+If you want to see more you can visit the \textbf{examples} folder.
 
-\subsection{Use case: A} (0.5)
+\subsection{Use case: Who changed, what files} (0.5)
 
-TODO
 
-\subsection{Use case: B} (0.5)
+\begin{lstlisting}
+	from: author a; commit c; file f
+	select: a.name; f.path; short(c.date)
+	where: a.email == c.author && c.changes.indexOf(f.path) >= 0
+\end{lstlisting}
 
-TODO
+\subsection{Use case: A single person commits} (0.5)
 
-\subsection{Use case: C} (0.5)
+\begin{lstlisting}
+	from: author; commit
+	select: commit.sha
+	where: author.email == 'tejohnson@google.com' && commit.author == auhtor.email
+\end{lstlisting}
 
-TODO
+\subsection{Use case: How many commits the authors have} (0.5)
+
+\begin{lstlisting}
+	name: How much work [have] people done
+	from: author a; commit c
+	select: a.name; count(c.sha)
+	where: a.email == c.author
+	group: a.name
+\end{lstlisting}
 
 \section{Enumerations and lists}
 
