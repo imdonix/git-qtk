@@ -1,31 +1,35 @@
 \chapter{User documentation}
 \label{ch:user}
 
-In this section I will show you how you can use the \textbf{git-qtk} (Git Query Tool Kit). The kit contains three tool and one plugin:
+In this section I will show you how you can use the \textbf{git-qtk} (Git Query Tool Kit) which where created to solve these problems. 
+The kit contains three tool and one plugin:
 
 \begin{itemize}
-\item Git History Parser.
-\item Query Tool.
-\item Command Line Interface.
-\item Git Plugin.
+\item Git History Parser. (HP)
+\item Query Tool. (QT)
+\item Command Line Interface. (CLI)
+\item Git Plugin. (GP)
 \end{itemize}
 
 \section{System requirements}
-The software is written in JavaScript and uses Node.js\cite{node.js}.
+The software is written in JavaScript and uses Node.js\cite{node.js} as runtime environment.
 
 \subsection{Node.js and NPM}
-Node.js runtime environment that runs on the V8 engine and executes JavaScript code outside a web browser. NPM is the Node Package Manager which is a powerful tool to manage dependencies with more than 1 million package\cite{npm-count} \newline
+Node.js is runtime environment that runs on the V8 engine and executes JavaScript code outside a web browser. 
+NPM is the Node Package Manager which is a powerful tool to manage package dependencies. NPM has more than 1 million package\cite{npm-count} already. \newline
 
-Users are required to download and install the \textbf{v14.x.x} version of Node.js with the packaged NPM which can be done by visiting the official website:\newline  \url{https://nodejs.org/download/release/latest-v14.x/}
+Users are required to download and install the \textbf{v14.x.x} version of Node.js with the packaged NPM which can be done by visiting the official website:\newline
+\url{https://nodejs.org/download/release/latest-v14.x/}
 \newline 
 
 Note that this specified version is needed because of a dependency related to node-gyp\cite{node-gyp-14}
  
 \subsection{Git}
-For managing Git repositories a stable version Git is also required to be installed. It can be downloaded here: \url{https://git-scm.com/}
+For managing Git repositories a stable version Git is also required to be installed. It can be downloaded here:\newline 
+\url{https://git-scm.com/}
  
 \subsection{Operating system}
-Node.js and Git is platform independent, so it can be used on most of the modern Windows or Unix based operating systems.\newline
+Node.js and Git is platform independent, it can be used on most of the modern version of Windows and Unix based operating systems.\newline
 
 There is no official minimum system requirements for node, for running this tool it recommended to have:
 
@@ -33,22 +37,26 @@ There is no official minimum system requirements for node, for running this tool
 	\item x86 CPU with at least 2 vCPUs
 	\item At least 8 GB of RAM
 	\item At least 10 GB of storage  
-	\item Internet Connection (For first time use or cloning repository online)
+	\item Internet Connection (For first time use or cloning repository over the internet)
 \end{itemize}
 
 
 \section{Installation}
-The software comes as a node.js package, which can be installed in multiple different way. 
+The software comes as a Node.js package, which can be installed in multiple different way. 
+The installation is done by the Node Package Manager 
 
 Note: Administrator privileges may be needed in Windows OS.
+
 \subsection{From source files}
-If you want to install the toolkit from a local copy of the project you will have to extract the source to a folder. Then you have to install the dependencies with npm.
+If you want to install the toolkit from a local copy of the project you will have to extract the source to a folder. 
+Then you have to install the dependencies with npm.
 To do that run this command:
 
 \textbf{npm install . --global}
 
-\subsection{From package manager}
-The repository is version controlled with Git, and the project is available publicly on GitHub. To install the you have to run this command:
+\subsection{From the GitHub repository}
+The repository is version controlled with Git, and the project is available publicly on GitHub. 
+To install the toolkit you have to run this command:
 
 \textbf{npm install https://github.com/imdonix/git-qtk.git --global}
 
