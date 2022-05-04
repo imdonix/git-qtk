@@ -60,16 +60,17 @@ To install the toolkit you have to run this command:
 
 \textbf{npm install https://github.com/imdonix/git-qtk.git --global}
 
-\section{Basics TODo} (2)
+\section{Basics} (2)
+ //TODO
 
-\section{The query language} (0.5)
+\section{The query language}
 
 The toolkit provides an easy way to search in the history.
 The query is based on YAML\cite{yaml} markup language which is a is a human-friendly data serialization language for all programming languages. 
 By defineing the following tags you can manipulate the query as you wish.
 
 
-\subsection{From} (0.5)
+\subsection{From}
 
 In the \textit{From} tag you have to define which models you want to include in your search.
 This tag is required.
@@ -83,7 +84,21 @@ You can define it with the following rules:
 
 Note: Based on the givven models the tool will create a subset of the needed plguins for performance reason.
 
-\subsection{Select} (0.5)
+Example tags:
+\begin{itemize}
+	\item from: commit
+	\item from: commit; author
+	\item from: commit a; commit c
+\end{itemize}
+
+Invalid tags:
+\begin{itemize}
+	\item from: $\O$ (From is required)
+	\item from: commit, commit (Multiple model with same name)
+	\item from: commit c, author c (Multiple model with same name)
+\end{itemize}
+
+\subsection{Select}
 
 The \textit{Select} tag is used to create a subset of the result and process it from the search:
 This tag is required.
@@ -96,7 +111,14 @@ You can define it with the following rules:
 	\item The \textbf{\$} symbol is a wildcard to select all fields. 
 \end{itemize}
 
-\subsection{Where} (0.5)
+Example tags:
+\begin{itemize}
+	\item select: \$
+	\item select: \$; "Dr. " + author.name
+	\item select: 1 + 2; 44; short(commit.sha)
+\end{itemize}
+
+\subsection{Where}
 
 The \textit{Where} tag can be used to filter records from the records.
 This is an optional tag, otherwise all record will be passed.
@@ -105,6 +127,13 @@ You can define it with the following rules:
 \begin{itemize}
 	\item A single JavaScript statement should be provided.
 	\item The record fields can be referenced as \textbf{'{model}.{field}'}
+	\item \textbf{'reductors'} can be used if \textit{Group} tag is in use (Described later)
+\end{itemize}
+
+Example tags:
+\begin{itemize}
+	\item where: author.email == commit.author && true
+	\item where: author.data > (now() - 1000)
 \end{itemize}
 
 \subsubsection{Join}
@@ -131,6 +160,18 @@ This sub statements will be removed from the where tag and added handled separat
 The \textit{Limit} tag define how many records should be displayed to the output.
 This field is optional.
 
+Example tags:
+\begin{itemize}
+	\item limit: 1
+	\item limit: 30
+\end{itemize}
+
+Invalid tags:
+\begin{itemize}
+	\item limit: 0
+	\item limit: -1
+\end{itemize}
+
 \subsection{Order} (0.5)
 
 The \textit{Order} tag will define how the records should be ordered.
@@ -145,6 +186,12 @@ The following rules applies:
 	\item The record fields can be referenced as \textbf{'{model}.{field}'}
 \end{itemize}
 
+Example tags:
+\begin{itemize}
+	\item order: commit.date DESC (Date order)
+	\item order: commit.author ASC (ABC order)
+\end{itemize}
+
 \subsection{Group} (0.5)
 
 The \textit{Group} tag groups records that have the same values into summary records.
@@ -154,6 +201,18 @@ The following rules applies:
 	\item A single field should be added as \textbf{'{model}.{field}'}
 \end{itemize}
 
+When using \textit{Group} tag you are able to use \textbf{'reductors'} in the \textit{Where} tag, such as:
+\begin{itemize}
+	\item \textbf{'sum()'} (Summation of the statement)
+	\item \textbf{'count()'} (Count records)
+	\item \textbf{'min()'} (Min of the records)
+	\item \textbf{'max()'} (Max of the records)
+\end{itemize}
+
+Example tags:
+\begin{itemize}
+	\item order: commit.author
+\end{itemize}
 
 \section{How to use the Toolkit}
 The toolkit intended to be used as a library for software which provide information about the progress of a project, the performance of the co-workers and much more. But in the development phase a CLI tool is also available so implementing the specified queries can be down easily.
