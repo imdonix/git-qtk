@@ -286,13 +286,26 @@ This will run the query on the given repository an the result will be printed to
 
 The toolkit is Node.js package so it can be used as a library in any project.
 Three class are exposed by the package API which are:
+
 \begin{itemize}
 	\item Query
 	\item \textit{Plugin (Abstract)}
 	\item \textit{Model (Abstract)}
 \end{itemize}
 
+To use the toolkit you have to create an instance of the \textit{Query} class by using its constructor.
+The first prameter should be an \textit{Object} with all the user defiend settings. 
+You can use all the flags (not CLI exclusive) which is mentioned in the \textit{As a CLI tool} section.
+An example would be:
 
+\begin{lstlisting}
+
+\end{lstlisting}
+
+In this way the toolkit will clone or use the repository in the root directory of the app, this can be changed with \textbf{root} pramameter.
+As you can see the parse and the query can be called separatly in this way you are able to run multiple queries on the same parsed history.
+But note that the fist query script will determine which \textit{Plugin}s are used for the histroy parsing, and if you try to run a script which
+use an unused \textit{Plugin} it will throw an \textit{Error}. With the \textbf{useall} pramameter you can force the parser to use all \textit{Plugin}s.
 
 
 \subsubsection{Extending with plugins} (2)
