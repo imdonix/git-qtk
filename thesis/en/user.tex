@@ -132,7 +132,7 @@ You can define it with the following rules:
 
 Example tags:
 \begin{itemize}
-	\item where: author.email == commit.author && true
+	\item where: author.email \=\= commit.author && true
 	\item where: author.data > (now() - 1000)
 \end{itemize}
 
@@ -143,7 +143,7 @@ Example tags:
 A special case of the filtering is considered as join. 
 This happens if a subset of the statement looks like:\newline
 
-\textbf{{model}.{field} == {model}.{field}}\newline
+\textbf{{model}.{field} \=\= {model}.{field}}\newline
 
 In this case the following rules applies:
 
