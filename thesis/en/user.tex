@@ -45,7 +45,7 @@ There is no official minimum system requirements for node, for running this tool
 The software comes as a Node.js package, which can be installed in multiple different way. 
 The installation is done by the Node Package Manager 
 
-Note: Administrator privileges may be needed in Windows OS.
+Notice: Administrator privileges may be needed in Windows OS.
 
 \subsection{From source files}
 If you want to install the toolkit from a local copy of the project you will have to extract the source to a folder. 
@@ -60,37 +60,100 @@ To install the toolkit you have to run this command:
 
 \textbf{npm install https://github.com/imdonix/git-qtk.git --global}
 
+\section{Basics TODo} (2)
+
 \section{The query language} (0.5)
 
-TODO
+The toolkit provides an easy way to search in the history.
+The query is based on YAML\cite{yaml} markup language which is a is a human-friendly data serialization language for all programming languages. 
+By defineing the following tags you can manipulate the query as you wish.
+
 
 \subsection{From} (0.5)
 
-TODO
+In the \textit{From} tag you have to define which models you want to include in your search.
+This tag is required.
+You can define it with the following rules:
+
+\begin{itemize}
+	\item A model can be selected by adding the model name to the tag.
+	\item Multiple model can be added by separating them with the \citebf{';'} delimiter.
+	\item A single model can be added multiple time by renaming it which can be done by adding a "nickname" after the model name.
+\end{itemize}
+
+Note: Based on the givven models the tool will create a subset of the needed plguins for performance reason.
 
 \subsection{Select} (0.5)
 
-TODO
+The \textit{Select} tag is used to create a subset of the result and process it from the search:
+This tag is required.
+You can define it with the following rules:
+
+\begin{itemize}
+	\item A single statement can be added with the \citebf{'{model}.{field}'} syntax.
+	\item Multiple statement can be selected by separating them with the \citebf{';'} delimiter.
+	\item Each statement will be interpreted and evaluated as JavaScript.
+	\item The \citebf{\$} symbol is a wildcard to select all fields. 
+\end{itemize}
 
 \subsection{Where} (0.5)
 
-TODO
+The \textit{Where} tag can be used to filter records from the records.
+This is an optional tag, otherwise all record will be passed.
+You can define it with the following rules:
+
+\begin{itemize}
+	\item A single JavaScript statement should be provided.
+	\item The record fields can be referenced as \citebf{'{model}.{field}'}
+\end{itemize}
+
+\subsubsection{Join}
+
+// THIS SHOUD BE A DEV DOC OR NOT?
+
+A special case of the filtering is considered as join. 
+This happens if a subset of the statement looks like:\newline
+
+\citebf{{model}.{field} == {model}.{field}}\newline
+
+In this case the following rules applies:
+
+\begin{itemize}
+	\item If only one of the field is a key for the model then its a \citebf{Right or Left Join}
+	\item If both of them are key then its a \citebf{Inner Join}
+	\item If none of then is a key this will be evaluated normaly
+\end{itemize}
+
+This sub statements will be removed from the where tag and added handled separatly for performance resons
 
 \subsection{Limit} (0.5)
 
-TODO
+The \textit{Limit} tag define how many records should be displayed to the output.
+This field is optional.
 
 \subsection{Order} (0.5)
 
-TODO
+The \textit{Order} tag will define how the records should be ordered.
+This field is optional.
+
+The following rules applies:
+
+\begin{itemize}
+	\item Descending order: \citebf{DESC}
+	\item Ascending order: \citebf{ASC}
+	\item A single JavaScript statement should be provided with the order key separeted by a space
+	\item The record fields can be referenced as \citebf{'{model}.{field}'}
+\end{itemize}
 
 \subsection{Group} (0.5)
 
-TODOs
+The \textit{Group} tag groups records that have the same values into summary records.
 
-\subsection{Join} (0.5)
+The following rules applies:
+\begin{itemize}
+	\item A single field should be added as \citebf{'{model}.{field}'}
+\end{itemize}
 
-TODOs
 
 \section{How to use the Toolkit}
 The toolkit intended to be used as a library for software which provide information about the progress of a project, the performance of the co-workers and much more. But in the development phase a CLI tool is also available so implementing the specified queries can be down easily.
