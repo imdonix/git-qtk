@@ -77,7 +77,7 @@ You can define it with the following rules:
 
 \begin{itemize}
 	\item A model can be selected by adding the model name to the tag.
-	\item Multiple model can be added by separating them with the \citebf{';'} delimiter.
+	\item Multiple model can be added by separating them with the \textbf{;} delimiter.
 	\item A single model can be added multiple time by renaming it which can be done by adding a "nickname" after the model name.
 \end{itemize}
 
@@ -90,10 +90,10 @@ This tag is required.
 You can define it with the following rules:
 
 \begin{itemize}
-	\item A single statement can be added with the \citebf{'{model}.{field}'} syntax.
-	\item Multiple statement can be selected by separating them with the \citebf{';'} delimiter.
+	\item A single statement can be added with the \textbf{'{model}.{field}'} syntax.
+	\item Multiple statement can be selected by separating them with the \textbf{';'} delimiter.
 	\item Each statement will be interpreted and evaluated as JavaScript.
-	\item The \citebf{\$} symbol is a wildcard to select all fields. 
+	\item The \textbf{\$} symbol is a wildcard to select all fields. 
 \end{itemize}
 
 \subsection{Where} (0.5)
@@ -104,7 +104,7 @@ You can define it with the following rules:
 
 \begin{itemize}
 	\item A single JavaScript statement should be provided.
-	\item The record fields can be referenced as \citebf{'{model}.{field}'}
+	\item The record fields can be referenced as \textbf{'{model}.{field}'}
 \end{itemize}
 
 \subsubsection{Join}
@@ -114,13 +114,13 @@ You can define it with the following rules:
 A special case of the filtering is considered as join. 
 This happens if a subset of the statement looks like:\newline
 
-\citebf{{model}.{field} == {model}.{field}}\newline
+\textbf{{model}.{field} == {model}.{field}}\newline
 
 In this case the following rules applies:
 
 \begin{itemize}
-	\item If only one of the field is a key for the model then its a \citebf{Right or Left Join}
-	\item If both of them are key then its a \citebf{Inner Join}
+	\item If only one of the field is a key for the model then its a \textbf{Right or Left Join}
+	\item If both of them are key then its a \textbf{Inner Join}
 	\item If none of then is a key this will be evaluated normaly
 \end{itemize}
 
@@ -139,10 +139,10 @@ This field is optional.
 The following rules applies:
 
 \begin{itemize}
-	\item Descending order: \citebf{DESC}
-	\item Ascending order: \citebf{ASC}
+	\item Descending order: \textbf{DESC}
+	\item Ascending order: \textbf{ASC}
 	\item A single JavaScript statement should be provided with the order key separeted by a space
-	\item The record fields can be referenced as \citebf{'{model}.{field}'}
+	\item The record fields can be referenced as \textbf{'{model}.{field}'}
 \end{itemize}
 
 \subsection{Group} (0.5)
@@ -151,7 +151,7 @@ The \textit{Group} tag groups records that have the same values into summary rec
 
 The following rules applies:
 \begin{itemize}
-	\item A single field should be added as \citebf{'{model}.{field}'}
+	\item A single field should be added as \textbf{'{model}.{field}'}
 \end{itemize}
 
 
