@@ -37,6 +37,13 @@ const params = {
         description: "The root folder to checkout the repositories",
         keys: ['root'],
         required : false
+    },
+
+    full : {
+        type: 'bool',
+        description: "Use all available plugin when parsing the history ",
+        keys: ['f', 'full'],
+        required : false
     }
 }
 
@@ -154,7 +161,10 @@ class Query
     async setup()
     {
         parseFrom(this)
-        usePlugins(this, this.logger)
+        
+        usePlugins(this)
+        populateFunctions(this)
+        populateReductors(this)
 
         parseSelect(this)
         parseWhere(this)
@@ -267,7 +277,7 @@ function filterUnusedPlugins(plugins, from)
     const filtered = new Array()
     for (const plugin of plugins) 
     {
-        for (const [key, value] of from) 
+        for (const [_, value] of from) 
         {
             if(plugin.models().find(model => model == value))
             {
@@ -281,9 +291,19 @@ function filterUnusedPlugins(plugins, from)
 
 function usePlugins(query)
 {
-    let before = query.plugins.length
-    query.plugins = filterUnusedPlugins(query.plugins, query.from)
+    const before = query.plugins.length
+    
+    if(!query.query.full)
+    {
+        query.plugins = filterUnusedPlugins(query.plugins, query.from)
+    }
 
+    query.logger.log(`${before} of ${query.plugins.length} plugin will be used`)
+    
+}
+
+function populateFunctions(query)
+{
     query.functions = new Object()
     for (const plugin of query.plugins) 
     {
@@ -292,7 +312,10 @@ function usePlugins(query)
             query.functions[fun.name] = fun
         }
     }
+}
 
+function populateReductors(query)
+{
     query.reductors = new Object()
     for (const plugin of query.plugins) 
     {
@@ -301,8 +324,6 @@ function usePlugins(query)
             query.reductors[fun.name] = fun
         }
     }
-
-    query.logger.log(`${before} of ${query.plugins.length} plugin will be used`)
 }
 
 module.exports = { Query, params, usePlugins } 
