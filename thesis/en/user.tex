@@ -298,7 +298,7 @@ The first parameter should be an \textit{Object} with all the user defined setti
 You can use all the flags (not CLI exclusive) which is mentioned in the \textit{As a CLI tool} section.
 An example would be:
 
-\lstinputlisting[caption={app.js}]{../lib/app.js}
+\lstinputlisting[caption={lib/app.js}]{../lib/app.js}
 
 In this way the toolkit will clone or use the repository in the root directory of the app, this can be changed with \textbf{root} parameter.
 As you can see the parse and the query can be called separately in this way you are able to run multiple queries on the same parsed history.
@@ -338,17 +338,17 @@ Task: We want to create a plugin which can track the size of each commit.
 Solution:\newline
 
 First lets create the structure for the database object:
-\lstinputlisting[caption={comsize.js}]{../lib/comsize.js}
+\lstinputlisting[caption={lib/comsize.js}]{../lib/comsize.js}
 
 Now have to create the actual plugin:
-\lstinputlisting[caption={size.js}]{../lib/size.js}
+\lstinputlisting[caption={lib/size.js}]{../lib/size.js}
 
 And now we are able to pass the newly created plugin to the \textit{Query}:
-\lstinputlisting[caption={main.js}]{../lib/main.js}
+\lstinputlisting[caption={lib/main.js}]{../lib/main.js}
 
 By running the program for any repository with the following script we will get this result:
 
-\lstinputlisting[caption={size.yaml}]{../lib/size.yaml}
+\lstinputlisting[caption={lib/size.yaml}]{../lib/size.yaml}
 
 
 \begin{figure}[H]
