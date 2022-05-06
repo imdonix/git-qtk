@@ -167,7 +167,6 @@ function max(acc, obj)
     return acc < obj ? obj : acc
 }
 
-
-/// -- R\eductors --
+/// -- \Reductors --
 
 module.exports = Git
