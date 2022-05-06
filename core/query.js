@@ -30,6 +30,13 @@ const params = {
         description: "Force cloning a clean the repository",
         keys: ['c', 'clean'],
         required : false
+    },
+
+    root : {
+        type: 'bool',
+        description: "The root folder to checkout the repositories",
+        keys: ['root'],
+        required : false
     }
 }
 
@@ -104,13 +111,14 @@ class Query
 
     async openRepository()
     {
-        let name = getRepoFromURL(this.query.repository)
+        const name = getRepoFromURL(this.query.repository)
+        const path = this.query.root ? `${this.query.root}/${name}` : `./${name}`
 
         if(!this.query.clean)
         {
             try
             {
-                this.repo = await Git.Repository.open(name)
+                this.repo = await Git.Repository.open(path)
                 return
             }
             catch(err)
@@ -122,7 +130,7 @@ class Query
         {
             try
             {
-                fs.rmSync(`./${name}`, { recursive: true, force: true })
+                fs.rmSync(path, { recursive: true, force: true })
                 this.logger.log(`Repository '${name}' deleted!`)
             }
             catch(err)
@@ -134,7 +142,7 @@ class Query
         try
         {
             this.logger.log(`Cloning ${this.query.repository} ...`)
-            this.repo = await Git.Clone(this.query.repository, `./${name}`)
+            this.repo = await Git.Clone(this.query.repository, path)
             return
         }
         catch(err)
