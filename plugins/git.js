@@ -80,9 +80,11 @@ class Git extends Plugin
 
     reductors()
     {
-        return [count]
+        return [count, min, max, sum]
     }
 }
+
+/// -- Functions --
 
 function short(obj)
 {
@@ -116,6 +118,15 @@ function trim(str)
     throw new Error(`'trim' can't be used on '${typeof(str)}'`)
 }
 
+function has(arr, elem)
+{
+    return arr.indexOf(elem) >= 0
+}
+
+/// -- \Functions --
+
+/// -- Reductors --
+
 function count(acc, obj)
 {
     if(acc == null)
@@ -126,9 +137,37 @@ function count(acc, obj)
     return acc + 1
 }
 
-function has(arr, elem)
+function sum(acc, obj)
 {
-    return arr.indexOf(elem) >= 0
+    if(acc == null)
+    {
+        acc = 0
+    }
+
+    return acc + obj
 }
+
+function min(acc, obj)
+{
+    if(acc == null)
+    {
+        acc = obj
+    }
+
+    return acc > obj ? obj : acc
+}
+
+function max(acc, obj)
+{
+    if(acc == null)
+    {
+        acc = obj
+    }
+
+    return acc < obj ? obj : acc
+}
+
+
+/// -- R\eductors --
 
 module.exports = Git
