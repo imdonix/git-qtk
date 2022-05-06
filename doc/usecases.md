@@ -1,11 +1,11 @@
-# Git Plugin
+# Git Plugin (Done)
 Name                                                        | Example
 ------------------------------------------------------------|---------------------------------------------
 What are they working on right now?                         | [whoonlast.yaml](../examples/whoonlast.yaml)
 How much work [have] people done?∗                          | [howmuchwork.yaml](../examples/howmuchwork.yaml)
 Who changed this [file], focused on person?∗                | [whochanged.yaml](../examples/whochanged.yaml)
 
-# Clang Plugin
+# Clang Plugin (In progress...)
 
 - What is the evolution of the code?
 - Who made a particular change and why?
@@ -19,7 +19,7 @@ Who changed this [file], focused on person?∗                | [whochanged.yaml
 - Which features and functions have been changing?∗
 - Who owns a test case? (Who resolved the last work item that fixed the test case?)
 
-# Github Plugin
+# Github Plugin (TDRL)
 
 - Why were they [these changes] introduced?∗
 - What are the changes on newly resolved work items related to me?
