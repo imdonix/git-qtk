@@ -1,3 +1,0 @@
-name: Get all commit's hashes from a repository
-from: commit c
-select: short(c.sha)

@@ -75,7 +75,7 @@ class Git extends Plugin
 
     functions()
     {
-        return [trim, short]
+        return [trim, short, has]
     }
 
     reductors()
@@ -124,6 +124,11 @@ function count(acc, obj)
     }
 
     return acc + 1
+}
+
+function has(arr, elem)
+{
+    return arr.indexOf(elem) >= 0
 }
 
 module.exports = Git

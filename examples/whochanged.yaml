@@ -1,4 +1,4 @@
 name: Who changed what
 from: author a; commit c; file f
 select: a.name; f.path; short(c.date)
-where: a.email == c.author && c.changes.indexOf(f.path) >= 0
+where: a.email == c.author && has(c.changes, f.path)

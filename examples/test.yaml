@@ -1,4 +1,4 @@
-name: Get all commit's hashes from a repository
+name: Testing
 from: commit c; author a
 select: count(c.sha); a.name
 where: c.author == a.email
