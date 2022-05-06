@@ -1,0 +1,5 @@
+from: commit; comsize
+select: commit.message; comsize.size
+where: commit.sha == comsize.commit
+order: comsize.size DESC
+limit: 3

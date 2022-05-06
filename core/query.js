@@ -5,6 +5,7 @@ const Git = require('nodegit')
 
 const Database = require('./database')
 const runner = require('./runner')
+const Plugin = require('./plugin')
 const { getRepoFromURL, loadModels, loadPlugins } = require('./utils')
 const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup } = require('./parse')
 
@@ -34,13 +35,41 @@ const params = {
 
 class Query
 {
-    constructor(input, logger)
+    constructor(input, logger, extension)
     {
-        this.query = input
-        this.plugins = loadPlugins()
-        this.models = loadModels(this.plugins)
-        this.logger = logger
         this.tracker = new Object()
+        
+        if(input)
+        {
+            this.query = input
+        }
+        else
+        {
+            throw new Error("Input params must be passed!")
+        }
+
+        this.plugins = loadPlugins()
+        if(extension)
+        {
+            for (const plug of extension) 
+            {
+                if(plug instanceof Plugin)
+                {
+                    this.plugins.push(plug)
+                }
+            }
+        }
+
+        this.models = loadModels(this.plugins)
+
+        if(logger)
+        {
+            this.logger = logger
+        }
+        else
+        {
+            this.logger = console
+        }   
     }
 
     async track(fun)
