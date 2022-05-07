@@ -1,5 +1,7 @@
 const { WILDCARD, OPERATOR } = require('./utils')
 
+const JOIN = /([a-zA-Z][a-zA-Z1-9._]*.[a-zA-Z][a-zA-Z1-9._]*)\s*==\s*([a-zA-Z][a-zA-Z1-9._]*.[a-zA-Z][a-zA-Z1-9._]*)/g
+
 function parseFrom(query)
 {
     if(!query.yaml.hasOwnProperty('from') || query.yaml['from'] == null )
@@ -176,6 +178,26 @@ function parseGroup(query)
             throw new Error(`You can only group by a 'model'.'field' (${selector})`)
         }
     }
+}
+
+function parseJoin(query)
+{
+    const join = new Array()
+    // parsing the join from where
+    if(query.yaml.hasOwnProperty('where') && query.yaml['where'] != null)
+    {   
+        let input = query.yaml['where']
+        for (const inp of input.matchAll(JOIN)) 
+        {
+            join.push({
+                exp : inp[0],
+                left: inp[1],
+                right: inp[2]
+            })
+        }
+    }
+
+    query.join = join
 }
 
 function insFunctionBinding(query, expression)
