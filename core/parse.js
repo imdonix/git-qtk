@@ -85,6 +85,10 @@ function parseWhere(query)
     {
         let expression = query.yaml['where'].toString()
 
+        if(query.join)
+        {
+            expression = simplify(expression, query.join)
+        }
         expression = insFieldBinding(query, expression)
         expression = insFunctionBinding(query, expression)
 
@@ -189,11 +193,48 @@ function parseJoin(query)
         let input = query.yaml['where']
         for (const inp of input.matchAll(JOIN)) 
         {
-            join.push({
-                exp : inp[0],
-                left: inp[1],
-                right: inp[2]
-            })
+            const exp = inp[0]
+            const left = inp[1]
+            const right = inp[2]
+    
+            const [lm, lf] = left.split('.')
+            const [rm, rf] = right.split('.')
+
+            //models can't be the same
+            if(lm != rm)
+            {
+                const lkey = query.from.get(lm).key() == lf
+                const rkey = query.from.get(rm).key() == rf
+
+                if(lkey && rkey)
+                {
+                    join.push({
+                        type: "full",
+                        exp: exp,
+                        on: left,
+                        model : [lm, rm]
+                    })
+                }
+                else if(lkey)
+                {
+                    join.push({
+                        type: "left",
+                        exp: exp,
+                        on: left,
+                        model : [lm, rm]
+                    })
+                }
+                else if(rkey)
+                {
+                    join.push({
+                        type: "left",
+                        exp: exp,
+                        on: right,
+                        model : [lm, rm]
+                    })
+                }
+
+            }            
         }
     }
 
@@ -233,5 +274,15 @@ function insFieldBinding(query, expression)
     return expression
 }
 
+function simplify(input, joins)
+{
+    for (const join of joins) 
+    {
+        input = input.replace(join.exp, 'true')
+    }
 
-module.exports = { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup }
+    return input
+}
+
+
+module.exports = { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin }

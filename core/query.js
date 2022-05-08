@@ -7,7 +7,7 @@ const Database = require('./database')
 const runner = require('./runner')
 const Plugin = require('./plugin')
 const { getRepoFromURL, loadModels, loadPlugins } = require('./utils')
-const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup } = require('./parse')
+const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin } = require('./parse')
 
 const params = {
     
@@ -167,6 +167,7 @@ class Query
         populateReductors(this)
 
         parseSelect(this)
+        parseJoin(this)
         parseWhere(this)
         parseLimit(this)
         parseOrder(this)
