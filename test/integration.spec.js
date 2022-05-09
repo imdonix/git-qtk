@@ -4,6 +4,7 @@ const { Query } = require('../app')
 const Git = require('../plugins/git')
 const { LOG } = require('../core/utils')
 
+/*
 describe('running an query on example repository', () =>
 {
     let db;
@@ -44,4 +45,4 @@ describe('running an query on example repository', () =>
 
 
   });
-  
+  */
