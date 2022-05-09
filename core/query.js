@@ -73,6 +73,8 @@ class Query
                 }
             }
         }
+        populateFunctions(this)
+        populateReductors(this)
 
         this.models = loadModels(this.plugins)
 
@@ -163,8 +165,6 @@ class Query
         parseFrom(this)
         
         usePlugins(this)
-        populateFunctions(this)
-        populateReductors(this)
 
         parseSelect(this)
         parseJoin(this)
