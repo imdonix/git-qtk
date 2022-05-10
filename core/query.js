@@ -15,36 +15,50 @@ const params = {
         type: 'string',
         description: "The repository relative 'URL' or 'folder name' where you want to run the query",
         keys: ['r', 'repository'],
-        required : true  
+        required : true,
+        or: []
     },
     
     script : {
         type: 'string',
         description: "Relative path to the script",
         keys: ['s', 'script'],
-        required : true
+        required : true,
+        or: ['yaml']
     },
 
     clean : {
         type: 'bool',
         description: "Force cloning a clean the repository",
         keys: ['c', 'clean'],
-        required : false
+        required : false,
+        or: []
     },
 
     root : {
         type: 'bool',
         description: "The root folder to checkout the repositories",
         keys: ['root'],
-        required : false
+        required : false,
+        or: []
     },
 
     full : {
         type: 'bool',
         description: "Use all available plugin when parsing the history ",
         keys: ['f', 'full'],
-        required : false
+        required : false,
+        or: []
+    },
+
+    yaml : {
+        type: 'string',
+        description: "Manualy set the script from string",
+        keys: ['yaml'],
+        required : false,
+        or: []
     }
+
 }
 
 class Query
@@ -102,26 +116,37 @@ class Query
         this.validate()
         this.db = new Database(this.plugins)
 
-        this.yaml = this.openQuery()
+        this.yaml = this.query.yaml ? this.query.yaml : this.openQuery()
         
-
         await this.track(this.openRepository)
         await this.track(this.setup)
         await this.track(this.fetch)
+        console.log("ok")
         await this.track(this.post)
+  
         return this.tracker
     }
 
     openQuery()
     {
-        const file = fs.readFileSync(this.query.script, 'utf8')
-        return yaml.parse(file)
+        try
+        {
+            fs.accessSync(this.query.script, fs.R_OK)
+            const file = fs.readFileSync(this.query.script, 'utf8')
+            return yaml.parse(file)
+        }
+        catch(_)
+        {
+            throw new Error('The script file does not exist')
+        }
     }
 
     async openRepository()
     {
         const name = getRepoFromURL(this.query.repository)
         const path = this.query.root ? `${this.query.root}/${name}` : `./${name}`
+
+        console.log(path)
 
         if(!this.query.clean)
         {
@@ -209,7 +234,7 @@ class Query
                     visited++
                 })
 
-                history.on('error', (err) => rej(err))
+                history.on('error', (err) => {rej(err)})
         
                 history.on('end', () =>
                 {
@@ -219,6 +244,7 @@ class Query
                 })
 
                 history.start()
+                console.log("ok")
             })
             .catch(err => rej(err))
         })        
@@ -240,7 +266,7 @@ class Query
         {
             if(params[par].required)
             {
-                if(!(par in this.query))
+                if(!(par in this.query) && params[par].or.length == 0)
                 {
                     problems.push(par)
                 }

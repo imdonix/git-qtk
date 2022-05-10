@@ -33,7 +33,8 @@
     "yaml": "^1.10.2"
   },
   "devDependencies": {
-    "mocha": "latest"
+    "mocha": "latest",
+    "unzipper": "^0.10.11"
   },
   "engines": {
     "node": "14.19.0",

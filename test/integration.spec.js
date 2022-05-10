@@ -1,29 +1,27 @@
 const assert = require('assert');
+const unzipper = require('unzipper')
+const fs = require('fs')
 
 const { Query } = require('../app') 
 const Git = require('../plugins/git')
 const { LOG } = require('../core/utils')
 
-/*
+
 describe('running an query on example repository', () =>
 {
-    let db;
+    const query = new Query({
+        repository: 'test/example', 
+        yaml: {
+            from: 'commit c',
+            select: '$'
+        }
+    }, LOG.VOID)
 
-    before((done) => {
-        let query = new Query({
-            repository: 'https://github.com/imdonix/example', 
-            script: './examples/allcommits.yaml'}, LOG.VOID)
-
+    before(done => {
         
-        query.validate()
-        query.load()
-        .then(() => query.run())
-        .then(() =>
-        {
-            db = query.view()
-            done()
-        })
-        
+        fs.createReadStream('test/example.zip')
+        .pipe(unzipper.Extract({ path: 'test' }))
+        .on('close', () => query.load().then(() => done()))
     })
 
     it('database contains all model', () => {
@@ -32,17 +30,16 @@ describe('running an query on example repository', () =>
         {
             it(`${model.name()} model view`, () => 
             {
-                assert.notEqual(db.view(model).size, 0)   
+                assert.notEqual(query.view().view(model).size, 0)   
             })
         }
     })
 
     it('commits are presented', () => {
-        assert.equal(db.view('commit').size, 10)
-        assert.equal(db.view('author').size, 1)
-        assert.equal(db.view('file').size, 4) //The github init commit is preserved
+        assert.equal(query.view().view('commit').size, 10)
+        assert.equal(query.view().view('author').size, 1)
+        assert.equal(query.view().view('file').size, 4) //The github init commit is preserved
     })
 
 
   });
-  */

@@ -9,7 +9,7 @@ function wrap(body, params)
 
 function getRepoFromURL(url)
 {
-    return url.substring(url.lastIndexOf('/')+1).replace('.git', '')
+    return url.indexOf('http') >= 0 ? url.substring(url.lastIndexOf('/')+1).replace('.git', '') : url
 }
 
 function abs()
