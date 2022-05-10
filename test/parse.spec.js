@@ -103,7 +103,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = {from : 'author a', select: 'a.name'}
             parseFrom(query)
-            usePlugins(query)
             parseSelect(query)
 
             assert.equal(1, query.select.length)
@@ -114,7 +113,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = {from : 'author a', select: 'a.name; a.name'}
             parseFrom(query)
-            usePlugins(query)
             parseSelect(query)
 
             assert.equal(2, query.select.length)
@@ -125,7 +123,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = {from : 'author a', select: 'b.name'}
             parseFrom(query)
-            usePlugins(query)
 
             try
             {
@@ -140,7 +137,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = {from : 'author a', select: 'a.namee'}
             parseFrom(query)
-            usePlugins(query)
 
             try
             {
@@ -156,7 +152,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = {from : 'author a', select: 'short(a.name)'}
             parseFrom(query)
-            usePlugins(query)
             parseSelect(query)
 
             assert.equal(query.select[0][0], `${WILDCARD.SP}f.short(${WILDCARD.SP}o['a.name'])`)
@@ -168,7 +163,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = {from : 'author a', select: 'short(short(a.name + 1))'}
             parseFrom(query)
-            usePlugins(query)
             parseSelect(query)
 
             assert.equal(query.select[0][0], `${WILDCARD.SP}f.short(${WILDCARD.SP}f.short(${WILDCARD.SP}o['a.name'] + 1))`)
@@ -195,7 +189,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = { from: 'author', where : 'true || true' }
             parseFrom(query)
-            usePlugins(query)
             parseWhere(query)
 
             assert.equal(query.where, 'true || true')
@@ -207,7 +200,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = { from: 'author a', where : 'a.name' }
             parseFrom(query)
-            usePlugins(query)
             parseWhere(query)
 
             assert.equal(query.where, `${WILDCARD.SP}o['a.name']`)
@@ -218,7 +210,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = { from: 'author a', where : "short('lajos')" }
             parseFrom(query)
-            usePlugins(query)
             parseWhere(query)
 
             assert.equal(query.where, `${WILDCARD.SP}f.short('lajos')`)  
@@ -229,7 +220,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = { from: 'author a', where : "short(a.name)" }
             parseFrom(query)
-            usePlugins(query)
             parseWhere(query)
 
             assert.equal(query.where, `${WILDCARD.SP}f.short(${WILDCARD.SP}o['a.name'])`)  
@@ -289,7 +279,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = { from: 'author a', order: 'a.name' }
             parseFrom(query)
-            usePlugins(query)
             parseOrder(query)
 
             assert.equal(query.order[0], `${WILDCARD.SP}o['a.name']`)
@@ -301,7 +290,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = { from: 'author a', order: 'a.name ASC' }
             parseFrom(query)
-            usePlugins(query)
             parseOrder(query)
 
             assert.equal(query.order[0],`${WILDCARD.SP}o['a.name']`)
@@ -313,7 +301,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = { from: 'author a', }
             parseFrom(query)
-            usePlugins(query)
             parseOrder(query)
 
             assert.equal(query.order, null)
@@ -324,7 +311,6 @@ describe('Validate query', () =>
             let query = new Query(params, LOG.VOID)
             query.yaml = { from: 'author a', order: 'a.name LAJOS' }
             parseFrom(query)
-            usePlugins(query)
             
             try
             {
@@ -335,4 +321,5 @@ describe('Validate query', () =>
         })
 
     })
+
 })
