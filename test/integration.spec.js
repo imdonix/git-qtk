@@ -38,7 +38,15 @@ describe('running an query on example repository', () =>
     it('commits are presented', () => {
         assert.equal(query.view().view('commit').size, 10)
         assert.equal(query.view().view('author').size, 1)
-        assert.equal(query.view().view('file').size, 4) //The github init commit is preserved
+        assert.equal(query.view().view('file').size, 4)
+    })
+
+    it('it can run the query', () => {
+        query.run()
+        .then(res =>
+        {
+            assert.equal(res[0]['c.author'] == 'tamas.donix@gmail.com')
+        })
     })
 
 
