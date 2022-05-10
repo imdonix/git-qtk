@@ -322,4 +322,96 @@ describe('Validate query', () =>
 
     })
 
+    describe('when parsing the: join', () => 
+    {
+        it('should ignore if: both side is a constant', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a', where: '1 == 1' }
+            parseFrom(query)
+            parseJoin(query)
+
+            assert.equal(query.join.length, 0)
+        })
+
+        it('should ignore if: left side is constant ', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a', where: '1 == a.email' }
+            parseFrom(query)
+            parseJoin(query)
+
+            assert.equal(query.join.length, 0)
+        })
+
+        it('should ignore if: right side is constant ', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a', where: 'a.email == 1' }
+            parseFrom(query)
+            parseJoin(query)
+
+            assert.equal(query.join.length, 0)
+        })
+
+        it('should ignore if: wrapped into function', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a; commit c', where: 'short(a.email) == c.author' }
+            parseFrom(query)
+            parseJoin(query)
+
+            assert.equal(query.join.length, 0)
+        })
+
+        it('should ignore if: same model', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a; commit c', where: 'c.author == c.author' }
+            parseFrom(query)
+            parseJoin(query)
+
+            assert.equal(query.join.length, 0)
+        })
+
+        it('should work on a left join', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a; commit c', where: 'a.email == c.author' }
+            parseFrom(query)
+            parseJoin(query)
+
+            assert.equal(query.join.length, 1)
+            assert.equal(query.join[0].type, 'left')
+            assert.equal(query.join[0].exp, 'a.email == c.author')
+        })
+
+        it('should work on a full join', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a; commit c', where: 'a.email == c.sha' }
+            parseFrom(query)
+            parseJoin(query)
+
+            assert.equal(query.join.length, 1)
+            assert.equal(query.join[0].type, 'full')
+            assert.equal(query.join[0].exp, 'a.email == c.sha')
+        })
+
+        it('should work for multiple join', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a; commit c; author aa; commit cc', where: 'a.email == c.sha && aa.email == cc.sha' }
+            parseFrom(query)
+            parseJoin(query)
+
+            assert.equal(query.join.length, 2)
+            assert.equal(query.join[0].type, 'full')
+            assert.equal(query.join[0].exp, 'a.email == c.sha')
+            assert.equal(query.join[1].type, 'full')
+            assert.equal(query.join[1].exp, 'aa.email == cc.sha')
+        })
+
+    })
+
 })
