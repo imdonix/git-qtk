@@ -223,8 +223,9 @@ function parseJoin(query)
                     join.unshift({
                         type: "full",
                         exp: exp,
-                        on: left,
-                        model : [lm, rm]
+                        on: lm,
+                        with : rm,
+                        model: rf
                     })
                 }
                 else if(lkey)
@@ -232,8 +233,9 @@ function parseJoin(query)
                     join.push({
                         type: "left",
                         exp: exp,
-                        on: left,
-                        model : [lm, rm]
+                        on: lm,
+                        with : rm,
+                        model: rf
                     })
                 }
                 else if(rkey)
@@ -241,8 +243,9 @@ function parseJoin(query)
                     join.push({
                         type: "left",
                         exp: exp,
-                        on: right,
-                        model : [lm, rm]
+                        on: rm,
+                        with : lm,
+                        model: lf
                     })
                 }
 

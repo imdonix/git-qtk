@@ -2,15 +2,39 @@ const { WILDCARD, wrap } = require('./utils')
 
 async function runner()
 {
+    let cache = [[]]
     const models = [...this.from.entries()]
 
-    let cache = [[]]
-    for (const model of models) 
+    for(const join of this.join)
+    {
+        const joined = new Array()
+
+        if(join.type == 'left')
+        {
+            const lt = this.db.view(this.from.get(join.on))
+            for(const left of this.db.get(this.from.get(join.with)))
+            {
+                const right = lt.get(left[join.model])
+                if(right)
+                {
+                    joined.push([right, left])
+                }
+            }
+        }
+
+        cache = mixA(cache, joined)
+    }
+
+
+    let mixins = [...models].splice(this.join.length * 2)
+    for (const model of mixins) 
     {
         cache = mix(cache, this.db.get(model[1]))
     }
 
     const compossed = composse(cache, models)
+    console.log(compossed)
+
     const filtered = where(compossed, this.where, this.functions)
     const ordered = order(filtered, this.order, this.functions)
     const grouped = group(ordered, this.group)
@@ -28,6 +52,21 @@ function mix(old, values)
         for (const right of values) 
         {
             tmp.push([...left, right])
+        }
+    }
+
+    return tmp
+}
+
+function mixA(old, values)
+{
+    const tmp = new Array()
+
+    for (const left of old) 
+    {
+        for (const right of values) 
+        {
+            tmp.push([...left, ...right])
         }
     }
 
