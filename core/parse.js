@@ -220,7 +220,7 @@ function parseJoin(query)
 
                 if(lkey && rkey)
                 {
-                    join.push({
+                    join.unshift({
                         type: "full",
                         exp: exp,
                         on: left,
