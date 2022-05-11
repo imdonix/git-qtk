@@ -7,7 +7,7 @@ async function runner()
     let cache = [[]]
     for (const model of models) 
     {
-        cache = mix(cache, this.db.models[model[1].name()].values())
+        cache = mix(cache, [...this.db.models[model[1].name()].values()])
     }
 
     const compossed = composse(cache, models)
@@ -43,7 +43,6 @@ function composse(input, mapping)
         const obj = new Object()
         
         let i = 0
-        console.log(mapping)
         for(const part of line)
         {
             for(const [key, value] of Object.entries(part))
