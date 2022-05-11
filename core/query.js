@@ -7,7 +7,7 @@ const Database = require('./database')
 const runner = require('./runner')
 const Plugin = require('./plugin')
 const { getRepoFromURL, loadModels, loadPlugins } = require('./utils')
-const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin } = require('./parse')
+const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin, parseStart } = require('./parse')
 
 const params = {
     
@@ -187,6 +187,7 @@ class Query
 
     async setup()
     {
+        parseStart(this)
         parseFrom(this)
         
         usePlugins(this)
@@ -218,8 +219,14 @@ class Query
     {
         return new Promise((res, rej) =>
         {
-            this.repo.getHeadCommit()
-            .then(head =>
+            let head = this.repo.getHeadCommit()
+            
+            if(this.query.start)
+            {
+                head = this.repo.getCommit(this.query.start)
+            }
+            
+            head.then(head =>
             {
                 let visited = 0
                 let history = head.history(Git.Revwalk.SORT)

@@ -297,4 +297,4 @@ function simplify(input, joins)
 }
 
 
-module.exports = { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin }
+module.exports = { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin, parseStart }
