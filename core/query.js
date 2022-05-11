@@ -261,6 +261,8 @@ class Query
         {
             plugin.post(this.db)
         }
+
+        this.db.finalize()
     }
 
     validate()

@@ -7,7 +7,7 @@ async function runner()
     let cache = [[]]
     for (const model of models) 
     {
-        cache = mix(cache, [...this.db.models[model[1].name()].values()])
+        cache = mix(cache, this.db.get(model[1]))
     }
 
     const compossed = composse(cache, models)
