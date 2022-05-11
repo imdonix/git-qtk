@@ -2,62 +2,59 @@ const { WILDCARD, wrap } = require('./utils')
 
 async function runner()
 {
-    let models = new Array()
-    for (const [key, value] of this.from)
+    const models = [...this.from.entries()]
+
+    let cache = [[]]
+    for (const model of models) 
     {
-        let dbrep = new Array() // we lose the key
-
-        for (const it of this.db.models[value.name()].values()) 
-        {
-            dbrep.push(it)
-        }
-
-        let extracted = dbrep.map(model => [[key, model]])
-        models.push(extracted)
+        cache = mix(cache, this.db.models[model[1].name()].values())
     }
 
-    let cache = models.pop()
-    while(models.length > 0)
-    {
-        let acc = new Array()
-        let model = models.pop()
-        for (const k of model) 
-        {
-            for (const curr of cache) 
-            {
-                acc.push([...curr, ...k])
-            }
-        }
-
-        cache = acc
-    }
-   
-    let compossed = composse(cache)
-    let filtered = where(compossed, this.where, this.functions)
-    let ordered = order(filtered, this.order, this.functions)
-    let grouped = group(ordered, this.group)
-    let limited = limit(grouped, this.limit, this.functions)
+    const compossed = composse(cache, models)
+    const filtered = where(compossed, this.where, this.functions)
+    const ordered = order(filtered, this.order, this.functions)
+    const grouped = group(ordered, this.group)
+    const limited = limit(grouped, this.limit, this.functions)
 
     return select(limited, this.select, this.group, this.functions, this.reductors, this.fields)
 }
 
-function composse(input)
+function mix(old, values)
+{
+    const tmp = new Array()
+
+    for (const left of old) 
+    {
+        for (const right of values) 
+        {
+            tmp.push([...left, right])
+        }
+    }
+
+    return tmp
+}
+
+function composse(input, mapping)
 {
     let records = new Array()
 
-    for (const record of input) 
+    for (const line of input) 
     {
-        let line = record.map(selector => {
-            const obj = new Object()
-            for (const [key, value] of Object.entries(selector[1])) 
-            {
-                obj[`${selector[0]}.${key}`] = value
-            }
-            return obj
-        })
-        .reduce((res, cur) => Object.assign(res, cur), new Object())
+        const obj = new Object()
         
-        records.push(line)
+        let i = 0
+        console.log(mapping)
+        for(const part of line)
+        {
+            for(const [key, value] of Object.entries(part))
+            {
+                obj[`${mapping[i][0]}.${key}`] = value
+            }
+
+            i++
+        }
+
+        records.push(obj)
     }
 
     return records

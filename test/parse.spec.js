@@ -406,10 +406,10 @@ describe('Validate query', () =>
             parseJoin(query)
 
             assert.equal(query.join.length, 2)
-            assert.equal(query.join[0].type, 'full')
-            assert.equal(query.join[0].exp, 'a.email == c.sha')
             assert.equal(query.join[1].type, 'full')
-            assert.equal(query.join[1].exp, 'aa.email == cc.sha')
+            assert.equal(query.join[1].exp, 'a.email == c.sha')
+            assert.equal(query.join[0].type, 'full')
+            assert.equal(query.join[0].exp, 'aa.email == cc.sha')
         })
 
     })
