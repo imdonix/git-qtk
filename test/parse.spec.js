@@ -412,6 +412,21 @@ describe('Validate query', () =>
             assert.equal(query.join[0].exp, 'aa.email == cc.sha')
         })
 
+        it('should work fail on invalid model', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a; commit c; author aa; commit cc', where: 'a.email == c.sha && aba.email == cc.sha' }
+            parseFrom(query)
+
+            try
+            {
+                parseJoin(query)
+                assert.fail()
+            }
+            catch(err){}
+
+        })
+
     })
 
     describe('when parsing the: start', () => 

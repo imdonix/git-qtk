@@ -33,8 +33,6 @@ async function runner()
     }
 
     const compossed = composse(cache, models)
-    console.log(compossed)
-
     const filtered = where(compossed, this.where, this.functions)
     const ordered = order(filtered, this.order, this.functions)
     const grouped = group(ordered, this.group)

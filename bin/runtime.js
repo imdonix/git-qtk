@@ -7,8 +7,8 @@ const { WILDCARD } = require('../core/utils')
 const tests = [
     'https://github.com/imdonix/example',
     'https://github.com/Ericsson/CodeCompass',
-    //'https://github.com/git/git',
-    //'https://github.com/llvm/llvm-project'
+    'https://github.com/git/git',
+    'https://github.com/llvm/llvm-project'
 ]
 
 const examples = path.join(__dirname, '../examples');
@@ -53,7 +53,7 @@ async function run()
                 repository: runtime,
                 script: path.join(examples, file)
             }, logger)
-            
+
             await query.load()
             await query.run()
     

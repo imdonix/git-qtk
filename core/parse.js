@@ -215,6 +215,17 @@ function parseJoin(query)
             //models can't be the same
             if(lm != rm)
             {
+                if(!query.from.has(lm))
+                {
+                    throw new Error(`Invalid model for join '${lm}'`)
+                }
+
+                if(!query.from.has(rm))
+                {
+                    throw new Error(`Invalid model for join '${rm}'`)
+                }
+
+
                 const lkey = query.from.get(lm).key() == lf
                 const rkey = query.from.get(rm).key() == rf
 
