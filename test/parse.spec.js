@@ -1,7 +1,7 @@
 const assert = require('assert');
 const { LOG, OPERATOR, WILDCARD } = require('../core/utils')
 const { Query, params, usePlugins } = require('../core/query')
-const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseJoin } = require('../core/parse')
+const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseJoin, parseStart } = require('../core/parse')
 
 describe('Validate query', () =>
 {
@@ -414,4 +414,16 @@ describe('Validate query', () =>
 
     })
 
+    describe('when parsing the: start', () => 
+    {
+        it('should work', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { start : 'valami' , from: 'author a', where: '1 == 1' }
+            parseStart(query)
+
+            assert.equal(query.start, 'valami')
+        })
+    })
+    
 })

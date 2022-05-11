@@ -2,6 +2,18 @@ const { WILDCARD, OPERATOR } = require('./utils')
 
 const JOIN = /([a-zA-Z][a-zA-Z1-9._]*.[a-zA-Z][a-zA-Z1-9._]*)\s*==\s*([a-zA-Z][a-zA-Z1-9._]*.[a-zA-Z][a-zA-Z1-9._]*)/g
 
+function parseStart(query)
+{
+    if(!query.yaml.hasOwnProperty('start') || query.yaml['start'] == null )
+    {
+        query.start = null
+    }
+    else
+    {
+        query.start = query.yaml['start']
+    }
+}
+
 function parseFrom(query)
 {
     if(!query.yaml.hasOwnProperty('from') || query.yaml['from'] == null )
@@ -285,4 +297,4 @@ function simplify(input, joins)
 }
 
 
-module.exports = { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin }
+module.exports = { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin, parseStart }

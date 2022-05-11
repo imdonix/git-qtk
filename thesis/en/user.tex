@@ -202,6 +202,7 @@ Example tags:
 \subsection{Group}
 
 The \textit{Group} tag groups records that have the same values into summary records.
+This field is optional.
 
 The following rules applies:
 \begin{itemize}
@@ -219,6 +220,16 @@ When using \textit{Group} tag you are able to use \textbf{'reductors'} in the \t
 Example tags:
 \begin{itemize}
 	\item order: commit.author
+\end{itemize}
+
+\subsection{Start}
+
+In the \textit{Start} tag you can define which should be the commit where the parsing should start.
+This field is optional.
+You can define it with the following rules:
+
+\begin{itemize}
+	\item A single \textit{sha} of the commit should be provided.
 \end{itemize}
 
 \section{How to use the Toolkit}
