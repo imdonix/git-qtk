@@ -121,7 +121,6 @@ class Query
         await this.track(this.openRepository)
         await this.track(this.setup)
         await this.track(this.fetch)
-        console.log("ok")
         await this.track(this.post)
   
         return this.tracker
@@ -251,7 +250,6 @@ class Query
                 })
 
                 history.start()
-                console.log("ok")
             })
             .catch(err => rej(err))
         })        
