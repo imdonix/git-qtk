@@ -1,7 +1,7 @@
 \chapter{User documentation}
 \label{ch:user}
 
-In this section I will show you how you can use the \textbf{git-qtk} (Git Query Tool Kit) which where created to solve these problems. 
+In this section I will show you how you can use the \textbf{git-qtk} (Git Query Tool Kit) which was created to solve these problems. 
 The kit contains three tool and one plugin:
 
 \begin{itemize}
@@ -16,7 +16,7 @@ The software is written in JavaScript and uses Node.js\cite{node.js} as runtime 
 
 \subsection{Node.js and NPM}
 Node.js is runtime environment that runs on the V8 engine and executes JavaScript code outside a web browser. 
-NPM is the Node Package Manager which is a powerful tool to manage package dependencies. NPM has more than 1 million package\cite{npm-count} already. \newline
+NPM is the Node Package Manager which is a powerful tool to manage package dependencies. NPM has more than 1 million packages\cite{npm-count} already. \newline
 
 Users are required to download and install the \textbf{v14.x.x} version of Node.js with the packaged NPM which can be done by visiting the official website:\newline
 \url{https://nodejs.org/download/release/latest-v14.x/}
@@ -29,9 +29,9 @@ For managing Git repositories a stable version Git is also required to be instal
 \url{https://git-scm.com/}
  
 \subsection{Operating system}
-Node.js and Git is platform independent, it can be used on most of the modern version of Windows and Unix based operating systems.\newline
+Node.js and Git are platform independent, they can be used on most of the modern version of Windows and Unix based operating systems.\newline
 
-There is no official minimum system requirements for node, for running this tool it recommended to have:
+There is no official minimum system requirement for node, for running this tool, it is recommended to have:
 
 \begin{itemize}
 	\item x86 CPU with at least 2 vCPUs
@@ -42,15 +42,15 @@ There is no official minimum system requirements for node, for running this tool
 
 
 \section{Installation}
-The software comes as a Node.js package, which can be installed in multiple different way. 
+The software comes as a Node.js package, which can be installed in multiple ways. 
 The installation is done by the Node Package Manager 
 
 Notice: Administrator privileges may be needed in Windows OS.
 
 \subsection{From source files}
-If you want to install the toolkit from a local copy of the project you will have to extract the source to a folder. 
-Then you have to install the dependencies with npm.
-To do that run this command:
+If you want to install the toolkit from a local copy of the project, you will have to extract the source to a folder. 
+Then, you have to install the dependencies with npm.
+To do that, run this command:
 
 \textbf{npm install . --global}
 
@@ -64,32 +64,31 @@ To install the toolkit you have to run this command:
 To get a better understanding how the toolkit works, let’s look at some of the main concepts:
 
 \begin{itemize}
-   \item A \textbf{Script} is declarative way to create queries.
-   \item A \textbf{Plugin} is defining how the history should be parsed into models.
+   \item A \textbf{Script} is a declarative way to create queries.
+   \item A \textbf{Plugin} defines how the history should be parsed into models.
    \item A \textbf{Model} is a structure of the data which is a set fields
-   \item A \textbf{Field} is represent an atomic data with its type
+   \item A \textbf{Field} represents an atomic data with its type
 \end{itemize}
 
 \section{The query language}
 
 The toolkit provides an easy way to create declarative queries to search in the history.
-The query is based on YAML\cite{yaml} markup language which is a is a human-friendly data serialization language for all programming languages. 
-By defining the following tags you can manipulate the query as you wish.
-
+The query is based on YAML\cite{yaml} markup language, which is a human-friendly data serialization language for all programming languages. 
+By defining the following tags, you can manipulate the query as you wish.
 
 \subsection{From}
 
-In the \textit{From} tag you have to define which models you want to include in your search.
+In the \textit{From} tag you have to define, which models you want to include in your search.
 This tag is required.
 You can define it with the following rules:
 
 \begin{itemize}
 	\item A model can be selected by adding the model name to the tag.
-	\item Multiple model can be added by separating them with the \textbf{;} delimiter.
-	\item A single model can be added multiple time by renaming it which can be done by adding a "nickname" after the model name.
+	\item Multiple models can be added by separating them with the \textbf{;} delimiter.
+	\item A single model can be added multiple times by renaming it which can be done by adding a "nickname" after the model name.
 \end{itemize}
 
-Note: Based on the given models the tool will create a subset of the needed plugins for performance reason.
+Note: Based on the given models, the tool will create a subset of the needed plugins for performance reasons.
 
 Example tags:
 \begin{itemize}
@@ -101,18 +100,18 @@ Example tags:
 Invalid tags:
 \begin{itemize}
 	\item from: $\O$ \textit{(From is required)}
-	\item from: commit, commit \textit{(Multiple model with same name)}
+	\item from: commit, commit \textit{(Multiple model with the same name)}
 	\item from: commit c, author c \textit{(Multiple model with same name)}
 \end{itemize}
 
 \subsection{Select}
 
-The \textit{Select} tag is used to create a subset of fields from the result and process it from the search:
+The \textit{Select} tag is used to create a subset of fields from the result, and process it from the search:
 This tag is required.
 You can define it with the following rules:
 
 \begin{itemize}
-	\item A single statement can be added with the \textbf{'{model}.{field}'} syntax.
+	\item A single statements can be added with the \textbf{'{model}.{field}'} syntax.
 	\item Multiple statement can be selected by separating them with the \textbf{';'} delimiter.
 	\item Each statement will be interpreted and evaluated as JavaScript.
 	\item The \textbf{\$} symbol is a wildcard to select all fields. 
@@ -128,7 +127,7 @@ Example tags:
 \subsection{Where}
 
 The \textit{Where} tag can be used to filter records from the records.
-This is an optional tag, otherwise all record will be passed.
+This is an optional tag, otherwise all the records will be passed.
 You can define it with the following rules:
 
 \begin{itemize}
@@ -145,26 +144,24 @@ Example tags:
 
 \subsubsection{Join}
 
-// THIS SHOUD BE A DEV DOC? OR NOT?
-
 A special case of the filtering is considered as join. 
 This happens if a subset of the statement looks like:\newline
 
 \textbf{{model}.{field} == {model}.{field}}\newline
 
-In this case the following rules applies:
+In this case the following rules apply:
 
 \begin{itemize}
 	\item If only one of the field is a key for the model then its a \textbf{Right or Left Join}
-	\item If both of them are key then its a \textbf{Inner Join}
-	\item If none of then is a key this will be evaluated normally
+	\item If both of them are key, then its a \textbf{Inner Join}
+	\item If none of them is a key then its will be evaluated normally
 \end{itemize}
 
 This sub statements will be removed from the where tag and handled separately for performance reasons
 
 \subsection{Limit}
 
-The \textit{Limit} tag define how many records should be displayed to the output.
+The \textit{Limit} tag defines, how many records should be displayed to the output.
 This field is optional.
 
 Example tags:
@@ -184,7 +181,7 @@ Invalid tags:
 The \textit{Order} tag will define how the records should be ordered.
 This field is optional.
 
-The following rules applies:
+The following rules apply:
 
 \begin{itemize}
 	\item Descending order: \textbf{DESC}
@@ -204,12 +201,12 @@ Example tags:
 The \textit{Group} tag groups records that have the same values into summary records.
 This field is optional.
 
-The following rules applies:
+The following rules apply:
 \begin{itemize}
 	\item A single field should be added as \textbf{'{model}.{field}'}
 \end{itemize}
 
-When using \textit{Group} tag you are able to use \textbf{'reductors'} in the \textit{Where} tag, such as:
+When using \textit{Group} tag, you are able to use \textbf{'reductors'} in the \textit{Where} tag, such as:
 \begin{itemize}
 	\item \textbf{sum()} (Summation of the statement)
 	\item \textbf{count()} (Count records)
@@ -233,10 +230,10 @@ You can define it with the following rules:
 \end{itemize}
 
 \section{How to use the Toolkit}
-The toolkit intended to be used as a library for software which provide information about the progress of a project, the performance of the co-workers and much more. But in the development phase a CLI tool is also available so implementing the specified queries can be down easily.
+The toolkit is intended to be used as a library for software, which provides information about the progress of a project, the performance of the co-workers and much more. However in the development phase, a CLI tool is also available, so implementing the specified queries can be done easily.
 
 \subsection{As a CLI tool}
-After installing the tool globally it can be tested by running the next command, this will provide all the functionally available with the CLI Tool:
+After installing the tool globally, it can be tested by running the next command, this will provide all the functionally available with the CLI Tool:
 
 \textbf{git-qtk}
 \subsubsection{Version}
@@ -253,7 +250,7 @@ This will also check that a new version of the toolkit is available in the GitHu
 
 \newpage
 \subsubsection{Help}
-All the available command will be displayed with description when running the program with the \textbf{-h} or \textbf{-help} flag.
+All the available commands will be displayed with description when running the program with the \textbf{-h} or \textbf{-help} flag.
 
 \begin{figure}[H]
 	\centering
@@ -273,7 +270,7 @@ With the \textbf{-p} or \textbf{-plugin} flag you will be able to access all the
 \end{figure}
 
 \subsubsection{Examples}
-To get example queries as reference you can use the \textbf{-e} or \textbf{-example} flag.
+To get example queries as reference, you can use the \textbf{-e} or \textbf{-example} flag.
 
 \begin{figure}[H]
 	\centering
@@ -283,14 +280,14 @@ To get example queries as reference you can use the \textbf{-e} or \textbf{-exam
 \end{figure}
 
 \subsubsection{Running a query}
-To run a query on a specified repository must provide the following information for the tool kit:
+To run a query on a specified repository you must provide the following information for the tool kit:
 
 \begin{itemize}
 	\item \textbf{-r} or -\textbf{repository} to specify which repository history should be parsed. You can give a local folder relative path or a full URL which will be cloned.
 	\item \textbf{-s} or -\textbf{script} to specify which query you want to run. You can give a relative path to the query file.
 \end{itemize}
 
-This will run the query on the given repository an the result will be printed to the standard output by default.
+This will run the query on the given repository, and the result will be printed to the standard output by default.
 
 \begin{figure}[H]
 	\centering
@@ -302,8 +299,8 @@ This will run the query on the given repository an the result will be printed to
 
 \subsection{As a Node.js library}
 
-The toolkit is Node.js package so it can be used as a library in any project.
-Three class are exposed by the package API which are:
+The toolkit is Node.js package, so it can be used as a library in any project.
+Three classes are exposed by the package API which are:
 
 \begin{itemize}
 	\item Query
@@ -311,26 +308,26 @@ Three class are exposed by the package API which are:
 	\item \textit{Model (Abstract)}
 \end{itemize}
 
-To use the toolkit you have to create an instance of the \textit{Query} class by using its constructor.
+To use the toolkit, you have to create an instance of the \textit{Query} class by using its constructor.
 The first parameter should be an \textit{Object} with all the user defined settings. 
-You can use all the flags (not CLI exclusive) which is mentioned in the \textit{As a CLI tool} section.
+You can use all the flags (not CLI exclusive) which are mentioned in the \textit{As a CLI tool} section.
 An example would be:
 
 \lstinputlisting[caption={lib/app.js}]{../lib/app.js}
 
-In this way the toolkit will clone or use the repository in the root directory of the app, this can be changed with \textbf{root} parameter.
-As you can see the parse and the query can be called separately in this way you are able to run multiple queries on the same parsed history.
-But note that the fist query script will determine which \textit{Plugin}s are used for the history parsing, and if you try to run a script which
-use an unused \textit{Plugin} it will throw an \textit{Error}. With the \textbf{useall} parameter you can force the parser to use all \textit{Plugin}s.
+In this way, the toolkit will clone or use the repository in the root directory of the app, this can be changed with \textbf{root} parameter.
+As you can see, the parse and the query can be called separately. In this way, you are able to run multiple queries on the same parsed history.
+But note, that the fist query script will determine which \textit{Plugin}s are used for the history parsing, and if you try to run a script, which
+uses an unused \textit{Plugin}, it will throw an \textit{Error}. With the \textbf{useall} parameter, you can force the parser to use all \textit{Plugin}s.
 
 \subsubsection{Extending with plugins}
 
 \textit{Plugin}s are the parsers for which is used by the global HP (History parser). 
-By default the \textit{Git} plugin is provided to the user, but the users are able to create their own plugin.
+By default, the \textit{Git} plugin is provided to the user, but the users are able to create their own plugin as well.
 \newline
-This can be done by inheriting from the \textit{Plugin} class and also creating their \textit{Model}s and passing it as a parameter for the \textit{Query}.
+This can be done by inheriting from the \textit{Plugin} class and also creating their \textit{Model}s, and passing it as a parameter for the \textit{Query}.
 
-The plugin has a few function which has to be implemeted:
+The plugin has a few functions, which have to be implemeted:
 \begin{itemize}
 	\item \textit{name()} - the name of the plugin as a string
 	\item \textit{functions()} - a list of the functions which are injected into the statements
@@ -342,8 +339,8 @@ The plugin has a few function which has to be implemeted:
 	\item \textit{post()} - run at the end of the parsing
 \end{itemize}
 
-A \textit{Model} is represent a structure how the data should be stored in the database.
-The model requires to implemet these:
+A \textit{Model} represents a structure how the data should be stored in the database.
+The model requires to implement these:
 \begin{itemize}
 	\item \textit{name()} - the name of the model
 	\item \textit{model()} - the model definition as a name-type object 
@@ -352,19 +349,19 @@ The model requires to implemet these:
 \end{itemize}
 
 An example for a custom plugin:\newline
-Task: We want to create a plugin which can track the size of each commit. 
+Task: We want to create a plugin, which can track the size of each commit. 
 Solution:\newline
 
-First lets create the structure for the database object:
+First, let's create the structure for the database object:
 \lstinputlisting[caption={lib/comsize.js}]{../lib/comsize.js}
 
-Now have to create the actual plugin:
+Now, we have to create the actual plugin:
 \lstinputlisting[caption={lib/size.js}]{../lib/size.js}
 
-And now we are able to pass the newly created plugin to the \textit{Query}:
+After that we are able to pass the newly created plugin to the \textit{Query}:
 \lstinputlisting[caption={lib/main.js}]{../lib/main.js}
 
-By running the program for any repository with the following script we will get this result:
+By running the program for any repository with the following script, we will get a result which looks like this:
 
 \lstinputlisting[caption={lib/size.yaml}]{../lib/size.yaml}
 
@@ -379,8 +376,8 @@ By running the program for any repository with the following script we will get 
 
 \section{Use cases / Examples}
 
-In this section, you will able to see some real world examples which only use the Git plugin.
-If you want to see more you can visit the \textbf{examples} folder.
+In this section, you will be able to see some real world examples which use the Git plugin only.
+If you want to see more, you can visit the \textbf{examples} folder.
 
 \subsection{Use case: Who changed, what files}
 
@@ -392,9 +389,9 @@ We want to see who changed what file in the repository:
 	where: a.email == c.author && c.changes.indexOf(f.path) >= 0
 \end{lstlisting}
 
-\subsection{Use case: A single person commits}
+\subsection{Use case: A single person's commits}
 
-We want to search for a single person commits:
+We want to search for a single person's commits:
 
 \begin{lstlisting}[caption={authorcommits.yaml}]
 	from: author; commit
