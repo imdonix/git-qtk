@@ -41,28 +41,31 @@ async function run()
     {       
         for(const file of all)
         {
-            count++
+            if(file.indexOf('.yaml') > 0)
+            {
+                count++
 
-            console.log(`(${count}) [${getRepoFromURL(runtime)}] Running '${file}'`);
-            
-            let logger = {
-                log : (msg) => console.log(`(${count}) [${getRepoFromURL(runtime)}] --> ${msg}`)
-            }
-
-            let query = new Query({
-                repository: runtime,
-                script: path.join(examples, file)
-            }, logger)
-
-            await query.load()
-            await query.run()
+                console.log(`(${count}) [${getRepoFromURL(runtime)}] Running '${file}'`);
+                
+                let logger = {
+                    log : (msg) => console.log(`(${count}) [${getRepoFromURL(runtime)}] --> ${msg}`)
+                }
     
-            const out = tracker2log(runtime, file, query.tracker)
-            output = output.concat(out)
-
-            console.log(`(${count}) [${getRepoFromURL(runtime)}] --> ${out}`);
-            console.log(`(${count}) [${getRepoFromURL(runtime)}] Query '${file}' finished`);
-            console.log(`-----`);
+                let query = new Query({
+                    repository: runtime,
+                    script: path.join(examples, file)
+                }, logger)
+    
+                await query.load()
+                await query.run()
+        
+                const out = tracker2log(runtime, file, query.tracker)
+                output = output.concat(out)
+    
+                console.log(`(${count}) [${getRepoFromURL(runtime)}] --> ${out}`);
+                console.log(`(${count}) [${getRepoFromURL(runtime)}] Query '${file}' finished`);
+                console.log(`-----`);
+            }
         }
     }
 }
@@ -71,12 +74,4 @@ run()
 .then(() =>
 {
     console.log("[RM] finished successfully!")
-})
-.catch((err) => 
-{
-    console.error(`[RM] failed with \\ ${err}`)
-})
-.finally(async () => {
-    await writeFile(outfile, output)
-    console.log(`[RM] tracked result: '${outfile}'`)
 })
