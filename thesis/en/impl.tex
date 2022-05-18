@@ -9,7 +9,23 @@
 
 \subsection{Database}
 
-(1)
+We need to somehow store all the data coming from the parser and plugins. We can assume that the plugins will reduce the size of the
+pure data from the repository history. So to provide maxium performace for the query we can use an in-memory database. 
+We can also assume that the database will be immutable after the parsing is done. 
+
+The database is collections of hash maps based on the models. The hash map keys are defined by its model \textit{key()} method.
+The reson behind this database structure is in the join mechanism in the query. The hash map is implemeted with the built in 
+\textit{Map} \cite{map} which has a acceess time and space compexity of:
+
+\( O(1) \)
+
+In this way if we connect two models where at least of the models field is a key then we can assume that:
+\(
+    N records of the A model, M records of the B model
+
+    O(N * M) = O(N)
+
+\)
 
 \subsection{Extensions}
 
