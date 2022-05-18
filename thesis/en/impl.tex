@@ -1,14 +1,14 @@
 \chapter{Developer documentation}
 \label{ch:impl}
 
-For this project a high level programing language was needed which can support dynamic typing for creating easy statements and storing
+For this project a high level programming language was needed which can support dynamic typing for creating easy statements and storing
 lot of different data, the language also has to support runtime interpretation so the user defined statements can be used without
-creating a whole new programing language and compiler for it. For these reasons Javascript with the node.js runtime was chosen. 
+creating a whole new programming language and compiler for it. For these reasons JavaScript with the node.js runtime was chosen. 
 
 \section{Architectural Overview}
 
-The toolkit is heavily depends on the libgit2 \cite(libgit2) library which is a portable, pure C implementation  if the Git core methods,
-this library has a version for JavaScript and Node.js which is the nodegit \cite(nodegit).
+The toolkit is heavily depends on the libgit2 \cite{libgit2} library which is a portable, pure C implementation  if the Git core methods,
+this library has a version for JavaScript and Node.js which is the nodegit\cite{nodegit}.
 The whole toolkit architecture can be represented with the following diagram:
 
 \begin{figure}[H]
@@ -26,12 +26,12 @@ module. After both of them is ready the \textit{Runner} module will run the quer
 \subsection{Database}
 
 We need to somehow store all the data coming from the parser and plugins. We can assume that the plugins will reduce the size of the
-pure data from the repository history. So to provide maxium performace for the query we can use an in-memory database. 
+pure data from the repository history. So to provide maximum performance for the query we can use an in-memory database. 
 We can also assume that the database will be immutable after the parsing is done. 
 
 The database is collections of hash maps based on the models. The hash map keys are defined by its model \textit{key()} method.
-The reson behind this database structure is in the join mechanism in the query. The hash map is implemeted with the built in 
-\textit{Map} \cite{map} which has a acceess time and space compexity of:
+The reason behind this database structure is in the join mechanism in the query. The hash map is implemented with the built in 
+\textit{Map}\cite{map} which has a access time and space complexity of:
 
 \( O(1) \)
 
@@ -68,7 +68,7 @@ The models will be loaded into database before \textit{init()} is called.
 
 \subsubsection{Functions}
 
-Functions are help for the user to predefine some often used functions for the given plugin.
+Functions are help for the user to predefined some often used functions for the given plugin.
 For example: we may only need a short id for the commit so we can call \textit{short(sha)} inside our query expressions.
 Behind the scene this will be injected into the sandbox where the expressions are evaluated.
 
@@ -78,15 +78,15 @@ To define a new functions just pass the function in an array in the \textit{func
 
 Reductors are similar to Functions but its only can be used if a grouping is presented in the query. This will
 run for each record in that group. The reductor should be a function and has 2 parameter \textit{reductor(acc, obj)}.
-The acc will accumulate the result and the object will be the record itself.
+The \textit{acc} will accumulate the result and the object will be the record itself.
 
 To define a new reductor just pass the function in an array in the \textit{reductors()} method.
 
 \subsubsection{Model}
 
 A model is simply defining the structure of data it has two major function \textit{parse(input)}, \textit{parse(key)}. 
-This will take the inputand transform it that way the database is storing them. 
-\textit{name()} will be the name how it can be refered in the from tag.
+This will take the input and transform it that way the database is storing them. 
+\textit{name()} will be the name how it can be refereed in the from tag.
 
 Lets look at the Git plugin:
 
