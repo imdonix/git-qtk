@@ -19,13 +19,9 @@ The reson behind this database structure is in the join mechanism in the query. 
 
 \( O(1) \)
 
-In this way if we connect two models where at least of the models field is a key then we can assume that:
-\(
-    N records of the A model, M records of the B model
-
-    O(N * M) = O(N)
-
-\)
+In this way if we connect two models where at least of the models field is a key then we can assume that:\newline
+N records of the A model, M records of the B model
+\(O(N * M) = O(N)\)
 
 \subsection{Extensions}
 
