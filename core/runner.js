@@ -46,7 +46,7 @@ async function runner()
             added.add(join.with)
         }
 
-        this.logger.log(`Join: ${join.on} |-> ${join.with}`)
+        this.logger.log(`Join: ${join.on} |-> ${join.with} (${join.model})`)
         cache = mix(cache, joined)
     }
 
