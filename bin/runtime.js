@@ -2,7 +2,7 @@ const { readdir, writeFile } = require('fs/promises')
 const path = require('path');
 const { getRepoFromURL } = require('../core/utils')
 const { Query }= require('../core/query')
-const { WILDCARD } = require('../core/utils')
+const { WILDCARD } = require('../core/utils');
 
 const tests = [
     'https://github.com/imdonix/example',
@@ -74,7 +74,5 @@ async function run()
 }
 
 run()
-.then(() =>
-{
-    console.log("[RM] finished successfully!")
-})
+.then(() => writeFile(outfile, output))
+.then(() => console.log("[RM] finished successfully!"))
