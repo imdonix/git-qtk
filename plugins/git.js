@@ -94,7 +94,7 @@ function short(obj)
     }
     else if(typeof obj.getMonth === 'function')
     {
-        let mm = obj.getMonth() + 1; // getMonth() is zero-based
+        let mm = obj.getMonth() + 1;
         let dd = obj.getDate();
 
         return [obj.getFullYear(),
