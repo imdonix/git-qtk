@@ -229,20 +229,9 @@ function parseJoin(query)
                 const lkey = query.from.get(lm).key() == lf
                 const rkey = query.from.get(rm).key() == rf
 
-                if(lkey && rkey)
-                {
-                    join.unshift({
-                        type: "full",
-                        exp: exp,
-                        on: lm,
-                        with : rm,
-                        model: rf
-                    })
-                }
-                else if(lkey)
+                if(lkey)
                 {
                     join.push({
-                        type: "left",
                         exp: exp,
                         on: lm,
                         with : rm,
@@ -252,7 +241,6 @@ function parseJoin(query)
                 else if(rkey)
                 {
                     join.push({
-                        type: "left",
                         exp: exp,
                         on: rm,
                         with : lm,

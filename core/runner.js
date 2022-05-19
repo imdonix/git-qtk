@@ -9,16 +9,13 @@ async function runner()
     {
         const joined = new Array()
 
-        if(join.type == 'left')
+        const lt = this.db.view(this.from.get(join.on))
+        for(const left of this.db.get(this.from.get(join.with)))
         {
-            const lt = this.db.view(this.from.get(join.on))
-            for(const left of this.db.get(this.from.get(join.with)))
+            const right = lt.get(left[join.model])
+            if(right)
             {
-                const right = lt.get(left[join.model])
-                if(right)
-                {
-                    joined.push([right, left])
-                }
+                joined.push([right, left])
             }
         }
 
@@ -31,6 +28,8 @@ async function runner()
     {
         cache = mix(cache, this.db.get(model[1]))
     }
+
+    this.tracker['set'] = cache.length;
 
     const compossed = composse(cache, models)
     const filtered = where(compossed, this.where, this.functions)
