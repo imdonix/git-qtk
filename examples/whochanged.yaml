@@ -2,3 +2,4 @@ name: Who changed what
 from: author a; commit c; file f
 select: a.name; f.path; short(c.date)
 where: c.author == a.email && has(c.changes, f.path)
+limit: 50

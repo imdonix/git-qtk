@@ -228,8 +228,10 @@ function parseJoin(query)
 
                 const lkey = query.from.get(lm).key() == lf
                 const rkey = query.from.get(rm).key() == rf
+                const ljoined = join.find(j => j.on == lm)
+                const rjoined = join.find(j => j.on == rm)
 
-                if(lkey)
+                if(lkey && !ljoined)
                 {
                     join.push({
                         exp: exp,
@@ -238,7 +240,7 @@ function parseJoin(query)
                         model: rf
                     })
                 }
-                else if(rkey)
+                else if(rkey && ! rjoined)
                 {
                     join.push({
                         exp: exp,
@@ -247,7 +249,7 @@ function parseJoin(query)
                         model: lf
                     })
                 }
-
+                
             }            
         }
     }

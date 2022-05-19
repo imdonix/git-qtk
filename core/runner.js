@@ -5,6 +5,8 @@ async function runner()
     let cache = [[]]
     const models = [...this.from.entries()]
 
+    
+    const added = new Set()
     for(const join of this.join)
     {
         const joined = new Array()
@@ -15,23 +17,49 @@ async function runner()
             const right = lt.get(left[join.model])
             if(right)
             {
-                joined.push([right, left])
+                if(!added.has(join.on) && !added.has(join.with))
+                {
+                    joined.push([right, left])
+                }
+                else if(!added.has(join.on))
+                {
+                    joined.push([right])
+                }
+                else if(!added.has(join.with))
+                {
+                    joined.push([left])
+                }
             }
         }
 
+        if(!added.has(join.on) && !added.has(join.with))
+        {
+            added.add(join.on)
+            added.add(join.with)
+        }
+        else if(!added.has(join.on))
+        {
+            added.add(join.on)
+        }
+        else if(!added.has(join.with))
+        {
+            added.add(join.with)
+        }
+
+        this.logger.log(`Join: ${join.on} |-> ${join.with}`)
         cache = mix(cache, joined)
     }
 
-
-    let mixins = [...models].splice(this.join.length * 2)
+    let mixins = models.filter(m => !this.join.find(j => j.on == m[0] || j.with == m[0]))
     for (const model of mixins) 
     {
+        this.logger.log(`Join: ${model[0]}`)
         cache = mix(cache, this.db.get(model[1]))
     }
 
     this.tracker['set'] = cache.length;
 
-    const compossed = composse(cache, models)
+    const compossed = composse(cache, new Array(...added), mixins)
     const filtered = where(compossed, this.where, this.functions)
     const ordered = order(filtered, this.order, this.functions)
     const grouped = group(ordered, this.group)
@@ -47,7 +75,7 @@ function mix(old, values)
     const estimated = old.length * values.length;
     if(estimated > MEMORY_THRESHOLD)
     {
-        throw new Error('Your selection is too large')
+        throw new Error(`The selected dataset is too large (${estimated})`)
     }
 
     for (const left of old) 
@@ -68,7 +96,8 @@ function mix(old, values)
     return tmp
 }
 
-function composse(input, mapping)
+
+function composse(input, joinmap, mixmap)
 {
     let records = new Array()
 
@@ -77,14 +106,27 @@ function composse(input, mapping)
         const obj = new Object()
         
         let i = 0
+        let j = 0
         for(const part of line)
         {
-            for(const [key, value] of Object.entries(part))
+            if(j < joinmap.length)
             {
-                obj[`${mapping[i][0]}.${key}`] = value
-            }
+                for(const [key, value] of Object.entries(part))
+                {
+                    obj[`${joinmap[j]}.${key}`] = value
+                }
 
-            i++
+                j++
+            }
+            else
+            {
+                for(const [key, value] of Object.entries(part))
+                {
+                    obj[`${mixmap[i][0]}.${key}`] = value
+                }
+
+                i++
+            }
         }
 
         records.push(obj)
