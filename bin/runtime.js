@@ -11,6 +11,7 @@ const tests = [
     'https://github.com/catchorg/Catch2',
     'https://github.com/microsoft/playwright',
     'https://github.com/vlang/v',
+    'https://github.com/freeCodeCamp/freeCodeCamp',
     'https://github.com/git/git',
 ]
 
