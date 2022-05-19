@@ -60,10 +60,18 @@ async function run()
                     script: path.join(examples, file)
                 }, logger)
     
-                await query.load()
-                await query.run()
-        
-                const out = tracker2log(runtime, file, query.tracker)
+                let out;
+                try
+                {
+                    await query.load()
+                    await query.run()
+                    out = tracker2log(runtime, file, query.tracker)
+                }
+                catch(err)
+                {
+                    out = err.message.concat(WILDCARD.NL)
+                }
+                
                 output = output.concat(out)
     
                 console.log(`(${count}) [${getRepoFromURL(runtime)}] --> ${out}`);

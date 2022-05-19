@@ -1,4 +1,4 @@
-const { WILDCARD, wrap } = require('./utils')
+const { WILDCARD, wrap, MEMORY_THRESHOLD } = require('./utils')
 
 async function runner()
 {
@@ -44,26 +44,24 @@ function mix(old, values)
 {
     const tmp = new Array()
 
-    for (const left of old) 
+    const estimated = old.length * values.length;
+    if(estimated > MEMORY_THRESHOLD)
     {
-        for (const right of values) 
-        {
-            tmp.push([...left, right])
-        }
+        throw new Error('Your selection is too large')
     }
 
-    return tmp
-}
-
-function mixA(old, values)
-{
-    const tmp = new Array()
-
     for (const left of old) 
     {
         for (const right of values) 
         {
-            tmp.push([...left, ...right])
+            if(right.length)
+            {
+                tmp.push([...left, ...right])
+            }
+            else
+            {
+                tmp.push([...left, right])
+            }
         }
     }
 
