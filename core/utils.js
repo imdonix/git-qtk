@@ -58,6 +58,6 @@ const OPERATOR = {
     MORE: (a,b) => a > b,
 }
 
-const MEMORY_THRESHOLD = 50000000
+const MEMORY_THRESHOLD = 5000000
 
 module.exports = { wrap, loadPlugins, loadModels, getRepoFromURL, abs, LOG, WILDCARD, OPERATOR, MEMORY_THRESHOLD }
