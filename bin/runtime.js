@@ -6,9 +6,12 @@ const { WILDCARD } = require('../core/utils')
 
 const tests = [
     'https://github.com/imdonix/example',
+    'https://github.com/imdonix/git-qtk',
     'https://github.com/Ericsson/CodeCompass',
+    'https://github.com/catchorg/Catch2',
+    'https://github.com/microsoft/playwright',
+    'https://github.com/vlang/v',
     'https://github.com/git/git',
-    'https://github.com/llvm/llvm-project'
 ]
 
 const examples = path.join(__dirname, '../examples');

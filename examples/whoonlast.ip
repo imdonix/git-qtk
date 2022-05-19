@@ -2,5 +2,3 @@ name: Who changed the file last
 from: author a; commit c; file f
 select: f.path; a.name; short(c.date) 
 where: f.modified == c.sha && c.author == a.email
-
-# Not working coz full join is not implemented yet
