@@ -155,7 +155,15 @@ else
         })
         .catch(err => 
         {
-            console.error(err)
+            if(err.message)
+            {
+                console.error(`Error: ${err.message}`)
+            }
+            else
+            {
+                console.error(`Something went wrong`)
+            }
+            
         })
     }
     catch(err)

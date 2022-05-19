@@ -19,7 +19,7 @@ async function runner()
             }
         }
 
-        cache = mixA(cache, joined)
+        cache = mix(cache, joined)
     }
 
 
