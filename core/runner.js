@@ -1,63 +1,135 @@
-const { WILDCARD, wrap } = require('./utils')
+const { WILDCARD, wrap, MEMORY_THRESHOLD } = require('./utils')
 
 async function runner()
 {
-    let models = new Array()
-    for (const [key, value] of this.from)
+    let cache = [[]]
+    const models = [...this.from.entries()]
+
+    
+    const added = new Set()
+    for(const join of this.join)
     {
-        let dbrep = new Array() // we lose the key
+        const joined = new Array()
 
-        for (const it of this.db.models[value.name()].values()) 
+        const lt = this.db.view(this.from.get(join.on))
+        for(const left of this.db.get(this.from.get(join.with)))
         {
-            dbrep.push(it)
-        }
-
-        let extracted = dbrep.map(model => [[key, model]])
-        models.push(extracted)
-    }
-
-    let cache = models.pop()
-    while(models.length > 0)
-    {
-        let acc = new Array()
-        let model = models.pop()
-        for (const k of model) 
-        {
-            for (const curr of cache) 
+            const right = lt.get(left[join.model])
+            if(right)
             {
-                acc.push([...curr, ...k])
+                if(!added.has(join.on) && !added.has(join.with))
+                {
+                    joined.push([right, left])
+                }
+                else if(!added.has(join.on))
+                {
+                    joined.push([right])
+                }
+                else if(!added.has(join.with))
+                {
+                    joined.push([left])
+                }
             }
         }
 
-        cache = acc
+        if(!added.has(join.on) && !added.has(join.with))
+        {
+            added.add(join.on)
+            added.add(join.with)
+        }
+        else if(!added.has(join.on))
+        {
+            added.add(join.on)
+        }
+        else if(!added.has(join.with))
+        {
+            added.add(join.with)
+        }
+
+        this.logger.log(`Join: ${join.on} |-> ${join.with} (${join.model})`)
+        cache = mix(cache, joined)
     }
-   
-    let compossed = composse(cache)
-    let filtered = where(compossed, this.where, this.functions)
-    let ordered = order(filtered, this.order, this.functions)
-    let grouped = group(ordered, this.group)
-    let limited = limit(grouped, this.limit, this.functions)
+
+    let mixins = models.filter(m => !this.join.find(j => j.on == m[0] || j.with == m[0]))
+    for (const model of mixins) 
+    {
+        this.logger.log(`Join: ${model[0]}`)
+        cache = mix(cache, this.db.get(model[1]))
+    }
+
+    this.tracker['set'] = cache.length;
+
+    const compossed = composse(cache, new Array(...added), mixins)
+    const filtered = where(compossed, this.where, this.functions)
+    const ordered = order(filtered, this.order, this.functions)
+    const grouped = group(ordered, this.group)
+    const limited = limit(grouped, this.limit, this.functions)
 
     return select(limited, this.select, this.group, this.functions, this.reductors, this.fields)
 }
 
-function composse(input)
+function mix(old, values)
+{
+    const tmp = new Array()
+
+    const estimated = old.length * values.length;
+    if(estimated > MEMORY_THRESHOLD)
+    {
+        throw new Error(`The selected dataset is too large (${estimated})`)
+    }
+
+    for (const left of old) 
+    {
+        for (const right of values) 
+        {
+            if(right.length)
+            {
+                tmp.push([...left, ...right])
+            }
+            else
+            {
+                tmp.push([...left, right])
+            }
+        }
+    }
+
+    return tmp
+}
+
+
+function composse(input, joinmap, mixmap)
 {
     let records = new Array()
 
-    for (const record of input) 
+    for (const line of input) 
     {
-        let line = record.map(selector => {
-            const obj = new Object()
-            for (const [key, value] of Object.entries(selector[1])) 
-            {
-                obj[`${selector[0]}.${key}`] = value
-            }
-            return obj
-        })
-        .reduce((res, cur) => Object.assign(res, cur), new Object())
+        const obj = new Object()
         
-        records.push(line)
+        let i = 0
+        let j = 0
+        for(const part of line)
+        {
+            if(j < joinmap.length)
+            {
+                for(const [key, value] of Object.entries(part))
+                {
+                    obj[`${joinmap[j]}.${key}`] = value
+                }
+
+                j++
+            }
+            else
+            {
+                for(const [key, value] of Object.entries(part))
+                {
+                    obj[`${mixmap[i][0]}.${key}`] = value
+                }
+
+                i++
+            }
+        }
+
+        records.push(obj)
     }
 
     return records

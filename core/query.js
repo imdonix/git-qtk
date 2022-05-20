@@ -145,8 +145,6 @@ class Query
         const name = getRepoFromURL(this.query.repository)
         const path = this.query.root ? `${this.query.root}/${name}` : `./${name}`
 
-        console.log(path)
-
         if(!this.query.clean)
         {
             try
@@ -261,6 +259,8 @@ class Query
         {
             plugin.post(this.db)
         }
+
+        this.db.finalize()
     }
 
     validate()

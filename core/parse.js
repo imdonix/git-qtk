@@ -215,37 +215,41 @@ function parseJoin(query)
             //models can't be the same
             if(lm != rm)
             {
+                if(!query.from.has(lm))
+                {
+                    throw new Error(`Invalid model for join '${lm}'`)
+                }
+
+                if(!query.from.has(rm))
+                {
+                    throw new Error(`Invalid model for join '${rm}'`)
+                }
+
+
                 const lkey = query.from.get(lm).key() == lf
                 const rkey = query.from.get(rm).key() == rf
+                const ljoined = join.find(j => j.on == lm)
+                const rjoined = join.find(j => j.on == rm)
 
-                if(lkey && rkey)
-                {
-                    join.unshift({
-                        type: "full",
-                        exp: exp,
-                        on: left,
-                        model : [lm, rm]
-                    })
-                }
-                else if(lkey)
+                if(lkey && !ljoined)
                 {
                     join.push({
-                        type: "left",
                         exp: exp,
-                        on: left,
-                        model : [lm, rm]
+                        on: lm,
+                        with : rm,
+                        model: rf
                     })
                 }
-                else if(rkey)
+                else if(rkey && ! rjoined)
                 {
                     join.push({
-                        type: "left",
                         exp: exp,
-                        on: right,
-                        model : [lm, rm]
+                        on: rm,
+                        with : lm,
+                        model: lf
                     })
                 }
-
+                
             }            
         }
     }

@@ -382,7 +382,6 @@ describe('Validate query', () =>
             parseJoin(query)
 
             assert.equal(query.join.length, 1)
-            assert.equal(query.join[0].type, 'left')
             assert.equal(query.join[0].exp, 'a.email == c.author')
         })
 
@@ -394,7 +393,6 @@ describe('Validate query', () =>
             parseJoin(query)
 
             assert.equal(query.join.length, 1)
-            assert.equal(query.join[0].type, 'full')
             assert.equal(query.join[0].exp, 'a.email == c.sha')
         })
 
@@ -406,10 +404,23 @@ describe('Validate query', () =>
             parseJoin(query)
 
             assert.equal(query.join.length, 2)
-            assert.equal(query.join[0].type, 'full')
             assert.equal(query.join[0].exp, 'a.email == c.sha')
-            assert.equal(query.join[1].type, 'full')
             assert.equal(query.join[1].exp, 'aa.email == cc.sha')
+        })
+
+        it('should work fail on invalid model', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a; commit c; author aa; commit cc', where: 'a.email == c.sha && aba.email == cc.sha' }
+            parseFrom(query)
+
+            try
+            {
+                parseJoin(query)
+                assert.fail()
+            }
+            catch(err){}
+
         })
 
     })
