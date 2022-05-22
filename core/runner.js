@@ -1,74 +1,103 @@
-const { WILDCARD, wrap, MEMORY_THRESHOLD } = require('./utils')
+const { MEMORY_THRESHOLD, wrap, readable } = require('./utils')
 
 async function runner()
 {
-    let cache = [[]]
-    const models = [...this.from.entries()]
-
-    
+    let cache = [new Object()]
     const added = new Set()
-    for(const join of this.join)
-    {
-        const joined = new Array()
+    const models = [...this.from.entries()]
+    const wheres = sortRunnable(this.where)
 
-        const lt = this.db.view(this.from.get(join.on))
-        for(const left of this.db.get(this.from.get(join.with)))
+    let task = wheres.shift()
+    while(task)
+    {
+        let next = nextJoin(added, task)
+        if(next.length > 0)
         {
-            const right = lt.get(left[join.model])
-            if(right)
+            cache = j2(this.logger, this.db, this.from, this.join, added, cache, next)
+        }
+        else
+        {
+            //Skip join part
+            if(task.part != 'true')
             {
-                if(!added.has(join.on) && !added.has(join.with))
-                {
-                    joined.push([right, left])
-                }
-                else if(!added.has(join.on))
-                {
-                    joined.push([right])
-                }
-                else if(!added.has(join.with))
-                {
-                    joined.push([left])
-                }
+                const pred = wrap(task.expression, ['__o', '__f'])
+                const before = cache.length;
+                cache = cache.filter(r => pred(r, this.functions))
+                this.logger.log(`Filtering: P(${task.bind.join(', ')}) => ${task.part} | [${readable(before)} -> ${readable(cache.length)}]`)
             }
-        }
 
-        if(!added.has(join.on) && !added.has(join.with))
-        {
-            added.add(join.on)
-            added.add(join.with)
+            task = wheres.shift()
         }
-        else if(!added.has(join.on))
-        {
-            added.add(join.on)
-        }
-        else if(!added.has(join.with))
-        {
-            added.add(join.with)
-        }
-
-        this.logger.log(`Join: ${join.on} |-> ${join.with} (${join.model})`)
-        cache = mix(cache, joined)
     }
 
-    let mixins = models.filter(m => !this.join.find(j => j.on == m[0] || j.with == m[0]))
-    for (const model of mixins) 
+    let rem = remain(added, models)
+    while(rem)
     {
-        this.logger.log(`Join: ${model[0]}`)
-        cache = mix(cache, this.db.get(model[1]))
+        cache = j2(this.logger, this.db, this.from, this.join, added, cache, rem)
+        rem = remain(added, models)
     }
-
+    
     this.tracker['set'] = cache.length;
-
-    const compossed = composse(cache, new Array(...added), mixins)
-    const filtered = where(compossed, this.where, this.functions)
-    const ordered = order(filtered, this.order, this.functions)
-    const grouped = group(ordered, this.group)
-    const limited = limit(grouped, this.limit, this.functions)
-
-    return select(limited, this.select, this.group, this.functions, this.reductors, this.fields)
+    this.result = cache
 }
 
-function mix(old, values)
+function hasjoin(joins, added, nexts)
+{
+    for (const join of joins) 
+    {
+        for (const next of nexts) 
+        {
+            if(join.on == next)
+            {
+                if(added.has(join.with))
+                {
+                    return [true, join]
+                }
+                else
+                {
+                    return [false, join.with]
+                }
+            }   
+        }
+    }
+
+    return [false, nexts[0]]
+}
+
+function remain(added, models)
+{
+    for (const model of models) 
+    {
+        if(!added.has(model[0]))
+        {
+            return model
+        }
+    }
+
+    return null
+}
+
+function sortRunnable(where)
+{
+    return where.sort((a,b) => a.bind.length - b.bind.length)
+}
+
+function nextJoin(added, where)
+{
+    const tmp = new Array()
+
+    for(const model of where.bind)
+    {
+        if(!added.has(model))
+        {
+            tmp.push(model)
+        }
+    }
+
+    return tmp;
+}
+
+function mix(old, values, model)
 {
     const tmp = new Array()
 
@@ -82,222 +111,74 @@ function mix(old, values)
     {
         for (const right of values) 
         {
-            if(right.length)
+            const comp = new Object()
+            for(const [key, value] of Object.entries(right))
             {
-                tmp.push([...left, ...right])
+                comp[`${model}.${key}`] = value
             }
-            else
-            {
-                tmp.push([...left, right])
-            }
+
+            tmp.push({
+                ...left,
+                ...comp
+            })
         }
     }
 
     return tmp
 }
 
-
-function composse(input, joinmap, mixmap)
+function j2(logger, db, from, join, added, cache, next)
 {
-    let records = new Array()
+    let [on, w] = hasjoin(join, added, next)
+    let tmp;
 
-    for (const line of input) 
+    if(on)
     {
-        const obj = new Object()
-        
-        let i = 0
-        let j = 0
-        for(const part of line)
-        {
-            if(j < joinmap.length)
-            {
-                for(const [key, value] of Object.entries(part))
-                {
-                    obj[`${joinmap[j]}.${key}`] = value
-                }
-
-                j++
-            }
-            else
-            {
-                for(const [key, value] of Object.entries(part))
-                {
-                    obj[`${mixmap[i][0]}.${key}`] = value
-                }
-
-                i++
-            }
-        }
-
-        records.push(obj)
+        added.add(w.on)
+        tmp = joinOn(db, from, cache, w)
+        logger.log(`Join on: -> ${w.on} (by ${w.with}) | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+    }
+    else
+    {
+        added.add(w)
+        tmp = joinWith(db, from, cache, w)
+        logger.log(`Join with: -> ${w} | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
     }
 
-    return records
+    return tmp
 }
 
-function where(input, where, funs)
+function joinWith(db, from, cache, model)
 {
-    const filtered = new Array()
-    const pred = wrap(where.toString(), ['__o', '__f'])
-
-    for (const record of input) 
-    {
-        if(pred(record, funs))
-        {
-            filtered.push(record)
-        }
-    }
-
-    return filtered
+    return mix(cache, db.get(from.get(model)), model)
 }
 
-function order(input, order, funs)
+function joinOn(db, from, cache, join)
 {
-    if(order != null)
+    const tmp = new Array()
+
+    const lt = db.view(from.get(join.on))
+    for (const left of cache) 
     {
-        const [exp, pre] = order
-        const p = wrap(exp.toString(), ['__o', '__f'])
-    
-        input.sort((a,b) => pre(p(a), p(b)) ? 1 : -1)
+        const right = lt.get(left[`${join.with}.${join.model}`])
+        if(right)
+        {
+            const comp = new Object()
+            for(const [key, value] of Object.entries(right))
+            {
+                comp[`${join.on}.${key}`] = value
+            }
+
+            tmp.push({
+                ...left,
+                ...comp
+            })
+        }
+
     }
 
-    return input
+    return tmp
 }
 
-function group(input, group)
-{
-    if(group != null)
-    {
-        const acc = new Map()
-        for (const record of input) 
-        {
-            const key = record[group]
-            const arr = acc.get(key)
-            
-            if(arr != undefined)
-            {
-                arr.push(record)
-            }
-            else
-            {
-                acc.set(key, [record])
-            }
-        }
-
-        return acc
-    }
-    
-    return input
-}
-
-function limit(input, lim)
-{
-    if(lim != null)
-    {
-        input.length = Math.min(input.length, lim)
-    }
-
-    return input
-}
-
-function select(input, select, group, funs, reductors, fields)
-{
-    const selected = new Array()
-    const reduced = new Array()
-    const flatview = new Array()
-
-    if(group != null)
-    {
-        // Find reductors in select
-        for (const sel of select) 
-        {
-            if(sel[0].indexOf(`${WILDCARD.SP}r`) >= 0)
-            {
-                reduced.push([sel, null])
-            }
-        }
-
-        // Create the reductor functions
-        const redfun = new Object()
-        for (const r of reduced)
-        {
-            redfun[r[0][0]] = wrap(r[0][0].toString(), ['__o', '__f', '__r', '__tmp'])
-        }
-
-        // Process
-        for (const [_, value] of input.entries()) 
-        {   
-            //Reset reduced
-            for (const r of reduced)
-            {
-                r[1] = null
-            }
-
-            for(const record of value)
-            {
-                for (const r of reduced) 
-                {
-                    r[1] = redfun[r[0][0]](record, funs, reductors, r[1])
-                }
-            }
-
-            if(value.length > 0)
-            {
-                let record = value[0]
-                for (const r of reduced)
-                {
-                    record[r[0][1]] = r[1]
-                }
-                flatview.push(record)
-            }
-        }   
-
-        input = flatview   
-
-    }
-
-    let ind = select.indexOf('$')
-    if(ind >= 0)
-    {
-        select.splice(ind)
-        if(input.length > 0)
-        {
-            for (const key of fields) 
-            {
-                select.push([`${WILDCARD.SP}o['${key[0]}']`,key[0]])
-            }
-        }
-    }    
-
-    const preds = new Object()
-    for(const se of select)
-    {
-        preds[se[0]] = wrap(se[0], ['__o', '__f'])
-    }
-
-    for (const record of input) 
-    {
-        const res = new Object()
-
-        for(const se of select)
-        {
-            const found = reduced.find(r => r[0][0] == se[0])
-            if(found)
-            {
-                res[se[1]] = record[se[1]]
-            }
-            else
-            {
-                res[se[1]] = preds[se[0]](record, funs)
-            }
-            
-        }
-
-        selected.push(res)
-    }
-
-    return selected
-    
-}
 
 module.exports = runner

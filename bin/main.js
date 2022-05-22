@@ -144,7 +144,7 @@ else
                     {
                         table.push(Object.values(rec))
                     }
-            
+
                     console.log(table.toString())
                 }
             }
@@ -163,9 +163,8 @@ else
             {
                 console.error(`Something went wrong`)
             }
-
-            throw err
             
+            throw err
         })
     }
     catch(err)
