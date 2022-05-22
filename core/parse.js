@@ -90,7 +90,7 @@ function parseSelect(query)
 function parseWhere(query)
 {
     let expression = 'true'
-    if(query.yaml.hasOwnProperty('where') || query.yaml['where'] != null )
+    if(query.yaml.hasOwnProperty('where') && query.yaml['where'])
     {
         expression = query.yaml['where'].toString()
     }

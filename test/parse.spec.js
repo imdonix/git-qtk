@@ -177,10 +177,11 @@ describe('Validate query', () =>
         it('should be true if not given', () =>
         {
             let query = new Query(params, LOG.VOID)
-            query.yaml = { where : null }
+            query.yaml = { from: 'author', where : null }
+            parseFrom(query)
             parseWhere(query)
 
-            assert.equal(query.where, 'true')
+            assert.equal(query.where[0].expression, 'true')
             
         })
 
@@ -191,7 +192,7 @@ describe('Validate query', () =>
             parseFrom(query)
             parseWhere(query)
 
-            assert.equal(query.where, 'true || true')
+            assert.equal(query.where[0].expression, 'true || true')
             
         })
 
@@ -202,7 +203,7 @@ describe('Validate query', () =>
             parseFrom(query)
             parseWhere(query)
 
-            assert.equal(query.where, `${WILDCARD.SP}o['a.name']`)
+            assert.equal(query.where[0].expression, `${WILDCARD.SP}o['a.name']`)
         })
 
         it('should handle functions', () =>
@@ -212,7 +213,7 @@ describe('Validate query', () =>
             parseFrom(query)
             parseWhere(query)
 
-            assert.equal(query.where, `${WILDCARD.SP}f.short('lajos')`)  
+            assert.equal(query.where[0].expression, `${WILDCARD.SP}f.short('lajos')`)  
         })
 
         it('should handle functions & fields mixed', () =>
@@ -222,7 +223,7 @@ describe('Validate query', () =>
             parseFrom(query)
             parseWhere(query)
 
-            assert.equal(query.where, `${WILDCARD.SP}f.short(${WILDCARD.SP}o['a.name'])`)  
+            assert.equal(query.where[0].expression, `${WILDCARD.SP}f.short(${WILDCARD.SP}o['a.name'])`)  
         })
     })
 
