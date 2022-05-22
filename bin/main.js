@@ -144,7 +144,7 @@ else
                     {
                         table.push(Object.values(rec))
                     }
-            
+
                     console.log(table.toString())
                 }
             }
