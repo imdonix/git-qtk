@@ -1,4 +1,4 @@
-const { WILDCARD, OPERATOR } = require('./utils')
+const { WILDCARD, OPERATOR, decompose } = require('./utils')
 
 const JOIN = /([a-zA-Z][a-zA-Z1-9._]*.[a-zA-Z][a-zA-Z1-9._]*)\s*==\s*([a-zA-Z][a-zA-Z1-9._]*.[a-zA-Z][a-zA-Z1-9._]*)/g
 
@@ -56,7 +56,7 @@ function parseFrom(query)
     {
         for(const [field, type] of Object.entries(model.model()))
         {
-            query.fields.push([`${key}.${field}`, type])
+            query.fields.push([`${key}.${field}`, type, key])
         }
     }
 }
@@ -101,10 +101,17 @@ function parseWhere(query)
         {
             expression = simplify(expression, query.join)
         }
-        expression = insFieldBinding(query, expression)
-        expression = insFunctionBinding(query, expression)
 
-        query.where = expression
+        query.where = decompose(expression).map(part => {
+
+            let expression = part
+            let bind = findBinding(query, part)
+            expression = insFieldBinding(query, expression)
+            expression = insFunctionBinding(query, expression) 
+
+
+            return { part, expression, bind }
+        })
     }
 }
 
@@ -267,6 +274,21 @@ function insFunctionBinding(query, expression)
     return expression
 }
 
+
+function findBinding(query, expression)
+{
+    let binds = new Array()
+    for(const field of query.fields)
+    {
+        let name = field[0]
+        if(new RegExp(`${name}`, 'g').test(expression))
+        {
+            binds.push(field[2])
+        }
+    }
+
+    return binds
+}
 
 function insReductorBinding(query, expression)
 {

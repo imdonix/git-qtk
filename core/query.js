@@ -3,9 +3,12 @@ const fs = require('fs')
 const yaml = require('yaml')
 const Git = require('nodegit')
 
-const Database = require('./database')
-const runner = require('./runner')
 const Plugin = require('./plugin')
+const Database = require('./database')
+
+const runner = require('./runner')
+const post = require('./post')
+
 const { getRepoFromURL, loadModels, loadPlugins } = require('./utils')
 const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin, parseStart } = require('./parse')
 
@@ -201,7 +204,8 @@ class Query
 
     async run()
     {
-        return await this.track(runner)
+        await this.track(runner)
+        return await this.track(post)
     }
 
     init()
