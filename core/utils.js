@@ -47,7 +47,7 @@ function decompose(str)
 
     tmp.push(expression)
 
-    return tmp
+    return tmp.map(str => str.trim())
 }
 
 function wrap(body, params)
@@ -90,6 +90,22 @@ function loadModels(plugins)
     return models
 }
 
+function readable(num)
+{
+    if(num < 1000)
+    {
+        return `${num}`
+    }
+    else if(num < 1000000 )
+    {
+        return `${Math.round(num / 1000)}k`
+    }
+    else
+    {
+        return `${Math.round(num / 1000000)}m`
+    }
+}
+
 const LOG = {
     VOID : {
         log: () => {}
@@ -110,4 +126,4 @@ const OPERATOR = {
 
 const MEMORY_THRESHOLD = 10000000
 
-module.exports = { wrap, loadPlugins, loadModels, getRepoFromURL, abs, decompose, LOG, WILDCARD, OPERATOR, MEMORY_THRESHOLD }
+module.exports = { wrap, loadPlugins, loadModels, getRepoFromURL, abs, decompose, readable, LOG, WILDCARD, OPERATOR, MEMORY_THRESHOLD }

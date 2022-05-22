@@ -1,4 +1,4 @@
 name: Who changed the file last
 from: author a; commit c; file f
 select: f.path; a.name; short(c.date) 
-where: f.modified == c.sha && c.author == a.email
+where: f.modified == c.sha && c.author == a.email && a.name[0].toUpperCase() == 'I'

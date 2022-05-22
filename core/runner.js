@@ -1,29 +1,31 @@
-const { MEMORY_THRESHOLD, wrap } = require('./utils')
+const { MEMORY_THRESHOLD, wrap, readable } = require('./utils')
 
 async function runner()
 {
     let cache = [new Object()]
     const added = new Set()
-    const mixin = new Array()
     const models = [...this.from.entries()]
     const wheres = sortRunnable(this.where)
-    
+
     let task = wheres.shift()
     while(task)
     {
         let next = nextJoin(added, task)
-        if(next)
+        if(next.length > 0)
         {
-            //TODO: Handle joins
-
-            cache = join(this.db, this.from, cache, next)
-            mixin.push(next)
-            added.add(next)
+            cache = j2(this.logger, this.db, this.from, this.join, added, cache, next)
         }
         else
         {
-            const pred = wrap(task.expression, ['__o', '__f'])
-            cache = cache.filter(r => pred(r, this.functions))
+            //Skip join part
+            if(task.part != 'true')
+            {
+                const pred = wrap(task.expression, ['__o', '__f'])
+                const before = cache.length;
+                cache = cache.filter(r => pred(r, this.functions))
+                this.logger.log(`Filtering: P => ${task.part} [${readable(before)} -> ${readable(cache.length)}]`)
+            }
+
             task = wheres.shift()
         }
     }
@@ -31,8 +33,7 @@ async function runner()
     let rem = remain(added, models)
     while(rem)
     {
-        cache = join(this.db, this.from, cache, rem[0])
-        added.add(rem)
+        cache = j2(this.logger, this.db, this.from, this.join, added, cache, rem)
         rem = remain(added, models)
     }
     
@@ -40,11 +41,34 @@ async function runner()
     this.result = cache
 }
 
+function hasjoin(joins, added, nexts)
+{
+    for (const join of joins) 
+    {
+        for (const next of nexts) 
+        {
+            if(join.on == next)
+            {
+                if(added.has(join.with))
+                {
+                    return [true, join]
+                }
+                else
+                {
+                    return [false, join.with]
+                }
+            }   
+        }
+    }
+
+    return [false, nexts[0]]
+}
+
 function remain(added, models)
 {
     for (const model of models) 
     {
-        if(!added.has(model))
+        if(!added.has(model[0]))
         {
             return model
         }
@@ -60,15 +84,17 @@ function sortRunnable(where)
 
 function nextJoin(added, where)
 {
+    const tmp = new Array()
+
     for(const model of where.bind)
     {
         if(!added.has(model))
         {
-            return model
+            tmp.push(model)
         }
     }
 
-    return null;
+    return tmp;
 }
 
 function mix(old, values, model)
@@ -101,53 +127,57 @@ function mix(old, values, model)
     return tmp
 }
 
+function j2(logger, db, from, join, added, cache, next)
+{
+    let [on, w] = hasjoin(join, added, next)
+    let tmp;
 
-function join(db, from, cache, model)
+    if(on)
+    {
+        added.add(w.on)
+        tmp = joinOn(db, from, cache, w)
+        logger.log(`Join on: ${w.on} |-> ${w.with} [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+    }
+    else
+    {
+        added.add(w)
+        tmp = joinWith(db, from, cache, w)
+        logger.log(`Join with: ${w} [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+    }
+
+    return tmp
+}
+
+function joinWith(db, from, cache, model)
 {
     return mix(cache, db.get(from.get(model)), model)
 }
 
-function joinOn(db, cache, model)
+function joinOn(db, from, cache, join)
 {
-    const joined = new Array()
+    const tmp = new Array()
 
-    const lt = this.db.view(this.from.get(join.on))
-    for(const left of this.db.get(this.from.get(join.with)))
+    const lt = db.view(from.get(join.on))
+    for (const left of cache) 
     {
-        const right = lt.get(left[join.model])
+        const right = lt.get(left[`${join.with}.${join.model}`])
         if(right)
         {
-            if(!added.has(join.on) && !added.has(join.with))
+            const comp = new Object()
+            for(const [key, value] of Object.entries(right))
             {
-                joined.push([right, left])
+                comp[`${join.on}.${key}`] = value
             }
-            else if(!added.has(join.on))
-            {
-                joined.push([right])
-            }
-            else if(!added.has(join.with))
-            {
-                joined.push([left])
-            }
+
+            tmp.push({
+                ...left,
+                ...comp
+            })
         }
+
     }
 
-    if(!added.has(join.on) && !added.has(join.with))
-    {
-        added.add(join.on)
-        added.add(join.with)
-    }
-    else if(!added.has(join.on))
-    {
-        added.add(join.on)
-    }
-    else if(!added.has(join.with))
-    {
-        added.add(join.with)
-    }
-
-    this.logger.log(`Join: ${join.on} |-> ${join.with} (${join.model})`)
-    return mix(cache, joined)
+    return tmp
 }
 
 
