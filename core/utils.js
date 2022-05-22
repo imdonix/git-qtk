@@ -92,7 +92,11 @@ function loadModels(plugins)
 
 function readable(num)
 {
-    if(num < 1000)
+    if(num == 1)
+    {
+        return `${0}`
+    }
+    else if(num < 1000)
     {
         return `${num}`
     }

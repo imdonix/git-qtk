@@ -23,7 +23,7 @@ async function runner()
                 const pred = wrap(task.expression, ['__o', '__f'])
                 const before = cache.length;
                 cache = cache.filter(r => pred(r, this.functions))
-                this.logger.log(`Filtering: P => ${task.part} [${readable(before)} -> ${readable(cache.length)}]`)
+                this.logger.log(`Filtering: P(${task.bind.join(', ')}) => ${task.part} | [${readable(before)} -> ${readable(cache.length)}]`)
             }
 
             task = wheres.shift()
@@ -136,13 +136,13 @@ function j2(logger, db, from, join, added, cache, next)
     {
         added.add(w.on)
         tmp = joinOn(db, from, cache, w)
-        logger.log(`Join on: ${w.on} |-> ${w.with} [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+        logger.log(`Join on: -> ${w.on} (by ${w.with}) | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
     }
     else
     {
         added.add(w)
         tmp = joinWith(db, from, cache, w)
-        logger.log(`Join with: ${w} [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+        logger.log(`Join with: -> ${w} | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
     }
 
     return tmp
