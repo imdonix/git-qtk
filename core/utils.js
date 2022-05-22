@@ -94,7 +94,7 @@ function readable(num)
 {
     if(num == 1)
     {
-        return `${0}`
+        return `init`
     }
     else if(num < 1000)
     {
