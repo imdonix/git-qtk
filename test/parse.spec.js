@@ -177,10 +177,11 @@ describe('Validate query', () =>
         it('should be true if not given', () =>
         {
             let query = new Query(params, LOG.VOID)
-            query.yaml = { where : null }
+            query.yaml = { from: 'author', where : null }
+            parseFrom(query)
             parseWhere(query)
 
-            assert.equal(query.where, 'true')
+            assert.equal(query.where[0].expression, 'true')
             
         })
 
@@ -191,7 +192,7 @@ describe('Validate query', () =>
             parseFrom(query)
             parseWhere(query)
 
-            assert.equal(query.where, 'true || true')
+            assert.equal(query.where[0].expression, 'true || true')
             
         })
 
@@ -202,7 +203,7 @@ describe('Validate query', () =>
             parseFrom(query)
             parseWhere(query)
 
-            assert.equal(query.where, `${WILDCARD.SP}o['a.name']`)
+            assert.equal(query.where[0].expression, `${WILDCARD.SP}o['a.name']`)
         })
 
         it('should handle functions', () =>
@@ -212,7 +213,7 @@ describe('Validate query', () =>
             parseFrom(query)
             parseWhere(query)
 
-            assert.equal(query.where, `${WILDCARD.SP}f.short('lajos')`)  
+            assert.equal(query.where[0].expression, `${WILDCARD.SP}f.short('lajos')`)  
         })
 
         it('should handle functions & fields mixed', () =>
@@ -222,7 +223,7 @@ describe('Validate query', () =>
             parseFrom(query)
             parseWhere(query)
 
-            assert.equal(query.where, `${WILDCARD.SP}f.short(${WILDCARD.SP}o['a.name'])`)  
+            assert.equal(query.where[0].expression, `${WILDCARD.SP}f.short(${WILDCARD.SP}o['a.name'])`)  
         })
     })
 
@@ -382,7 +383,6 @@ describe('Validate query', () =>
             parseJoin(query)
 
             assert.equal(query.join.length, 1)
-            assert.equal(query.join[0].type, 'left')
             assert.equal(query.join[0].exp, 'a.email == c.author')
         })
 
@@ -394,7 +394,6 @@ describe('Validate query', () =>
             parseJoin(query)
 
             assert.equal(query.join.length, 1)
-            assert.equal(query.join[0].type, 'full')
             assert.equal(query.join[0].exp, 'a.email == c.sha')
         })
 
@@ -406,10 +405,23 @@ describe('Validate query', () =>
             parseJoin(query)
 
             assert.equal(query.join.length, 2)
-            assert.equal(query.join[0].type, 'full')
             assert.equal(query.join[0].exp, 'a.email == c.sha')
-            assert.equal(query.join[1].type, 'full')
             assert.equal(query.join[1].exp, 'aa.email == cc.sha')
+        })
+
+        it('should work fail on invalid model', () =>
+        {
+            let query = new Query(params, LOG.VOID)
+            query.yaml = { from: 'author a; commit c; author aa; commit cc', where: 'a.email == c.sha && aba.email == cc.sha' }
+            parseFrom(query)
+
+            try
+            {
+                parseJoin(query)
+                assert.fail()
+            }
+            catch(err){}
+
         })
 
     })

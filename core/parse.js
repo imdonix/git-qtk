@@ -1,6 +1,6 @@
-const { WILDCARD, OPERATOR } = require('./utils')
+const { WILDCARD, OPERATOR, decompose } = require('./utils')
 
-const JOIN = /([a-zA-Z][a-zA-Z1-9._]*.[a-zA-Z][a-zA-Z1-9._]*)\s*==\s*([a-zA-Z][a-zA-Z1-9._]*.[a-zA-Z][a-zA-Z1-9._]*)/g
+const JOIN = /([a-zA-Z][a-zA-Z1-9._]*\.[a-zA-Z][a-zA-Z1-9._]*)\s*==\s*([a-zA-Z][a-zA-Z1-9._]*\.[a-zA-Z][a-zA-Z1-9._]*)/g
 
 function parseStart(query)
 {
@@ -56,7 +56,7 @@ function parseFrom(query)
     {
         for(const [field, type] of Object.entries(model.model()))
         {
-            query.fields.push([`${key}.${field}`, type])
+            query.fields.push([`${key}.${field}`, type, key])
         }
     }
 }
@@ -89,23 +89,28 @@ function parseSelect(query)
 
 function parseWhere(query)
 {
-    if(!query.yaml.hasOwnProperty('where') || query.yaml['where'] == null )
+    let expression = 'true'
+    if(query.yaml.hasOwnProperty('where') && query.yaml['where'])
     {
-        query.where = 'true'
+        expression = query.yaml['where'].toString()
     }
-    else
-    {
-        let expression = query.yaml['where'].toString()
 
-        if(query.join)
-        {
-            expression = simplify(expression, query.join)
-        }
+    if(query.join)
+    {
+        expression = simplify(expression, query.join)
+    }
+
+    query.where = decompose(expression).map(part => {
+
+        let expression = part
+        let bind = findBinding(query, part)
         expression = insFieldBinding(query, expression)
-        expression = insFunctionBinding(query, expression)
+        expression = insFunctionBinding(query, expression) 
 
-        query.where = expression
-    }
+
+        return { part, expression, bind }
+    })
+   
 }
 
 function parseLimit(query)
@@ -215,37 +220,41 @@ function parseJoin(query)
             //models can't be the same
             if(lm != rm)
             {
+                if(!query.from.has(lm))
+                {
+                    throw new Error(`Invalid model for join '${lm}'`)
+                }
+
+                if(!query.from.has(rm))
+                {
+                    throw new Error(`Invalid model for join '${rm}'`)
+                }
+
+
                 const lkey = query.from.get(lm).key() == lf
                 const rkey = query.from.get(rm).key() == rf
+                const ljoined = join.find(j => j.on == lm)
+                const rjoined = join.find(j => j.on == rm)
 
-                if(lkey && rkey)
-                {
-                    join.unshift({
-                        type: "full",
-                        exp: exp,
-                        on: left,
-                        model : [lm, rm]
-                    })
-                }
-                else if(lkey)
+                if(lkey && !ljoined)
                 {
                     join.push({
-                        type: "left",
                         exp: exp,
-                        on: left,
-                        model : [lm, rm]
+                        on: lm,
+                        with : rm,
+                        model: rf
                     })
                 }
-                else if(rkey)
+                else if(rkey && ! rjoined)
                 {
                     join.push({
-                        type: "left",
                         exp: exp,
-                        on: right,
-                        model : [lm, rm]
+                        on: rm,
+                        with : lm,
+                        model: lf
                     })
                 }
-
+                
             }            
         }
     }
@@ -263,6 +272,21 @@ function insFunctionBinding(query, expression)
     return expression
 }
 
+
+function findBinding(query, expression)
+{
+    let binds = new Array()
+    for(const field of query.fields)
+    {
+        let name = field[0]
+        if(new RegExp(`${name}`, 'g').test(expression))
+        {
+            binds.push(field[2])
+        }
+    }
+
+    return binds
+}
 
 function insReductorBinding(query, expression)
 {

@@ -1,231 +1,184 @@
-const { WILDCARD, wrap } = require('./utils')
+const { MEMORY_THRESHOLD, wrap, readable } = require('./utils')
 
 async function runner()
 {
-    let models = new Array()
-    for (const [key, value] of this.from)
-    {
-        let dbrep = new Array() // we lose the key
+    let cache = [new Object()]
+    const added = new Set()
+    const models = [...this.from.entries()]
+    const wheres = sortRunnable(this.where)
 
-        for (const it of this.db.models[value.name()].values()) 
+    let task = wheres.shift()
+    while(task)
+    {
+        let next = nextJoin(added, task)
+        if(next.length > 0)
         {
-            dbrep.push(it)
+            cache = j2(this.logger, this.db, this.from, this.join, added, cache, next)
         }
-
-        let extracted = dbrep.map(model => [[key, model]])
-        models.push(extracted)
-    }
-
-    let cache = models.pop()
-    while(models.length > 0)
-    {
-        let acc = new Array()
-        let model = models.pop()
-        for (const k of model) 
+        else
         {
-            for (const curr of cache) 
+            //Skip join part
+            if(task.part != 'true')
             {
-                acc.push([...curr, ...k])
+                const pred = wrap(task.expression, ['__o', '__f'])
+                const before = cache.length;
+                cache = cache.filter(r => pred(r, this.functions))
+                this.logger.log(`Filtering: P(${task.bind.join(', ')}) => ${task.part} | [${readable(before)} -> ${readable(cache.length)}]`)
             }
-        }
 
-        cache = acc
-    }
-   
-    let compossed = composse(cache)
-    let filtered = where(compossed, this.where, this.functions)
-    let ordered = order(filtered, this.order, this.functions)
-    let grouped = group(ordered, this.group)
-    let limited = limit(grouped, this.limit, this.functions)
-
-    return select(limited, this.select, this.group, this.functions, this.reductors, this.fields)
-}
-
-function composse(input)
-{
-    let records = new Array()
-
-    for (const record of input) 
-    {
-        let line = record.map(selector => {
-            const obj = new Object()
-            for (const [key, value] of Object.entries(selector[1])) 
-            {
-                obj[`${selector[0]}.${key}`] = value
-            }
-            return obj
-        })
-        .reduce((res, cur) => Object.assign(res, cur), new Object())
-        
-        records.push(line)
-    }
-
-    return records
-}
-
-function where(input, where, funs)
-{
-    const filtered = new Array()
-    const pred = wrap(where.toString(), ['__o', '__f'])
-
-    for (const record of input) 
-    {
-        if(pred(record, funs))
-        {
-            filtered.push(record)
+            task = wheres.shift()
         }
     }
 
-    return filtered
-}
-
-function order(input, order, funs)
-{
-    if(order != null)
+    let rem = remain(added, models)
+    while(rem)
     {
-        const [exp, pre] = order
-        const p = wrap(exp.toString(), ['__o', '__f'])
-    
-        input.sort((a,b) => pre(p(a), p(b)) ? 1 : -1)
-    }
-
-    return input
-}
-
-function group(input, group)
-{
-    if(group != null)
-    {
-        const acc = new Map()
-        for (const record of input) 
-        {
-            const key = record[group]
-            const arr = acc.get(key)
-            
-            if(arr != undefined)
-            {
-                arr.push(record)
-            }
-            else
-            {
-                acc.set(key, [record])
-            }
-        }
-
-        return acc
+        cache = j2(this.logger, this.db, this.from, this.join, added, cache, rem)
+        rem = remain(added, models)
     }
     
-    return input
+    this.tracker['set'] = cache.length;
+    this.result = cache
 }
 
-function limit(input, lim)
+function hasjoin(joins, added, nexts)
 {
-    if(lim != null)
+    for (const join of joins) 
     {
-        input.length = Math.min(input.length, lim)
-    }
-
-    return input
-}
-
-function select(input, select, group, funs, reductors, fields)
-{
-    const selected = new Array()
-    const reduced = new Array()
-    const flatview = new Array()
-
-    if(group != null)
-    {
-        // Find reductors in select
-        for (const sel of select) 
+        for (const next of nexts) 
         {
-            if(sel[0].indexOf(`${WILDCARD.SP}r`) >= 0)
+            if(join.on == next)
             {
-                reduced.push([sel, null])
-            }
-        }
-
-        // Create the reductor functions
-        const redfun = new Object()
-        for (const r of reduced)
-        {
-            redfun[r[0][0]] = wrap(r[0][0].toString(), ['__o', '__f', '__r', '__tmp'])
-        }
-
-        // Process
-        for (const [_, value] of input.entries()) 
-        {   
-            //Reset reduced
-            for (const r of reduced)
-            {
-                r[1] = null
-            }
-
-            for(const record of value)
-            {
-                for (const r of reduced) 
+                if(added.has(join.with))
                 {
-                    r[1] = redfun[r[0][0]](record, funs, reductors, r[1])
+                    return [true, join]
                 }
-            }
-
-            if(value.length > 0)
-            {
-                let record = value[0]
-                for (const r of reduced)
+                else
                 {
-                    record[r[0][1]] = r[1]
+                    return [false, join.with]
                 }
-                flatview.push(record)
-            }
-        }   
-
-        input = flatview   
-
-    }
-
-    let ind = select.indexOf('$')
-    if(ind >= 0)
-    {
-        select.splice(ind)
-        if(input.length > 0)
-        {
-            for (const key of fields) 
-            {
-                select.push([`${WILDCARD.SP}o['${key[0]}']`,key[0]])
-            }
+            }   
         }
-    }    
-
-    const preds = new Object()
-    for(const se of select)
-    {
-        preds[se[0]] = wrap(se[0], ['__o', '__f'])
     }
 
-    for (const record of input) 
-    {
-        const res = new Object()
-
-        for(const se of select)
-        {
-            const found = reduced.find(r => r[0][0] == se[0])
-            if(found)
-            {
-                res[se[1]] = record[se[1]]
-            }
-            else
-            {
-                res[se[1]] = preds[se[0]](record, funs)
-            }
-            
-        }
-
-        selected.push(res)
-    }
-
-    return selected
-    
+    return [false, nexts[0]]
 }
+
+function remain(added, models)
+{
+    for (const model of models) 
+    {
+        if(!added.has(model[0]))
+        {
+            return model
+        }
+    }
+
+    return null
+}
+
+function sortRunnable(where)
+{
+    return where.sort((a,b) => a.bind.length - b.bind.length)
+}
+
+function nextJoin(added, where)
+{
+    const tmp = new Array()
+
+    for(const model of where.bind)
+    {
+        if(!added.has(model))
+        {
+            tmp.push(model)
+        }
+    }
+
+    return tmp;
+}
+
+function mix(old, values, model)
+{
+    const tmp = new Array()
+
+    const estimated = old.length * values.length;
+    if(estimated > MEMORY_THRESHOLD)
+    {
+        throw new Error(`The selected dataset is too large (${estimated})`)
+    }
+
+    for (const left of old) 
+    {
+        for (const right of values) 
+        {
+            const comp = new Object()
+            for(const [key, value] of Object.entries(right))
+            {
+                comp[`${model}.${key}`] = value
+            }
+
+            tmp.push({
+                ...left,
+                ...comp
+            })
+        }
+    }
+
+    return tmp
+}
+
+function j2(logger, db, from, join, added, cache, next)
+{
+    let [on, w] = hasjoin(join, added, next)
+    let tmp;
+
+    if(on)
+    {
+        added.add(w.on)
+        tmp = joinOn(db, from, cache, w)
+        logger.log(`Join on: -> ${w.on} (by ${w.with}) | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+    }
+    else
+    {
+        added.add(w)
+        tmp = joinWith(db, from, cache, w)
+        logger.log(`Join with: -> ${w} | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+    }
+
+    return tmp
+}
+
+function joinWith(db, from, cache, model)
+{
+    return mix(cache, db.get(from.get(model)), model)
+}
+
+function joinOn(db, from, cache, join)
+{
+    const tmp = new Array()
+
+    const lt = db.view(from.get(join.on))
+    for (const left of cache) 
+    {
+        const right = lt.get(left[`${join.with}.${join.model}`])
+        if(right)
+        {
+            const comp = new Object()
+            for(const [key, value] of Object.entries(right))
+            {
+                comp[`${join.on}.${key}`] = value
+            }
+
+            tmp.push({
+                ...left,
+                ...comp
+            })
+        }
+
+    }
+
+    return tmp
+}
+
 
 module.exports = runner

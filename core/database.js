@@ -17,6 +17,20 @@ class Database
         this.models[model.name()].set(data[model.key()], data)
     }
 
+    get(model)
+    {
+        return this.cache[model.name()]
+    }
+
+    finalize()
+    {
+        this.cache = new Object()
+        for (const [key, dic] of Object.entries(this.models))
+        {
+            this.cache[key] = [...dic.values()]
+        }
+    }
+
     view(model)
     {
         if(typeof model == 'string')
