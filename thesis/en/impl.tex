@@ -5,6 +5,8 @@ For this project a high level programming language was needed which can support 
 lot of different data, the language also has to support runtime interpretation so the user defined statements can be used without
 creating a whole new programming language and compiler for it. For these reasons JavaScript with the node.js runtime was chosen. 
 
+\newpage
+
 \section{Architectural Overview}
 
 The toolkit is heavily depends on the libgit2 \cite{libgit2} library which is a portable, pure C implementation  if the Git core methods,
@@ -22,6 +24,7 @@ The \textit{Query} class is responsible to connect all the modules altogether an
 responsible for reading the history from the repository and passing it to the plugins for parsing. The parse data will be stored
 in the \textit{Database}. Before the parsing happens the input script also has to be recognized which is done by the \textit{Parse}
 module. After both of them is ready the \textit{Runner} module will run the query based on the script and database.
+\newpage
 
 \subsection{Database}
 
@@ -46,6 +49,7 @@ If: N is the count of records by the A model, M  is the count of records by the 
 	\caption{Structure of the database}
 	\label{fig:fig-help}
 \end{figure}
+\newpage
 
 \subsection{Extensions}
 
@@ -105,7 +109,7 @@ a third party library from npm which is the yaml\cite{yaml-pck} package.
 After parsing the input file into a JavaScript Object the real parsing begin: 
 
 The core tags of script file are the \textit{From}, \textit{Select}, \textit{Where}, all of them is required.
-
+\newpage
 \subsection{From}
 The used models should be enumerated here and separated with a \textit{;} character. The parser will create an Object in the \textit{Query} which will map each rename to a model.
 
