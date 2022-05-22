@@ -53,8 +53,17 @@ function decompose(str)
 function wrap(body, params)
 {
     const header = `(${params.join(',')})`
-    const f = eval(`${header} => { return ${body} }`)
-    return f
+    
+    try
+    {
+        const f = eval(`${header} => { return ${body} }`)
+        return f
+    }
+    catch(err)
+    {
+        throw new Error(`Syntax error in query file: ${err.massage}`)
+    }
+       
 }
 
 function getRepoFromURL(url)

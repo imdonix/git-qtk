@@ -163,9 +163,8 @@ else
             {
                 console.error(`Something went wrong`)
             }
-
-            throw err
             
+            throw err
         })
     }
     catch(err)

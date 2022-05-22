@@ -1,5 +1,5 @@
-name: Who changed what
+name: Who changed what (on mondays after 6pm)
 from: author a; commit c; file f
 select: a.name; f.path; short(c.date)
-where: c.author == a.email && has(c.changes, f.path)
+where: (c.date.getDay() == 0 && c.date.getHours() > 18 ) && c.author == a.email && has(c.changes, f.path) && f.path.indexOf('.h') > 0
 limit: 50
