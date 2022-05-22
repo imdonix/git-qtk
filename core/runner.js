@@ -23,7 +23,6 @@ async function runner()
         else
         {
             const pred = wrap(task.expression, ['__o', '__f'])
-            console.log(task.expression)
             cache = cache.filter(r => pred(r, this.functions))
             task = wheres.shift()
         }

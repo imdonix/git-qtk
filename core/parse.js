@@ -89,30 +89,28 @@ function parseSelect(query)
 
 function parseWhere(query)
 {
-    if(!query.yaml.hasOwnProperty('where') || query.yaml['where'] == null )
+    let expression = 'true'
+    if(query.yaml.hasOwnProperty('where') || query.yaml['where'] != null )
     {
-        query.where = 'true'
+        expression = query.yaml['where'].toString()
     }
-    else
+
+    if(query.join)
     {
-        let expression = query.yaml['where'].toString()
-
-        if(query.join)
-        {
-            expression = simplify(expression, query.join)
-        }
-
-        query.where = decompose(expression).map(part => {
-
-            let expression = part
-            let bind = findBinding(query, part)
-            expression = insFieldBinding(query, expression)
-            expression = insFunctionBinding(query, expression) 
-
-
-            return { part, expression, bind }
-        })
+        expression = simplify(expression, query.join)
     }
+
+    query.where = decompose(expression).map(part => {
+
+        let expression = part
+        let bind = findBinding(query, part)
+        expression = insFieldBinding(query, expression)
+        expression = insFunctionBinding(query, expression) 
+
+
+        return { part, expression, bind }
+    })
+   
 }
 
 function parseLimit(query)
