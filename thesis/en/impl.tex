@@ -31,19 +31,19 @@ We can also assume that the database will be immutable after the parsing is done
 
 The database is collections of hash maps based on the models. The hash map keys are defined by its model \textit{key()} method.
 The reason behind this database structure is in the join mechanism in the query. The hash map is implemented with the built in 
-\textit{Map}\cite{map} which has a access time and space complexity of:
+\textit{Map}\cite{map} in JavaScript which has access to a given key by a time and space complexity of:
 
 \( O(1) \)
 
 In this way if we connect two models where at least of the models field is a key then we can assume that:\newline
-If: N is the count of records by A model
-	M  is the count of records by B model
-\(O(N * M) = O(N)\)
+If: N is the count of records by the A model, M  is the count of records by the B model. Then:
+	
+\(O(N * M) \Leftrightarrow O(N * 1) \Leftrightarrow O(N)\)
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=350px]{help}
-	\caption{TODO: databse mod}
+	\includegraphics[width=350px]{database}
+	\caption{Structure of the database}
 	\label{fig:fig-help}
 \end{figure}
 
@@ -94,11 +94,129 @@ Lets look at the Git plugin:
 
 \subsection{Parsing and validating scripts}
 
-(2)
+The one of the most important step is properly read and process the input
+from the user script file. Storing this data in the right structure is a key
+to speed up the process of the parsing and running the query.
+
+The input script file is a YAML\cite{yaml} which is a human readable data-serialization language. Because the script file structure is declarative
+this markup language is ideal. The actual parsing of the YAML file is done by
+a third party library from npm which is the yaml\cite{yaml-pck} package.
+
+After parsing the input file into a JavaScript Object the real parsing begin: 
+
+The core tags of script file are the \textit{From}, \textit{Select}, \textit{Where}, all of them is required.
+
+\subsection{From}
+The used models should be enumerated here and separated with a \textit{;} character. The parser will create an Object in the \textit{Query} which will map each rename to a model.
+
+ \begin{figure}[H]
+ 	\centering
+ 	\includegraphics[width=350px]{fromconn}
+ 	\caption{Structure of the parsed From tag}
+ 	\label{fig:fig-help}
+ \end{figure}
+
+\subsection{Select}
+Here the selected \textit{model.field} should be provided with a \textit{;} 
+separator character. The \textit{\$} wildcard can be used to select all the
+available fields. This can be mixed with a custom transformation of a field.
+
+Here JavaScript statements can be provided which will be evaluated when the
+Query runner stops. The statement is transformed by these rules:
+
+\begin{itemize}
+	\item If a model with a field is present it will be replaced with a special expression: \textbf{\_\_o['model.field']}
+	\item If a plugin provided function is present it will be replaced with: \textbf{\_\_f.function(args)}
+	\item If a plugin provided reductor is present it will be replaced with: \textbf{\_\_r.reductor(args)}
+\end{itemize}
+
+You can provide multiple field for one selection but you can add without any of it. The header of the selection
+will be always the provided statement.
+
+The transformation of the statement is needed because later on when \textit{Runner} start to process the script
+it will transform each and every JavaScript statement into a function by:
+
+Creating a lambda expression of the statement: 
+
+ model.field + 2 + fun(4)\newline 
+ To:\newline
+ (\_\_o, \_\_f) => \{ return \_\_o['model.field'] + 2 + \_\_f.fun(4) \}\newline
+
+This can be cached into the memory so when it has to be evaluated for each record this can speed up the process.
+
+The same principles applies for all the JavaScript statements in the input file, only the \textit{Where} tag makes an exception. 
+
+Note: The JavaScript will be executed in a sandbox mode no node.js module is
+available. 
+
+\subsubsection{Where}
+
+In the where tag two parsing is happening: The join and where. Both the where and join are part of the \textit{Runner} workflow. Lets look at this statement, where we are using the the following models: commit c1, commit c2, commit c3
+
+\( c1.sha ==\ '5b2c7'\ \&\&\ c2.sha == c1.sha\ \&\&\ c3.sha == c1.sha\)
+
+Now lets convert this statement into a logic expression where we want to specify the required
+data set:
+
+\( \forall{c1}\forall{c2}\forall{c3}(c1.sha ==\ '5b2c7' \wedge c2.sha == c1.sha \wedge c3.sha == c1.sha)\)
+
+Lets simply the expression by:
+
+\( \forall{c1}(c1.sha ==\ '5b2c7') \wedge \forall{c1}\forall{c2}(c2.sha == c1.sha) \wedge \forall{c1}\forall{c3}(c3.sha == c1.sha)\)
+
+Now lets replace the universal quantifier with predicates and we get:
+
+\( P(c1) \wedge G(c1,c2) \wedge H(c1,c3)\)
+
+In this way we can break up the expression into smaller pieces so the parts can be evaluated
+without the fully fledged record. This will be important later on...
+
+Before we parse the \textit{Where} flag we are replacing the joins with placeholders.
+As discussed in the User Documentation if one of the \textit{model.field} is a key then
+we can make faster the \textit{Runner} by using the Maps in the \textit{Database}.
+
+We can assume that all the joins will be done during the run so we can replace these with a
+\textbf{true} expression. The join will be stored in a special Object in the Query which will
+be used by the \textit{Runner} itself.
 
 \subsection{Parsing Git histroy}
 
-breadth-first search (2)
+Before talking about how the history is evaluated into a user readable output. Lets take a look
+how the history parsing. This part is done by the main \textit{Query} class with the loaded
+plugin. First the repository is loaded either by cloning it from Github or by loading a local copy of it. After that if the script file contain the main commit sha then the commit will be the starting point of the algorithm if not them the master commit will provide the starting point.
+
+The history walker algorithm is based on a breadth-first search.
+
+\begin{algorithm}[H]
+	\caption{History walker} 
+	\label{alg:ibb} 
+	\textbf{\underline{function}} load($Plugins$ ,$Repository, commit$)
+	\begin{algorithmic}[1] % display line numbers before every n line, here n = 1
+		\For{all $plugin$ in $Plugins$}
+		\State plugin.setup()
+		\EndFor
+		\State let Q be a queue
+		\State label commit as explored
+		\State Q.enqueue(commit)
+		\While{( ${\cal Q}$\ is\ not\ empty )}
+		\State $c$ := $Q$.dequeue()
+		\For{all edges from $v$ to $w$ in $Repository$.parents($v$)}
+		\If{$w$ w is not labeled as explored }
+		\State label w as explored  
+		\State Q.enqueue(w) 
+		\For{all $plugin$ in $Plugins$}
+		\State plugin.fetch($w$)
+		\EndFor 
+		\EndIf
+		\EndFor
+		\EndWhile
+		\For{all $plugin$ in $Plugins$}
+		\State plugin.post()
+		\EndFor
+		\end{algorithmic}
+\end{algorithm}
+
+After finishing the parsing the Database is locked and can be considered as an immutable object. 
 
 \subsection{Running the query}
 
