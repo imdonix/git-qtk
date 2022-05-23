@@ -381,6 +381,13 @@ The thesis document itself is version controlled on Github and generated for eac
 
 For testing each module in this complex toolkit tests where created to provide stability. The testing is done with the mocha.js\cite{mocha} node.js package. Which is a feature-rich JavaScript test framework running on Node.js and in the browser, making asynchronous testing simple and fun. Mocha tests run serially, allowing for flexible and accurate reporting, while mapping uncaught exceptions to the correct test cases.
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=350px]{test}
+	\caption{Tests}
+	\label{fig:fig-help}
+\end{figure}
+
 \subsection{Unit tests}
 
 Unit tests are created for each module of the toolkit:
@@ -412,6 +419,13 @@ The integration test unzip the sample repository and run the query on it then it
 	\item Is the records in the database are valid?
 	\item Is the output of the tool are same as the expected?
 \end{itemize}
+
+\subsubsection{How to run the tests}
+
+To run the tests just run the following command:
+
+\[ npm\ test \]
+
 
 \chapter{Runtime measurement}
 \label{appx:simulation}
