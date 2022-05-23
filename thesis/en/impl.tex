@@ -16,7 +16,7 @@ The whole toolkit architecture can be represented with the following diagram:
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=350px]{uml}
-	\caption{TODO}
+	\caption{UML diagram of the toolkit}
 	\label{fig:fig-help}
 \end{figure}
 
@@ -317,32 +317,101 @@ If a join can be done with join-on it will be preferred in that way if the predi
 
 And the execution list will be:
 
-  \begin{figure}[H]
- 	\centering
- 	\includegraphics[width=150px]{execlist-join}
- 	\caption{Execution list with join}
- 	\label{fig:fig-help}
- \end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=150px]{execlist-join}
+	\caption{Execution list with join}
+	\label{fig:fig-help}
+\end{figure}
 
 \section{Tools}
 
-(1)
+The development of the toolkit requires to use special tools to make the it easy and fast. The creation of the software is mostly done in windows but for each release a manual test is done in Linux too.
 
-\subsection{Gitub}
+\subsection{Visual Studio Code}
 
-\subsection{VS Code}
+Visual Studio Code is a streamlined code editor with support for development operations like debugging, task running, and version control. It aims to provide just the tools a developer needs for a quick code-build-debug cycle and leaves more complex workflows to fuller featured IDEs, such as Visual Studio IDE\cite{vscode}
+
+It has build in support for JavaScript syntax, has an easy to use file system navigator and the built in terminal helped a lot to test the whole toolkit in only one application. Also has a built in Git tool so it can be used as a Git client too.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=400px]{vscode}
+	\caption{Project in Visual Studio Code}
+	\label{fig:fig-help}
+\end{figure}
+
+\newpage
+\subsection{Github}
+
+GitHub is a provider of Internet hosting for software development and version control using Git. It offers the distributed version control and source code management (SCM) functionality of Git, plus its own features. It provides access control and several collaboration features such as bug tracking, feature requests, task management, continuous integration, and wikis for every project.\cite{gitbib}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=400px]{github}
+	\caption{Github page of the project}
+	\label{fig:fig-help}
+\end{figure}
+
+It way obvious to host the project on Github, because it can be also an input repository for the toolkit. The whole project is under version control and with the help of pull requests I was able to track my work easily. By creating feature or bug issues I was able to work on the project effectively.
+
+\newpage
+\subsection{Continues integration}
+
+With the help of GitHub Actions the project was under continues integration which runs the tests for each and every commit and also create a runtime measurement report as artifact. 
+The thesis document itself is version controlled on Github and generated for each push. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=400px]{action}
+	\caption{Github Actions}
+	\label{fig:fig-help}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=400px]{run}
+	\caption{Github Actions - Integration}
+	\label{fig:fig-help}
+\end{figure}
+
 
 \section{Testing}
 
-(0.5)
+For testing each module in this complex toolkit tests where created to provide stability. The testing is done with the mocha.js\cite{mocha} node.js package. Which is a feature-rich JavaScript test framework running on Node.js and in the browser, making asynchronous testing simple and fun. Mocha tests run serially, allowing for flexible and accurate reporting, while mapping uncaught exceptions to the correct test cases.
 
 \subsection{Unit tests}
 
-(2)
+Unit tests are created for each module of the toolkit:
+
+\begin{itemize}
+	\item Parsing: From (9)
+	\item Parsing: Select (6)
+	\item Parsing: Where (5)
+	\item Parsing: Limit (4)
+	\item Parsing: Order (5)
+	\item Parsing: Join (9)
+	\item Parsing: Start (1)
+	\item CLI (3)
+\end{itemize}
+
+A total of 41 unit test are added to the project. These are mostly black box testes but some white box test also present.
 
 \subsection{Integration tests}
 
-(2)
+During the development integration tests was a big help to get information about the health of the tool. This contains a simple test on a prepackaged small repository repository for only validating the result of the toolkit.
+
+So when a optimization change is made in a module I was able to validate how its working in real life.
+
+The integration test unzip the sample repository and run the query on it then its checking the following values:
+
+\begin{itemize}
+	\item Are the plugins run correctly?
+	\item Is the required models present in the database?
+	\item Is the records in the database are valid?
+	\item Is the output of the tool are same as the expected?
+\end{itemize}
 
 \chapter{Runtime measurement}
 \label{appx:simulation}
