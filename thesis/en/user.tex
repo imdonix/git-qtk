@@ -142,9 +142,9 @@ Example tags:
 	\item where: author.data > (now() - 1000)
 \end{itemize}
 
-\subsubsection{Join}
+\subsubsection{Join on}
 
-A special case of the filtering is considered as join. 
+A special case of the filtering is considered as join on. 
 This happens if a subset of the statement looks like:\newline
 
 \textbf{{model}.{field} == {model}.{field}}\newline
@@ -153,11 +153,10 @@ In this case the following rules apply:
 
 \begin{itemize}
 	\item If only one of the field is a key for the model then its a \textbf{Right or Left Join}
-	\item If both of them are key, then its a \textbf{Inner Join}
 	\item If none of them is a key then its will be evaluated normally
 \end{itemize}
 
-This sub statements will be removed from the where tag and handled separately for performance reasons
+This sub statements will be removed from the where tag and handled separately for performance reasons.
 
 \subsection{Limit}
 

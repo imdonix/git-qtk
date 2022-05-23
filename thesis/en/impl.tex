@@ -41,7 +41,7 @@ The reason behind this database structure is in the join mechanism in the query.
 In this way if we connect two models where at least of the models field is a key then we can assume that:\newline
 If: N is the count of records by the A model, M  is the count of records by the B model. Then:
 	
-\(O(N * M) \Leftrightarrow O(N * 1) \Leftrightarrow O(N)\)
+\[O(N * M) \Leftrightarrow O(N * 1) \Leftrightarrow O(N)\]
 
 \begin{figure}[H]
 	\centering
@@ -153,27 +153,27 @@ The same principles applies for all the JavaScript statements in the input file,
 Note: The JavaScript will be executed in a sandbox mode no node.js module is
 available. 
 
+\newpage
 \subsubsection{Where}
 
 In the where tag two parsing is happening: The join and where. Both the where and join are part of the \textit{Runner} workflow. Lets look at this statement, where we are using the the following models: commit c1, commit c2, commit c3
 
-\( c1.sha ==\ '5b2c7'\ \&\&\ c2.sha == c1.sha\ \&\&\ c3.sha == c1.sha\)
+\[ c1.sha ==\ '5b2c7'\ \&\&\ c2.sha == c1.sha\ \&\&\ c3.sha == c1.sha\]
 
 Now lets convert this statement into a logic expression where we want to specify the required
 data set:
 
-\( \forall{c1}\forall{c2}\forall{c3}(c1.sha ==\ '5b2c7' \wedge c2.sha == c1.sha \wedge c3.sha == c1.sha)\)
+\[( \forall{c1}\forall{c2}\forall{c3}(c1.sha ==\ '5b2c7' \wedge c2.sha == c1.sha \wedge c3.sha == c1.sha)\]
 
 Lets simply the expression by:
 
-\( \forall{c1}(c1.sha ==\ '5b2c7') \wedge \forall{c1}\forall{c2}(c2.sha == c1.sha) \wedge \forall{c1}\forall{c3}(c3.sha == c1.sha)\)
+\[ \forall{c1}(c1.sha ==\ '5b2c7') \wedge \forall{c1}\forall{c2}(c2.sha == c1.sha) \wedge \forall{c1}\forall{c3}(c3.sha == c1.sha)\]
 
 Now lets replace the universal quantifier with predicates and we get:
 
-\( P(c1) \wedge G(c1,c2) \wedge H(c1,c3)\)
+\[ P1(c1) \wedge P2(c1,c2) \wedge P3(c1,c3)\]
 
-In this way we can break up the expression into smaller pieces so the parts can be evaluated
-without the fully fledged record. This will be important later on...
+In this way we can break up the expression into smaller pieces so the parts can be evaluated without the fully fledged record. This will be important later on...
 
 Before we parse the \textit{Where} flag we are replacing the joins with placeholders.
 As discussed in the User Documentation if one of the \textit{model.field} is a key then
@@ -183,6 +183,7 @@ We can assume that all the joins will be done during the run so we can replace t
 \textbf{true} expression. The join will be stored in a special Object in the Query which will
 be used by the \textit{Runner} itself.
 
+\newpage
 \subsection{Parsing Git histroy}
 
 Before talking about how the history is evaluated into a user readable output. Lets take a look
@@ -226,7 +227,102 @@ After finishing the parsing the Database is locked and can be considered as an i
 
 \subsection{Running the query}
 
-(2)
+The most important part of the project is how we can efficiently query in the parsed data. At this point we have a in-memory database where we can search in \(O(1)\) time, we were able break up the \textit{Where} statement into smaller predicates.
+
+The goal is to join all the tables together and filter out the rerecords where the condition does not met.
+
+\subsubsection{Trivial solution problem}
+The most trivial solution is to connect all models together and run the full \textit{Where} statement on the fully fledged record. This can work in most of the cases but if we want to run it on a big repository then we will end up running out of memory quickly. For example lets look at this:
+
+Let: $commit.count$ = 50 = $N$
+
+if we would like to join the commit model in $M$ times we would end up in a time and space complexity of:
+
+\[ O(N_1 * N_2 * \dots * N_M ) \Leftrightarrow O(N^M) \]
+
+Lets assume that the heap memory limit in node.js with 8G of allocated memory is around $~10.000.000$ records. So in this way we are limited by
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ | m{0.25\textwidth} | m{0.35\textwidth} | m{0.15\textwidth} | }
+		\hline
+		\textbf{N} & \textbf{Joined records count} & \textbf{Under memory limit} \\
+		\hline \hline
+		\emph{1} & 50 & $\checkmark$ \\
+		\hline
+		\emph{2} & 2.500 & $\checkmark$ \\
+		\hline
+		\emph{3} & 125.000 & $\checkmark$ \\
+		\hline
+		\emph{4} & 6.250.000 & $\checkmark$ \\
+		\hline
+		\emph{5} & 312.500.000 & $\times$ \\
+		\hline
+		\emph{$\infty$} & $\dots$ & $\times$ \\
+		\hline
+	\end{tabular}
+	\caption{Time and space analysis on trivial join}
+	\label{tab:tsj-1}
+\end{table}
+
+As we can see even for a small repository a 5 way join is cause out of memory problems. But if we take into consideration that a large repository with $10.000$ commits, even a 2 way join can cause problems which is not acceptable. 
+\newpage
+
+\subsubsection{Solution}
+
+Lets assume first that the user is provided "useful" query script which means the result of the query should be human readable data size. With some trick we can reduce the size of the fully fledged dateset without losing any information or by giving up flexibly of the query language. 
+
+\subsubsection{Predicates}
+
+As discussed in the \textit{Where} tag parsing we are break up the whole statement into pieces. Let's take a look on the previous example:
+
+\[ P1(c1) \wedge P2(c1,c2) \wedge P3(c1,c3)\]
+
+This means we have 3 separated predicate where the parameters are the model dependencies, this means we can create a dependency graph by filtering with this predicates as soon as possible  in the execution tree (Circles are joins).
+
+ \begin{figure}[H]
+	\centering
+	\includegraphics[width=250px]{exectree}
+	\caption{Execution tree (Top to down)}
+	\label{fig:fig-help}
+\end{figure}
+
+\newpage
+
+Currently the toolkit is single threaded application so there is no optimization with the execution by doing the filtering and joins parallel.
+
+Because of that we can convert the execution tree into an execution list by doing the predicates as soon as possible in the execution order.
+
+ \begin{figure}[H]
+	\centering
+	\includegraphics[width=250px]{execlist}
+	\caption{Execution list}
+	\label{fig:fig-help}
+\end{figure}
+
+The predicates are ordered by how many parameters it have if the same the order which they were given in the script file will be take into consideration. The only exception if a join on is present.
+
+\newpage
+\subsubsection{Join on}
+As discussed in the user documentation join-on section the join-ons will be removed from the statement and handled separately. Lets look at how this effect the \textbf{Runner} execution list. This step can be done because the structure of the database.
+
+If a join can be done with join-on it will be preferred in that way if the predicate requires the model which can be join-on then the join-on dependency will be joined first. Lets look on an other execution tree:
+
+ \begin{figure}[H]
+	\centering
+	\includegraphics[width=250px]{exectree-join}
+	\caption{Execution tree with join-on (Top to down)}
+	\label{fig:fig-help}
+\end{figure}
+
+And the execution list will be:
+
+  \begin{figure}[H]
+ 	\centering
+ 	\includegraphics[width=150px]{execlist-join}
+ 	\caption{Execution list with join}
+ 	\label{fig:fig-help}
+ \end{figure}
 
 \section{Tools}
 
