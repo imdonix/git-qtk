@@ -284,7 +284,7 @@ This means we have 3 separated predicate where the parameters are the model depe
 	\centering
 	\includegraphics[width=250px]{exectree}
 	\caption{Execution tree (Top to down)}
-	\label{fig:fig-help}
+	\label{fig:fig-elist}
 \end{figure}
 
 \newpage
@@ -297,7 +297,7 @@ Because of that we can convert the execution tree into an execution list by doin
 	\centering
 	\includegraphics[width=250px]{execlist}
 	\caption{Execution list}
-	\label{fig:fig-help}
+	\label{fig:fig-liste}
 \end{figure}
 
 The predicates are ordered by how many parameters it have if the same the order which they were given in the script file will be take into consideration. The only exception if a join on is present.
@@ -312,7 +312,7 @@ If a join can be done with join-on it will be preferred in that way if the predi
 	\centering
 	\includegraphics[width=250px]{exectree-join}
 	\caption{Execution tree with join-on (Top to down)}
-	\label{fig:fig-help}
+	\label{fig:fig-tree}
 \end{figure}
 
 And the execution list will be:
@@ -321,7 +321,7 @@ And the execution list will be:
 	\centering
 	\includegraphics[width=150px]{execlist-join}
 	\caption{Execution list with join}
-	\label{fig:fig-help}
+	\label{fig:fig-joine}
 \end{figure}
 
 \section{Tools}
@@ -338,7 +338,7 @@ It has build in support for JavaScript syntax, has an easy to use file system na
 	\centering
 	\includegraphics[width=400px]{vscode}
 	\caption{Project in Visual Studio Code}
-	\label{fig:fig-help}
+	\label{fig:fig-studio}
 \end{figure}
 
 \newpage
@@ -350,7 +350,7 @@ GitHub is a provider of Internet hosting for software development and version co
 	\centering
 	\includegraphics[width=400px]{github}
 	\caption{Github page of the project}
-	\label{fig:fig-help}
+	\label{fig:fig-github}
 \end{figure}
 
 It way obvious to host the project on Github, because it can be also an input repository for the toolkit. The whole project is under version control and with the help of pull requests I was able to track my work easily. By creating feature or bug issues I was able to work on the project effectively.
@@ -365,7 +365,7 @@ The thesis document itself is version controlled on Github and generated for eac
 	\centering
 	\includegraphics[width=400px]{action}
 	\caption{Github Actions}
-	\label{fig:fig-help}
+	\label{fig:fig-act}
 \end{figure}
 
 
@@ -373,7 +373,7 @@ The thesis document itself is version controlled on Github and generated for eac
 	\centering
 	\includegraphics[width=400px]{run}
 	\caption{Github Actions - Integration}
-	\label{fig:fig-help}
+	\label{fig:fig-int}
 \end{figure}
 
 
@@ -385,7 +385,7 @@ For testing each module in this complex toolkit tests where created to provide s
 	\centering
 	\includegraphics[width=350px]{test}
 	\caption{Tests}
-	\label{fig:fig-help}
+	\label{fig:fig-test}
 \end{figure}
 
 \subsection{Unit tests}
@@ -436,6 +436,13 @@ For this reason a special action is induced in the toolkit which called runtime 
 
 The list of bench repository are provided manually and the example script files are used in the process.
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=400px]{runtime}
+	\caption{Tests}
+	\label{fig:fig-runtime}
+\end{figure}
+
 \subsubsection{Bench repositories}
 
 \begin{table}[H]
@@ -459,26 +466,328 @@ The list of bench repository are provided manually and the example script files 
 	\label{tab:runtime}
 \end{table}
 
+The test run all the example script for all the bench repositories and collect the timed steps into a csv file in the root of the project. If a test fails the error will be printed out instead.
+
+To run the runtime measurement type:
+\[npm\ run\ runtime\]
+
 \subsubsection{Test devices}
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{ | m{0.15\textwidth} | m{0.45\textwidth} | m{0.15\textwidth} | }
+	\begin{tabular}{ | m{0.15\textwidth} | m{0.5\textwidth} | m{0.13\textwidth} |  m{0.15\textwidth} | }
 		\hline
-		\textbf{Nickname} & \textbf{CPU} & \textbf{Memory} \\
+		\textbf{Nickname} & \textbf{CPU} & \textbf{Memory} & \textbf{OS}  \\
 		\hline \hline
-		Workstation & Intel™ Xeon™ E5-2678 v3 @ 2.50GHz (8c/16t) & 32GB DDR3 1333Mhz \\ 
+		Workstation & Intel™ Xeon™ E5-2678 v3 @ 2.50GHz (8c/16t) & 32GB DDR3 1333Mhz  & Windows \\ 
 		\hline
-		Laptop & AMD Ryzen™ 5 5500U @ 2.1GHz (6c/12t) & 16GB DDR4 2666Mhz \\
+		Laptop & AMD Ryzen™ 5 5500U @ 2.1GHz (6c/12t) & 16GB DDR4 2666Mhz & Windows \\
+		\hline
+		Action & Intel™ Xeon™ 8370C CPU @ 2.80GHz (2c/2t) & 8GB DDR4 3200Mhz & Linux \\
 		\hline
 	\end{tabular}
 	\caption{Bench devices}
 	\label{tab:devices}
 \end{table}
 
-\subsubsection{Results with: Laptop}
+Note that the GitHub Action provided runner is in a virtual environment so can't use it as a "pure" input for measurement but we can filter out problems which hardly impact the runtime.   
+
+\subsubsection{Results}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ | m{0.15\textwidth} | m{0.16\textwidth} | m{0.25\textwidth} | m{0.1\textwidth} | m{0.1\textwidth} | m{0.1\textwidth} | }
+		\hline
+		\textbf{Device} & \textbf{Repository} & \textbf{Script} & \textbf{Parsing} & \textbf{Query} & \textbf{Size} \\ 
+		\hline \hline
+		Workstation & Catch2 & authorcommits.yaml & 3 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & Catch2 & authorcommits.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Action & Catch2 & authorcommits.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & Catch2 & commithash.yaml & 4 s & 2 s & ~4k \\ 
+		\hline
+		Laptop & Catch2 & commithash.yaml & 2 s & 2 s & ~4k \\ 
+		\hline
+		Action & Catch2 & commithash.yaml & 4 s & 2 s & ~4k \\ 
+		\hline
+		Workstation & Catch2 & howmuchwork.yaml & 4 s & 2 s & ~4k \\ 
+		\hline
+		Laptop & Catch2 & howmuchwork.yaml & 2 s & 2 s & ~4k \\ 
+		\hline
+		Action & Catch2 & howmuchwork.yaml & 4 s & 2 s & ~4k \\ 
+		\hline
+		Workstation & Catch2 & test.yaml & 3 s & 2 s & ~4k \\ 
+		\hline
+		Laptop & Catch2 & test.yaml & 3 s & 2 s & ~4k \\ 
+		\hline
+		Action & Catch2 & test.yaml & 4 s & 2 s & ~4k \\ 
+		\hline
+		Workstation & Catch2 & where.yaml & 4 s & 2 s & < 1k \\ 
+		\hline
+		Laptop & Catch2 & where.yaml & 3 s & 2 s & < 1k \\ 
+		\hline
+		Action & Catch2 & where.yaml & 3 s & 2 s & < 1k \\ 
+		\hline
+		Workstation & Catch2 & whochanged.yaml & 3 s & 4 s & < 1k \\ 
+		\hline
+		Laptop & Catch2 & whochanged.yaml & 1 s & 2 s & < 1k \\ 
+		\hline
+		Action & Catch2 & whochanged.yaml & 4 s & 3 s & < 1k \\ 
+		\hline
+		Workstation & Catch2 & whoonlast.yaml & 3 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & Catch2 & whoonlast.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Action & Catch2 & whoonlast.yaml & 3 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & CodeCompass & authorcommits.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & CodeCompass & authorcommits.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Action & CodeCompass & authorcommits.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & CodeCompass & commithash.yaml & 3 s & 2 s & < 1k \\ 
+		\hline
+		Laptop & CodeCompass & commithash.yaml & 2 s & 2 s & < 1k \\ 
+		\hline
+		Action & CodeCompass & commithash.yaml & 2 s & 2 s & < 1k \\ 
+		\hline
+		Workstation & CodeCompass & howmuchwork.yaml & 3 s & 2 s & < 1k \\ 
+		\hline
+		Laptop & CodeCompass & howmuchwork.yaml & 2 s & 2 s & < 1k \\ 
+		\hline
+		Action & CodeCompass & howmuchwork.yaml & 3 s & 2 s & < 1k \\ 
+		\hline
+		Workstation & CodeCompass & test.yaml & 3 s & 2 s & < 1k \\ 
+		\hline
+		Laptop & CodeCompass & test.yaml & 2 s & 2 s & < 1k \\ 
+		\hline
+		Action & CodeCompass & test.yaml & 3 s & 2 s & < 1k \\ 
+		\hline
+		Workstation & CodeCompass & where.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & CodeCompass & where.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Action & CodeCompass & where.yaml & 2 s & 0 s & < 1k \\ 
+		\hline
+		Workstation & CodeCompass & whochanged.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+	\end{tabular}
+	\caption{Runtime measurement - Page 1.}
+	\label{tab:mes-2}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ | m{0.15\textwidth} | m{0.16\textwidth} | m{0.25\textwidth} | m{0.1\textwidth} | m{0.1\textwidth} | m{0.1\textwidth} | }
+		\hline
+		\textbf{Device} & \textbf{Repository} & \textbf{Script} & \textbf{Parsing} & \textbf{Query} & \textbf{Size} \\ 
+		\hline \hline
+		Laptop & CodeCompass & whochanged.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Action & CodeCompass & whochanged.yaml & 2 s & 2 s & < 1k \\ 
+		\hline
+		Workstation & CodeCompass & whoonlast.yaml & 2 s & 2 s & < 1k \\ 
+		\hline
+		Laptop & CodeCompass & whoonlast.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Action & CodeCompass & whoonlast.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & git & authorcommits.yaml & 96 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & git & authorcommits.yaml & 53 s & 1 s & < 1k \\ 
+		\hline
+		Action & git & authorcommits.yaml & 136 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & git & commithash.yaml & 98 s & 2 s & ~67k \\ 
+		\hline
+		Laptop & git & commithash.yaml & 54 s & 2 s & ~67k \\ 
+		\hline
+		Action & git & commithash.yaml & 138 s & 2 s & ~67k \\ 
+		\hline
+		Workstation & git & howmuchwork.yaml & 104 s & 2 s & ~67k \\ 
+		\hline
+		Laptop & git & howmuchwork.yaml & 64 s & 2 s & ~67k \\ 
+		\hline
+		Action & git & howmuchwork.yaml & 139 s & 2 s & ~67k \\ 
+		\hline
+		Workstation & git & test.yaml & 108 s & 2 s & ~67k \\ 
+		\hline
+		Laptop & git & test.yaml & 59 s & 2 s & ~67k \\ 
+		\hline
+		Action & git & test.yaml & 140 s & 2 s & ~67k \\ 
+		\hline
+		Workstation & git & where.yaml & 106 s & 2 s & < 1k \\ 
+		\hline
+		Laptop & git & where.yaml & 58 s & 2 s & < 1k \\ 
+		\hline
+		Action & git & where.yaml & 139 s & 2 s & < 1k \\ 
+		\hline
+		Workstation & git & whochanged.yaml & 100 s & 102 s & ~8k \\ 
+		\hline
+		Laptop & git & whochanged.yaml & 59 s & 55 s & ~8k \\ 
+		\hline
+		Workstation & git & whoonlast.yaml & 105 s & 2 s & < 1k \\ 
+		\hline
+		Laptop & git & whoonlast.yaml & 60 s & 1 s & < 1k \\ 
+		\hline
+		Action & git & whoonlast.yaml & 132 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & example & authorcommits.yaml & 3 s & 2 s & < 1k \\ 
+		\hline
+		Laptop & example & authorcommits.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Action & example & authorcommits.yaml & 2 s & 0 s & < 1k \\ 
+		\hline
+		Workstation & example & commithash.yaml & 2 s & 0 s & < 1k \\ 
+		\hline
+		Laptop & example & commithash.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Action & example & commithash.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & example & howmuchwork.yaml & 2 s & 2 s & < 1k \\ 
+		\hline
+		Laptop & example & howmuchwork.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Action & example & howmuchwork.yaml & 1 s & 0 s & < 1k \\ 
+		\hline
+		Workstation & example & test.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & example & test.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Action & example & test.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+	\end{tabular}
+	\caption{Runtime measurement - Page 2.}
+	\label{tab:mes-3}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ | m{0.15\textwidth} | m{0.16\textwidth} | m{0.25\textwidth} | m{0.1\textwidth} | m{0.1\textwidth} | m{0.1\textwidth} | }
+		\hline
+		\textbf{Device} & \textbf{Repository} & \textbf{Script} & \textbf{Parsing} & \textbf{Query} & \textbf{Size} \\ 
+		\hline \hline
+		Workstation & example & where.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & example & where.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Action & example & where.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & example & whochanged.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & example & whochanged.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Action & example & whochanged.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & example & whoonlast.yaml & 3 s & 2 s & < 1k \\ 
+		\hline
+		Laptop & example & whoonlast.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Action & example & whoonlast.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & git-qtk & authorcommits.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & git-qtk & authorcommits.yaml & 2 s & 2 s & < 1k \\ 
+		\hline
+		Action & git-qtk & authorcommits.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & git-qtk & commithash.yaml & 2 s & 2 s & < 1k \\ 
+		\hline
+		Laptop & git-qtk & commithash.yaml & 3 s & 2 s & < 1k \\ 
+		\hline
+		Action & git-qtk & commithash.yaml & 3 s & 2 s & < 1k \\ 
+		\hline
+		Workstation & git-qtk & howmuchwork.yaml & 3 s & 2 s & < 1k \\ 
+		\hline
+		Laptop & git-qtk & howmuchwork.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Action & git-qtk & howmuchwork.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & git-qtk & test.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & git-qtk & test.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Action & git-qtk & test.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & git-qtk & where.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & git-qtk & where.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Action & git-qtk & where.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & git-qtk & whochanged.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & git-qtk & whochanged.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Action & git-qtk & whochanged.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & git-qtk & whoonlast.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & git-qtk & whoonlast.yaml & 1 s & 1 s & < 1k \\ 
+		\hline
+		Action & git-qtk & whoonlast.yaml & 2 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & v & authorcommits.yaml & 6 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & v & authorcommits.yaml & 5 s & 1 s & < 1k \\ 
+		\hline
+		Action & v & authorcommits.yaml & 15 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & v & commithash.yaml & 7 s & 2 s & ~13k \\ 
+		\hline
+		Laptop & v & commithash.yaml & 5 s & 2 s & ~13k \\ 
+		\hline
+		Action & v & commithash.yaml & 15 s & 2 s & ~13k \\ 
+		\hline
+		Workstation & v & howmuchwork.yaml & 6 s & 2 s & ~13k \\ 
+		\hline
+	\end{tabular}
+	\caption{Runtime measurement - Page 3.}
+	\label{tab:mes-4}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ | m{0.15\textwidth} | m{0.16\textwidth} | m{0.25\textwidth} | m{0.1\textwidth} | m{0.1\textwidth} | m{0.1\textwidth} | }
+		\hline
+		\textbf{Device} & \textbf{Repository} & \textbf{Script} & \textbf{Parsing} & \textbf{Query} & \textbf{Size} \\ 
+		\hline \hline
+		Laptop & v & howmuchwork.yaml & 6 s & 2 s & ~13k \\ 
+		\hline
+		Action & v & howmuchwork.yaml & 15 s & 2 s & ~13k \\ 
+		\hline
+		Workstation & v & test.yaml & 6 s & 2 s & ~13k \\ 
+		\hline
+		Laptop & v & test.yaml & 5 s & 2 s & ~13k \\ 
+		\hline
+		Action & v & test.yaml & 15 s & 2 s & ~13k \\ 
+		\hline
+		Workstation & v & where.yaml & 6 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & v & where.yaml & 6 s & 1 s & < 1k \\ 
+		\hline
+		Action & v & where.yaml & 17 s & 1 s & < 1k \\ 
+		\hline
+		Workstation & v & whochanged.yaml & 13 s & 25 s & < 1k \\ 
+		\hline
+		Laptop & v & whochanged.yaml & 14 s & 13 s & < 1k \\ 
+		\hline
+		Action & v & whochanged.yaml & 31 s & 13 s & < 1k \\ 
+		\hline
+		Workstation & v & whoonlast.yaml & 6 s & 1 s & < 1k \\ 
+		\hline
+		Laptop & v & whoonlast.yaml & 5 s & 1 s & < 1k \\ 
+		\hline
+		Action & v & whoonlast.yaml & 17 s & 2 s & < 1k \\ 
+		\hline
+	\end{tabular}
+	\caption{Runtime measurement - Page 4.}
+	\label{tab:mes-5}
+\end{table}
 
 
 
-\subsubsection{Results with: Workstation}
-
+We can see in the result that key factor in the runtime is the single threaded performance of the CPU. 
