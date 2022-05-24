@@ -23,7 +23,7 @@ async function runner()
                 const pred = wrap(task.expression, ['__o', '__f'])
                 const before = cache.length;
                 cache = cache.filter(r => pred(r, this.functions))
-                this.logger.log(`Filtering: P(${task.bind.join(', ')}) => ${task.part} | [${readable(before)} -> ${readable(cache.length)}]`)
+                this.logger.log(`Filtering: P${task.id}(${task.bind.join(', ')}) => ${task.part} | [${readable(before)} -> ${readable(cache.length)}]`)
             }
 
             task = wheres.shift()

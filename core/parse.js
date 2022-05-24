@@ -100,15 +100,16 @@ function parseWhere(query)
         expression = simplify(expression, query.join)
     }
 
+    let id = 0
     query.where = decompose(expression).map(part => {
 
         let expression = part
         let bind = findBinding(query, part)
         expression = insFieldBinding(query, expression)
-        expression = insFunctionBinding(query, expression) 
-
-
-        return { part, expression, bind }
+        expression = insFunctionBinding(query, expression)
+        
+        id++
+        return { id, part, expression, bind }
     })
    
 }

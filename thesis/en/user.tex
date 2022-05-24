@@ -142,9 +142,9 @@ Example tags:
 	\item where: author.data > (now() - 1000)
 \end{itemize}
 
-\subsubsection{Join}
+\subsubsection{Join on}
 
-A special case of the filtering is considered as join. 
+A special case of the filtering is considered as join on. 
 This happens if a subset of the statement looks like:\newline
 
 \textbf{{model}.{field} == {model}.{field}}\newline
@@ -153,11 +153,10 @@ In this case the following rules apply:
 
 \begin{itemize}
 	\item If only one of the field is a key for the model then its a \textbf{Right or Left Join}
-	\item If both of them are key, then its a \textbf{Inner Join}
 	\item If none of them is a key then its will be evaluated normally
 \end{itemize}
 
-This sub statements will be removed from the where tag and handled separately for performance reasons
+This sub statements will be removed from the where tag and handled separately for performance reasons.
 
 \subsection{Limit}
 
@@ -320,7 +319,7 @@ As you can see, the parse and the query can be called separately. In this way, y
 But note, that the fist query script will determine which \textit{Plugin}s are used for the history parsing, and if you try to run a script, which
 uses an unused \textit{Plugin}, it will throw an \textit{Error}. With the \textbf{useall} parameter, you can force the parser to use all \textit{Plugin}s.
 
-\subsubsection{Extending with plugins}
+\subsubsection{\label{Extending with plugins}}
 
 \textit{Plugin}s are the parsers for which is used by the global HP (History parser). 
 By default, the \textit{Git} plugin is provided to the user, but the users are able to create their own plugin as well.
@@ -369,7 +368,7 @@ By running the program for any repository with the following script, we will get
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=420px]{cusplug}
-	\caption{Part of the output}
+	\caption{The output with the custom plugin}
 	\label{fig:fig-cusplug}
 \end{figure}
 
