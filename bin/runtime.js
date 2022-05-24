@@ -3,6 +3,7 @@ const path = require('path');
 const { getRepoFromURL } = require('../core/utils')
 const { Query }= require('../core/query')
 const { WILDCARD } = require('../core/utils');
+const os = require('os')
 
 const tests = [
     'https://github.com/imdonix/example',
