@@ -19,21 +19,19 @@ const outfile = path.join(__dirname, '../measurement.csv');
 function tracker2log(repo,query,tracker)
 {
     let res = [
+        os.cpus()[0].model,
         repo,
         query,
         tracker.commits,
-        tracker.openRepository,
-        tracker.setup,
-        tracker.fetch,
-        tracker.post,
-        tracker.runner,
+        tracker.setup + tracker.fetch + tracker.post,
+        tracker.runner + tracker.post,
         tracker.set
     ]
 
     return res.join(WILDCARD.SEP).concat(WILDCARD.NL)
 }
 
-let output = 'repository;query;commits;open;setup;fetch;post;runner;set'.concat(WILDCARD.NL)
+let output = 'cpu;repository;query;commits;load;run;joined'.concat(WILDCARD.NL)
 let count = 0
 
 async function run()

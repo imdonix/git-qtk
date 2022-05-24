@@ -430,4 +430,55 @@ To run the tests just run the following command:
 \chapter{Runtime measurement}
 \label{appx:simulation}
 
-(3)
+An important requirement for the toolkit to be efficient and able to handle large repositories. This is done by the optimizations in the history parser and in the Runner. During the development is was important to track how a change effect the runtime in different script-repository runs.   
+
+For this reason a special action is induced in the toolkit which called runtime measurement. By running it we can get a full report of how much time it takes to run the toolkit on repositories.
+
+The list of bench repository are provided manually and the example script files are used in the process.
+
+\subsubsection{Bench repositories}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ | m{0.35\textwidth} | m{0.35\textwidth} | }
+		\hline
+		\textbf{Repository} & \textbf{Commits} \\
+		\hline \hline
+		\href{https://github.com/imdonix/example}{imdonix/example} & 10 \\
+		\hline
+		\href{https://github.com/Ericsson/CodeCompass}{Ericsson/CodeCompass} & 905 \\
+		\hline
+		\href{https://github.com/catchorg/Catch2}{catchorg/Catch2} & 4.044 \\
+		\hline
+		\href{https://github.com/vlang/v}{vlang/v} & 13.140 \\
+		\hline
+		\href{https://github.com/git/git}{git/git} & 66.783 \\
+		\hline
+	\end{tabular}
+	\caption{Bench repositories with commit count (On master branch)}
+	\label{tab:runtime}
+\end{table}
+
+\subsubsection{Test devices}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ | m{0.15\textwidth} | m{0.45\textwidth} | m{0.15\textwidth} | }
+		\hline
+		\textbf{Nickname} & \textbf{CPU} & \textbf{Memory} \\
+		\hline \hline
+		Workstation & Intel™ Xeon™ E5-2678 v3 @ 2.50GHz (8c/16t) & 32GB DDR3 1333Mhz \\ 
+		\hline
+		Laptop & AMD Ryzen™ 5 5500U @ 2.1GHz (6c/12t) & 16GB DDR4 2666Mhz \\
+		\hline
+	\end{tabular}
+	\caption{Bench devices}
+	\label{tab:devices}
+\end{table}
+
+\subsubsection{Results with: Laptop}
+
+
+
+\subsubsection{Results with: Workstation}
+
