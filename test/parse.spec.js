@@ -174,15 +174,14 @@ describe('Validate query', () =>
 
     describe('when parsing the: where', () =>
     {
-        it('should be true if not given', () =>
+        it('should be empty if not given', () =>
         {
             let query = new Query(params, LOG.VOID)
             query.yaml = { from: 'author', where : null }
             parseFrom(query)
             parseWhere(query)
 
-            assert.equal(query.where[0].expression, 'true')
-            
+            assert.equal(query.where.length, 0)          
         })
 
         it('should be normaly set', () =>
