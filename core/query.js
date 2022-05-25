@@ -216,47 +216,44 @@ class Query
         }
     }
 
-    fetch()
+    async fetch()
     {
-        return new Promise((res, rej) =>
+        let head;
+        
+        if(this.query.start)
         {
-            let head = this.repo.getHeadCommit()
-            
-            if(this.query.start)
-            {
-                head = this.repo.getCommit(this.query.start)
-            }
-            
-            head.then(head =>
-            {
-                let visited = new Set()
-                let queue = new Array()
+            head = await this.repo.getCommit(this.query.start)
+        }
+        else
+        {
+            head = await this.repo.getHeadCommit()
+        }
         
-                queue.push(head)
-                while(queue.length > 0)
+        let visited = new Set()
+        let queue = new Array()
+
+        queue.push(head)
+        while(queue.length > 0)
+        {
+            let commit = queue.shift()
+            let sha = commit.sha()
+
+            if(!visited.has(sha))
+            {
+                visited.add(sha)
+                for (const plugin of this.plugins) 
                 {
-                    let commit = queue.shift()
-                    let sha = commit.sha()
-        
-                    if(!visited.has(sha))
-                    {
-                        visited.add(sha)
-                        for (const plugin of this.plugins) 
-                        {
-                            await plugin.parse(this.db, commit)
-                        }
-        
-                        let parents = await commit.getParents()
-                        queue.push(...parents)
-                    }
+                    await plugin.parse(this.db, commit)
                 }
 
-                this.logger.log(`${visited.size} commit are parsed`)
-                this.tracker['commits'] = visited.size
-                res(visited.size)
-            })
-            .catch(err => rej(err))
-        })        
+                let parents = await commit.getParents()
+                queue.push(...parents)
+            }
+        }
+
+        this.logger.log(`${visited.size} commit are parsed`)
+        this.tracker['commits'] = visited.size
+        return visited.size
     }
 
     async post()
