@@ -7,6 +7,7 @@ const { Promise } = require('nodegit');
 const { cli } = require('../core/cli')
 const { Query, params } = require('../core/query')
 const { loadPlugins, WILDCARD } = require('../core/utils')
+const readline = require('readline');
 
 const global = {
     version : {
@@ -102,7 +103,7 @@ else if(input.example)
         console.log(table.toString())
     }
 }
-else
+else if(input.script)
 {
     const query = new Query(input, console);
 
@@ -114,7 +115,7 @@ else
         .then(tracker => 
         {
             console.log(`Opening : ${tracker.openRepository}s`)
-            console.log(`Parsing : ${tracker.setup + tracker.fetch + tracker.post}s`)
+            console.log(`Parsing : ${tracker.init + tracker.fetch + tracker.post}s`)
     
             return query.run()
         })
@@ -165,6 +166,102 @@ else
             }
             
             throw err
+        })
+    }
+    catch(err)
+    {
+        console.error(err.message)
+    }
+}
+else
+{
+    const query = new Query(input, console);
+
+    try
+    {
+        query.validate()
+        Promise.resolve()
+        .then(() => query.load())   
+        .then(tracker => 
+        {
+            console.log(`Opening : ${tracker.openRepository}s`)
+            console.log(`Parsing : ${tracker.init + tracker.fetch + tracker.post}s`)
+        })
+        .then(() =>
+        {
+            const int = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout
+            });
+
+            int.on('close', () => {
+                process.exit(0);
+            });
+
+            const readnext = () => {
+                int.question('>>> ', str => {
+                    if(str == 'exit')
+                    {
+                        int.close();
+                    }
+                    else
+                    {
+                        query.run(str)
+                        .then(res => 
+                        {
+                            console.log(`Query : ${query.tracker.runner}s`)
+
+                            if(res.length > 0)
+                            {
+                                const template = res[0]
+
+                                const table = new Table({
+                                    head: Object.keys(template)
+                                });
+                    
+                                for(const rec of res)
+                                {
+                                    table.push(Object.values(rec))
+                                }
+            
+                                console.log(table.toString())
+                            }
+                            else
+                            {
+                                console.log('The query result is empty!')
+                            }
+
+                            readnext()
+                        })
+                        .catch(err => 
+                        {
+                            if(err.message)
+                            {
+                                console.error(`Error: ${err.message}`)
+                            }
+                            else
+                            {
+                                console.error(`Something went wrong`)
+                            }
+                            
+                            readnext()
+                        })                        
+                    }
+                })
+            }
+
+            readnext()
+        })
+        .catch(err => 
+        {
+            if(err.message)
+            {
+                console.error(`Error: ${err.message}`)
+            }
+            else
+            {
+                console.error(`Something went wrong`)
+            }
         })
     }
     catch(err)
