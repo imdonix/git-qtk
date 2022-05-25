@@ -241,10 +241,9 @@ class Query
             if(!visited.has(sha))
             {
                 visited.add(sha)
-                for (const plugin of this.plugins) 
-                {
-                    await plugin.parse(this.db, commit)
-                }
+                
+                //Run parse on all plugin async
+                await Promise.all(this.plugins.map(plugin => plugin.parse(this.db, commit)))
 
                 let parents = await commit.getParents()
                 queue.push(...parents)
