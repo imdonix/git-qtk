@@ -1,5 +1,5 @@
-name: How much work [have] people done
+name: How many "big" changes the contributors have done
 from: author a; commit c
 select: a.name; count(c.sha)
-where: a.email == c.author
+where: a.email == c.author && f.path.lenght > 3
 group: a.name
