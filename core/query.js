@@ -229,29 +229,31 @@ class Query
             
             head.then(head =>
             {
-                let visited = 0
-                let history = head.history(Git.Revwalk.SORT)
-
-                history.on('commit', (commit) =>
+                let visited = new Set()
+                let queue = new Array()
+        
+                queue.push(head)
+                while(queue.length > 0)
                 {
-                    for (const plugin of this.plugins) 
+                    let commit = queue.shift()
+                    let sha = commit.sha()
+        
+                    if(!visited.has(sha))
                     {
-                        plugin.parse(this.db, commit)
+                        visited.add(sha)
+                        for (const plugin of this.plugins) 
+                        {
+                            await plugin.parse(this.db, commit)
+                        }
+        
+                        let parents = await commit.getParents()
+                        queue.push(...parents)
                     }
-        
-                    visited++
-                })
+                }
 
-                history.on('error', (err) => {rej(err)})
-        
-                history.on('end', () =>
-                {
-                    this.logger.log(`${visited} commit are parsed`)
-                    this.tracker['commits'] = visited
-                    res(visited)
-                })
-
-                history.start()
+                this.logger.log(`${visited.size} commit are parsed`)
+                this.tracker['commits'] = visited.size
+                res(visited.size)
             })
             .catch(err => rej(err))
         })        
