@@ -103,13 +103,14 @@ function parseWhere(query)
     let id = 0
     query.where = decompose(expression).map(part => {
 
+        let finished = false
         let expression = part
         let bind = findBinding(query, part)
         expression = insFieldBinding(query, expression)
         expression = insFunctionBinding(query, expression)
         
         id++
-        return { id, part, expression, bind }
+        return { id, part, expression, bind, finished }
     })
    
 }

@@ -1,5 +1,5 @@
 name: Testing
 from: commit c; author a
 select: count(c.sha); a.name
-where: c.author == a.email
+where: c.sha == 1 || true && a.name == '' || true && c.author == a.name || true
 group: c.author

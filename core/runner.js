@@ -13,19 +13,25 @@ async function runner()
         let next = nextJoin(added, task)
         if(next.length > 0)
         {
-            cache = j2(this.logger, this.db, this.from, this.join, added, cache, next)
+            cache = j2(this.logger, this.db, this.from, this.join, added, cache, next, task, this.functions)
+
+
         }
         else
         {
-            //Skip join part
+            //Skip predicate if the task is a joinOn
             if(task.part != 'true')
             {
                 const pred = wrap(task.expression, ['__o', '__f'])
                 const before = cache.length;
                 cache = cache.filter(r => pred(r, this.functions))
                 this.logger.log(`Filtering: P${task.id}(${task.bind.join(', ')}) => ${task.part} | [${readable(before)} -> ${readable(cache.length)}]`)
+                task.finished = true
             }
+        }
 
+        if(task.finished)
+        {
             task = wheres.shift()
         }
     }
@@ -33,7 +39,7 @@ async function runner()
     let rem = remainingModel(added, models)
     while(rem)
     {
-        cache = j2(this.logger, this.db, this.from, this.join, added, cache, rem)
+        cache = j2(this.logger, this.db, this.from, this.join, added, cache, rem, null, this.functions)
         rem = remainingModel(added, models)
     }
     
@@ -97,22 +103,35 @@ function nextJoin(added, where)
     return tmp;
 }
 
-function j2(logger, db, from, join, added, cache, next)
+function j2(logger, db, from, join, added, cache, next, task, funs)
 {
     let [on, w] = joinType(join, added, next)
     let tmp;
 
+    
     if(on)
     {
+        //Join on
         added.add(w.on)
         tmp = joinOn(db, from, cache, w)
-        logger.log(`Join on: -> ${w.on} (by ${w.with}) | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+        logger.log(`Join on: |-> ${w.on} (by ${w.with}) | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
     }
     else
     {
         added.add(w)
-        tmp = joinWith(db, from, cache, w)
-        logger.log(`Join with: -> ${w} | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+        if(task && task.bind.length == 1 && task.bind[0] == w)
+        {
+            //Join pred
+            tmp = joinBy(db, from, cache, w, funs, task)
+            logger.log(`Join with: P${task.id}(${task.bind.join(', ')}) -> ${w} | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+            task.finished = true
+        }
+        else
+        {
+            //Join with
+            tmp = joinWith(db, from, cache, w)
+            logger.log(`Join with: -> ${w} | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+        }
     }
 
     return tmp
@@ -122,7 +141,7 @@ function joinWith(db, from, cache, model)
 {
     const tmp = new Array()
 
-    const estimated = old.length * values.length;
+    const estimated = from.length * cache.length;
     if(estimated > MEMORY_THRESHOLD)
     {
         throw new Error(`The selected dataset is too large (${estimated})`)
@@ -170,6 +189,48 @@ function joinOn(db, from, cache, join)
             })
         }
 
+    }
+
+    return tmp
+}
+
+function joinBy(db, from, cache, model, funs, task)
+{
+    const pred = wrap(task.expression, ['__o', '__f'])
+    const tmp = new Array()
+    const filtered = new Array()
+    
+    for (const right of db.get(from.get(model))) 
+    {
+        const obj = new Object()
+        for(const [key, value] of Object.entries(right))
+        {
+            obj[`${model}.${key}`] = value
+        }
+
+        if(pred(obj, funs))
+        {
+            
+            filtered.push(obj)
+        }
+    }
+
+
+    const estimated = filtered.length * cache.length;
+    if(estimated > MEMORY_THRESHOLD)
+    {
+        throw new Error(`The selected dataset is too large (${estimated})`)
+    }
+
+    for (const left of cache) 
+    {
+        for (const right of filtered) 
+        {
+            tmp.push({
+                ...left,
+                ...right
+            })
+        }
     }
 
     return tmp
