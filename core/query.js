@@ -24,9 +24,9 @@ const params = {
     
     script : {
         type: 'string',
-        description: "Relative path to the script",
+        description: "Relative path to the script on load&run",
         keys: ['s', 'script'],
-        required : true,
+        required : false,
         or: ['yaml']
     },
 
@@ -120,10 +120,23 @@ class Query
     {
         this.db = new Database(this.plugins)
 
-        this.yaml = this.query.yaml ? this.query.yaml : this.openQuery()
-        
-        parseStart(this)
-        parseFrom(this)
+        if(this.query.yaml)
+        {
+            this.yaml = this.query.yaml
+            parseStart(this)
+            parseFrom(this)
+        }
+        else if (this.query.script)
+        {
+            this.yaml = this.openQuery()
+            parseStart(this)
+            parseFrom(this)
+        }
+        else
+        {
+            this.query.full = true
+        }        
+
         usePlugins(this)
 
         await this.track(this.openRepository)
@@ -134,8 +147,14 @@ class Query
         return this.tracker
     }
 
-    async run()
+    async run(script)
     {
+        if(script)
+        {
+            this.query.script = script
+            this.yaml = this.openQuery()
+        }
+
         parseFrom(this)
         parseSelect(this)
         parseJoin(this)
