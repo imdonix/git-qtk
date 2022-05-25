@@ -24,9 +24,9 @@ const params = {
     
     script : {
         type: 'string',
-        description: "Relative path to the script",
+        description: "Relative path to the script on load&run",
         keys: ['s', 'script'],
-        required : true,
+        required : false,
         or: ['yaml']
     },
 
@@ -103,6 +103,8 @@ class Query
         {
             this.logger = console
         }   
+
+        this.validate()
     }
 
     async track(fun)
@@ -116,17 +118,53 @@ class Query
 
     async load()
     {
-        this.validate()
         this.db = new Database(this.plugins)
 
-        this.yaml = this.query.yaml ? this.query.yaml : this.openQuery()
-        
+        if(this.query.yaml)
+        {
+            this.yaml = this.query.yaml
+            parseStart(this)
+            parseFrom(this)
+        }
+        else if (this.query.script)
+        {
+            this.yaml = this.openQuery()
+            parseStart(this)
+            parseFrom(this)
+        }
+        else
+        {
+            this.query.full = true
+        }        
+
+        usePlugins(this)
+
         await this.track(this.openRepository)
-        await this.track(this.setup)
+        await this.track(this.init)
         await this.track(this.fetch)
         await this.track(this.post)
   
         return this.tracker
+    }
+
+    async run(script)
+    {
+        if(script)
+        {
+            this.query.script = script
+            this.yaml = this.openQuery()
+        }
+
+        parseFrom(this)
+        parseSelect(this)
+        parseJoin(this)
+        parseWhere(this)
+        parseLimit(this)
+        parseOrder(this)
+        parseGroup(this)
+
+        await this.track(runner)
+        return await this.track(post)
     }
 
     openQuery()
@@ -183,29 +221,6 @@ class Query
         {
             throw new Error(`Repository can't be cloned! ${err}`)
         }
-    }
-
-    async setup()
-    {
-        parseStart(this)
-        parseFrom(this)
-        
-        usePlugins(this)
-
-        parseSelect(this)
-        parseJoin(this)
-        parseWhere(this)
-        parseLimit(this)
-        parseOrder(this)
-        parseGroup(this)
-
-        this.init()
-    }
-
-    async run()
-    {
-        await this.track(runner)
-        return await this.track(post)
     }
 
     init()

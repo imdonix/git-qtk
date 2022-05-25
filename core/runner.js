@@ -14,20 +14,14 @@ async function runner()
         if(next.length > 0)
         {
             cache = j2(this.logger, this.db, this.from, this.join, added, cache, next, task, this.functions)
-
-
         }
         else
         {
-            //Skip predicate if the task is a joinOn
-            if(task.part != 'true')
-            {
-                const pred = wrap(task.expression, ['__o', '__f'])
-                const before = cache.length;
-                cache = cache.filter(r => pred(r, this.functions))
-                this.logger.log(`Filtering: P${task.id}(${task.bind.join(', ')}) => ${task.part} | [${readable(before)} -> ${readable(cache.length)}]`)
-                task.finished = true
-            }
+            const pred = wrap(task.expression, ['__o', '__f'])
+            const before = cache.length;
+            cache = cache.filter(r => pred(r, this.functions))
+            this.logger.log(`Filtering: P${task.id}(${task.bind.join(', ')}) => ${task.part} | [${readable(before)} -> ${readable(cache.length)}]`)
+            task.finished = true
         }
 
         if(task.finished)

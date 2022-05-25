@@ -6,10 +6,9 @@ describe('check valid query inputs', () =>
 {
     it('should fail for missing all required parameters', () =>
     {
-        let query = new Query({}, LOG.VOID)
         try
         {
-            query.validate()
+            new Query({}, LOG.VOID)
             assert.fail("Validation passed on a invalid query")
         }
         catch(err){}        
@@ -17,10 +16,9 @@ describe('check valid query inputs', () =>
 
     it('should fail for missing some required parameters', () =>
     {
-        let query = new Query({script : ''}, LOG.VOID)
         try
         {
-            query.validate()
+            new Query({script : ''}, LOG.VOID)
             assert.fail("Validation passed on a invalid query")
         }
         catch(err){}        
@@ -28,10 +26,9 @@ describe('check valid query inputs', () =>
 
     it('should pass if all required parameter is given', () =>
     {
-        let query = new Query(params, LOG.VOID)
         try
         {
-            query.validate()
+            new Query(params, LOG.VOID)
         }
         catch(err)
         {

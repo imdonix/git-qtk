@@ -1,4 +1,4 @@
 name: Get a single person commits in the repository
 from: author; commit
 select: commit.sha
-where: author.email == 'tejohnson@google.com' && commit.author == author.email
+where: author.email == commit.author
