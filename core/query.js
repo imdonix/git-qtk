@@ -103,6 +103,8 @@ class Query
         {
             this.logger = console
         }   
+
+        this.validate()
     }
 
     async track(fun)
@@ -116,17 +118,34 @@ class Query
 
     async load()
     {
-        this.validate()
         this.db = new Database(this.plugins)
 
         this.yaml = this.query.yaml ? this.query.yaml : this.openQuery()
         
+        parseStart(this)
+        parseFrom(this)
+        usePlugins(this)
+
         await this.track(this.openRepository)
-        await this.track(this.setup)
+        await this.track(this.init)
         await this.track(this.fetch)
         await this.track(this.post)
   
         return this.tracker
+    }
+
+    async run()
+    {
+        parseFrom(this)
+        parseSelect(this)
+        parseJoin(this)
+        parseWhere(this)
+        parseLimit(this)
+        parseOrder(this)
+        parseGroup(this)
+
+        await this.track(runner)
+        return await this.track(post)
     }
 
     openQuery()
@@ -183,29 +202,6 @@ class Query
         {
             throw new Error(`Repository can't be cloned! ${err}`)
         }
-    }
-
-    async setup()
-    {
-        parseStart(this)
-        parseFrom(this)
-        
-        usePlugins(this)
-
-        parseSelect(this)
-        parseJoin(this)
-        parseWhere(this)
-        parseLimit(this)
-        parseOrder(this)
-        parseGroup(this)
-
-        this.init()
-    }
-
-    async run()
-    {
-        await this.track(runner)
-        return await this.track(post)
     }
 
     init()
