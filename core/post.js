@@ -17,7 +17,7 @@ function order(input, order, funs)
         const [exp, pre] = order
         const p = wrap(exp.toString(), ['__o', '__f'])
     
-        input.sort((a,b) => pre(p(a), p(b)) ? 1 : -1)
+        input.sort((a,b) => pre(p(a, funs), p(b, funs)) ? 1 : -1)
     }
 
     return input

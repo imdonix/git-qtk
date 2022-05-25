@@ -5,7 +5,7 @@ async function runner()
     let cache = [new Object()]
     const added = new Set()
     const models = [...this.from.entries()]
-    const wheres = sortRunnable(this.where)
+    const wheres = sortPredicates(this.where)
 
     let task = wheres.shift()
     while(task)
@@ -30,18 +30,18 @@ async function runner()
         }
     }
 
-    let rem = remain(added, models)
+    let rem = remainingModel(added, models)
     while(rem)
     {
         cache = j2(this.logger, this.db, this.from, this.join, added, cache, rem)
-        rem = remain(added, models)
+        rem = remainingModel(added, models)
     }
     
     this.tracker['set'] = cache.length;
     this.result = cache
 }
 
-function hasjoin(joins, added, nexts)
+function joinType(joins, added, nexts)
 {
     for (const join of joins) 
     {
@@ -64,7 +64,7 @@ function hasjoin(joins, added, nexts)
     return [false, nexts[0]]
 }
 
-function remain(added, models)
+function remainingModel(added, models)
 {
     for (const model of models) 
     {
@@ -77,7 +77,7 @@ function remain(added, models)
     return null
 }
 
-function sortRunnable(where)
+function sortPredicates(where)
 {
     return where.sort((a,b) => a.bind.length - b.bind.length)
 }
@@ -97,39 +97,9 @@ function nextJoin(added, where)
     return tmp;
 }
 
-function mix(old, values, model)
-{
-    const tmp = new Array()
-
-    const estimated = old.length * values.length;
-    if(estimated > MEMORY_THRESHOLD)
-    {
-        throw new Error(`The selected dataset is too large (${estimated})`)
-    }
-
-    for (const left of old) 
-    {
-        for (const right of values) 
-        {
-            const comp = new Object()
-            for(const [key, value] of Object.entries(right))
-            {
-                comp[`${model}.${key}`] = value
-            }
-
-            tmp.push({
-                ...left,
-                ...comp
-            })
-        }
-    }
-
-    return tmp
-}
-
 function j2(logger, db, from, join, added, cache, next)
 {
-    let [on, w] = hasjoin(join, added, next)
+    let [on, w] = joinType(join, added, next)
     let tmp;
 
     if(on)
@@ -150,7 +120,32 @@ function j2(logger, db, from, join, added, cache, next)
 
 function joinWith(db, from, cache, model)
 {
-    return mix(cache, db.get(from.get(model)), model)
+    const tmp = new Array()
+
+    const estimated = old.length * values.length;
+    if(estimated > MEMORY_THRESHOLD)
+    {
+        throw new Error(`The selected dataset is too large (${estimated})`)
+    }
+
+    for (const left of cache) 
+    {
+        for (const right of db.get(from.get(model))) 
+        {
+            const comp = new Object()
+            for(const [key, value] of Object.entries(right))
+            {
+                comp[`${model}.${key}`] = value
+            }
+
+            tmp.push({
+                ...left,
+                ...comp
+            })
+        }
+    }
+
+    return tmp
 }
 
 function joinOn(db, from, cache, join)
