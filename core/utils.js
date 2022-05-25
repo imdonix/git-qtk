@@ -1,5 +1,6 @@
 const fs = require('fs')
 
+//Decompose a statement into sub parts by &&
 function decompose(str)
 {
     const tmp = new Array()
@@ -61,7 +62,7 @@ function wrap(body, params)
     }
     catch(err)
     {
-        throw new Error(`Syntax error in query file: ${err.massage}`)
+        throw new Error(`Syntax error in script file: ${err.massage}`)
     }
        
 }
@@ -99,6 +100,7 @@ function loadModels(plugins)
     return models
 }
 
+//Return the joined records count in a human readable way
 function readable(num)
 {
     if(num == 1)
