@@ -25,7 +25,7 @@ function tracker2log(repo,query,tracker)
         repo,
         query,
         tracker.commits,
-        tracker.setup + tracker.fetch + tracker.post,
+        tracker.init + tracker.fetch + tracker.post,
         tracker.runner + tracker.post,
         tracker.set
     ]
@@ -42,41 +42,46 @@ async function run()
 
     for (const runtime of tests) 
     {       
-        for(const file of all)
-        {
-            if(file.indexOf('.yaml') > 0)
-            {
-                count++
+        const logger = {
+            log : (msg) => console.log(`(${count}) [${getRepoFromURL(runtime)}] --> ${msg}`)
+        }
+        let query = new Query({
+            repository: runtime
+        }, logger)
 
-                console.log(`(${count}) [${getRepoFromURL(runtime)}] Running '${file}'`);
-                
-                let logger = {
-                    log : (msg) => console.log(`(${count}) [${getRepoFromURL(runtime)}] --> ${msg}`)
-                }
-    
-                let query = new Query({
-                    repository: runtime,
-                    script: path.join(examples, file)
-                }, logger)
-    
-                let out;
-                try
+        try
+        {
+            await query.load()
+
+            for(const file of all)
+            {
+                if(file.indexOf('.yaml') > 0)
                 {
-                    await query.load()
-                    await query.run()
-                    out = tracker2log(runtime, file, query.tracker)
-                }
-                catch(err)
-                {
-                    out = err.message.concat(WILDCARD.NL)
-                }
+                    count++
+                    console.log(`(${count}) [${getRepoFromURL(runtime)}] Running '${file}'`);
                 
-                output = output.concat(out)
-    
-                console.log(`(${count}) [${getRepoFromURL(runtime)}] --> ${out}`);
-                console.log(`(${count}) [${getRepoFromURL(runtime)}] Query '${file}' finished`);
-                console.log(`-----`);
+                    let out;
+                    try
+                    {
+                        await query.run(path.join(examples, file))
+                        out = tracker2log(runtime, file, query.tracker)
+                    }
+                    catch(err)
+                    {
+                        out = err.message.concat(WILDCARD.NL)
+                    }
+                    
+                    output = output.concat(out)
+        
+                    console.log(`(${count}) [${getRepoFromURL(runtime)}] --> ${out}`);
+                    console.log(`(${count}) [${getRepoFromURL(runtime)}] Query '${file}' finished`);
+                    console.log(`-----`);
+                }
             }
+        }
+        catch(err)
+        {
+            console.log(`(${count}) [${getRepoFromURL(runtime)}] Failed to load! ${err}`);
         }
     }
 }
