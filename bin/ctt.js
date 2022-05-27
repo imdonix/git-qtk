@@ -84,7 +84,7 @@ function s(num)
 
 fs.readdir(`${__dirname}/../gen`)
 .then(files => files.filter(file => file.indexOf('.csv') >= 0))
-.then(files => Promise.all(files.map(file => fs.readFile(`{__dirname}/../gen/${file}`)))) 
+.then(files => Promise.all(files.map(file => fs.readFile(`${__dirname}/../gen/${file}`)))) 
 .then(contents => 
 {
     const sum = new Array()
