@@ -1,9 +1,12 @@
 # Project #
 
 # Test repositories
-example/
-CodeCompass/
-git/
+example
+git-qtk
+CodeCompass
+Catch2
+v
+git
 
 # Node.js #
 
