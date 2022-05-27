@@ -16,7 +16,7 @@ const tests = [
 ]
 
 const examples = path.join(__dirname, '../examples');
-const cpu = os.cpus()[0].model.split(' ').join('-')
+const cpu = os.cpus()[0].model.trim().split(' ').join('-')
 const outfile = path.join(__dirname, `../gen/${cpu}.csv`);
 
 function tracker2log(repo,query,tracker)
