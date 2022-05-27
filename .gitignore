@@ -1,8 +1,5 @@
 # Project #
 
-# Runtime tests
-gen/
-
 # Test repositories
 example/
 CodeCompass/
