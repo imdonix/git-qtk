@@ -95,7 +95,10 @@ fs.readdir(`${__dirname}/../gen`)
         lines.shift() // remove header
         for (const l of lines) 
         {
-            sum.push(l)
+            if(l != '')
+            {
+                sum.push(l)
+            }
         }
     }
     return sum
