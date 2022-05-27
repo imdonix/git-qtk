@@ -136,8 +136,8 @@ fs.readdir(__dirname + + '/../gen')
     `
     sum += str
 
-    console.log('table.tex content generated')
+    console.log('gen/table.texgen generated')
     return sum
 })
-.then(out => fs.writeFile(__dirname + '/../table.tex', out))
+.then(out => fs.writeFile(__dirname + '/../gen/table.texgen', out))
 .catch(err => console.error(err))

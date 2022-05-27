@@ -26,13 +26,15 @@ jobs:
         run: npm run runtime
       - uses: actions/upload-artifact@v3
         with:
-          path: measurement.csv
+          path: gen/*.csv
   build_latex:
       name: 'Create Thesis document'
       runs-on: ubuntu-latest
       steps:
         - name: Set up Git repository
           uses: actions/checkout@v2
+        - name: Generate runtime measurement table
+          run: npm run ctt
         - name: Compile LaTeX document
           uses: xu-cheng/latex-action@v2
           with:
