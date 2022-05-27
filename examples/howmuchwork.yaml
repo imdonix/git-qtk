@@ -1,5 +1,5 @@
 name: How many "big" changes the contributors have done
 from: author a; commit c
 select: a.name; count(c.sha)
-where: a.email == c.author && f.path.length > 3
+where: a.email == c.author && c.changes.length > 3
 group: a.name
