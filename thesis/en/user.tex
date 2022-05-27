@@ -255,7 +255,7 @@ All the available commands will be displayed with description when running the p
 	\centering
 	\includegraphics[width=350px]{help}
 	\caption{Help of the tool}
-	\label{fig:fig-help}
+	\label{fig:fig-help-v2}
 \end{figure}
 
 \subsubsection{Plugin}
@@ -283,7 +283,7 @@ To run a query on a specified repository you must provide the following informat
 
 \begin{itemize}
 	\item \textbf{-r} or -\textbf{repository} to specify which repository history should be parsed. You can give a local folder relative path or a full URL which will be cloned.
-	\item \textbf{-s} or -\textbf{script} to specify which query you want to run. You can give a relative path to the query file.
+	\item \textbf{-s} or -\textbf{script} to specify which script you want to run. You can give a relative path to the script file.
 \end{itemize}
 
 This will run the query on the given repository, and the result will be printed to the standard output by default.
@@ -295,6 +295,14 @@ This will run the query on the given repository, and the result will be printed 
 	\label{fig:fig-query}
 \end{figure}
 
+If you want to run multiple scripts in a repository without re-loading the whole history you can use the read–eval–print loop which is avaibale by only providing the repository with the \textbf{-r} flag, you can exit with the \textbf{exit} command.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=420px]{repl}
+	\caption{Part of the output}
+	\label{fig:fig-query-repl}
+\end{figure}
 
 \subsection{As a Node.js library}
 

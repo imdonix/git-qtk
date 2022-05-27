@@ -188,7 +188,7 @@ be used by the \textit{Runner} itself.
 
 Before talking about how the history is evaluated into a user readable output. Lets take a look
 how the history parsing. This part is done by the main \textit{Query} class with the loaded
-plugin. First the repository is loaded either by cloning it from Github or by loading a local copy of it. After that if the script file contain the main commit sha then the commit will be the starting point of the algorithm if not them the master commit will provide the starting point.
+plugin. First the repository is loaded either by cloning it from Github or by loading a local copy of it. After that if the script file contain the main commit SHA then the commit will be the starting point of the algorithm if not them the master commit will provide the starting point.
 
 The history walker algorithm is based on a breadth-first search.
 
@@ -323,6 +323,10 @@ And the execution list will be:
 	\caption{Execution list with join}
 	\label{fig:fig-joine}
 \end{figure}
+
+\subsubsection{Join with}
+
+Other optimization is done when a join is happening and there is a predicate which only filtering the currently joining model. It this case the already filtered model will be joined.
 
 \section{Tools}
 
