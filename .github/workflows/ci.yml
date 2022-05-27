@@ -32,7 +32,7 @@ jobs:
           working_directory: thesis
           root_file: thesis_en.tex
           latexmk_shell_escape: true
-      - name: Upload the compiled pdf
+      - name: Upload the compiled pdf & csv
         uses: actions/upload-artifact@v2.2.4
         with:
           name: thesis
