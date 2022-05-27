@@ -13,8 +13,7 @@ const header = `\\begin{table}[H]
 `
 const devices = {
     '5500U' : 'Laptop',
-    'E5-2689' : 'Workstation',
-    '8370C' : 'Action'
+    'E5-2689' : 'Workstation'
 }
 
 function comaprator(al, bl)
@@ -67,7 +66,7 @@ function dev(dev)
         }        
     }
 
-    return 'Unknown'
+    return 'Action'
 }
 
 function s(num)
