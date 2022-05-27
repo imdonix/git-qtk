@@ -87,16 +87,18 @@ fs.readdir(__dirname + '/../gen')
 .then(files => Promise.all(files.map(file => fs.readFile(file))))
 .then(contents => 
 {
-    const lines = new Array()
+    const sum = new Array()
+    
     for(const content of contents)
     {
-        const inp = input.toString().split('\n')
-        for (const l of inp) 
+        const lines = input.toString().split('\n')
+        lines.shift() // remove header
+        for (const l of lines) 
         {
-            lines.push(l)
+            sum.push(l)
         }
     }
-    return lines
+    return sum
 })
 .then(lines => {
     
@@ -106,7 +108,7 @@ fs.readdir(__dirname + '/../gen')
     let i = 0
     let page = 1
 
-    lines.shift() // remove header
+    
     lines = lines.filter(s => s != '')
     lines.sort(comaprator)
     for (const line of lines) 
