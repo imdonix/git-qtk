@@ -9,13 +9,7 @@ const { LOG } = require('../core/utils')
 
 describe('running an query on example repository', () =>
 {
-    const query = new Query({
-        repository: 'test/example', 
-        yaml: {
-            from: 'commit c',
-            select: '$'
-        }
-    }, LOG.VOID)
+    const query = new Query({ repository: 'test/example' }, LOG.VOID)
 
     before(done => {
         
@@ -41,13 +35,63 @@ describe('running an query on example repository', () =>
         assert.equal(query.view().view('file').size, 6)
     })
 
-    it('it can run the query', () => {
-        query.run()
+    it('it can run a query', async () => {
+        query.yaml = {
+            from: 'commit c',
+            select: '$'
+        }
+
+        return query.run()
         .then(res =>
         {
-            assert.equal(res[0]['c.author'] == 'tamas.donix@gmail.com')
+            assert.equal(res[0]['c.author'], 'tamas.donix@gmail.com')
         })
     })
 
+
+    it('it runs "authorcommits.yaml" correctly', async () => {
+        return query.run('./examples/authorcommits.yaml')
+        .then(res =>
+        {
+            assert.equal(res[0]['commit.sha'], 'b5b3e89454cf9644d4c576482b173178108d60c1')
+            assert.equal(res.length, 10)
+        })
+    })
+
+    it('it runs "commithash.yaml" correctly', async () => {
+        return query.run('./examples/commithash.yaml')
+        .then(res =>
+        {
+            assert.equal(res[0]['short(c.sha)'], 'B5B3E8')
+            assert.equal(res.length, 10)
+        })
+    })
+
+    it('it runs "howmuchwork.yaml" correctly', async () => {
+        return query.run('./examples/howmuchwork.yaml')
+        .then(res =>
+        {
+            console.log(res)
+            assert.equal(res[0]['a.name'], 'imdonix')
+            assert.equal(res[0]['count(c.sha)'], 1)
+            assert.equal(res.length, 1)
+        })
+    })
+
+    it('it runs "whochanged.yaml" correctly', async () => {
+        return query.run('./examples/whochanged.yaml')
+        .then(res =>
+        {
+            assert.equal(res.length, 0)
+        })
+    })
+
+    it('it runs "whoonlast.yaml" correctly', async () => {
+        return query.run('./examples/whoonlast.yaml')
+        .then(res =>
+        {
+            assert.equal(res.length, 0)
+        })
+    })
 
   });

@@ -266,6 +266,13 @@ else
     }
     catch(err)
     {
-        console.error(err.message)
+        if(err.message)
+        {
+            console.error(`Error: ${err.message}`)
+        }
+        else
+        {
+            console.error(`Something went wrong`)
+        }
     }
 }
