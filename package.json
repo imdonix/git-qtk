@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node app.js",
     "test": "mocha --timeout 10000",
-    "runtime": "node --max_old_space_size=12288 ./bin/runtime.js"
+    "runtime": "node --max_old_space_size=12288 ./bin/runtime.js",
+    "ctt": "node ./bin/ctt.js"
   },
   "bin": {
     "git-qtk": "./bin/main.js --max_old_space_size=8192"

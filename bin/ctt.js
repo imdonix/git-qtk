@@ -1,8 +1,9 @@
 #! /usr/bin/env node
-// Convert CSV into Latex table for runtime
+// Convert runtime CSVs into Latex table for thesis
 
 const fs = require('fs').promises
-const tablesize = 6*6
+const rows = 40
+
 const header = `\\begin{table}[H]
 \\centering
 \\begin{tabular}{ | m{0.15\\textwidth} | m{0.16\\textwidth} | m{0.25\\textwidth} | m{0.1\\textwidth} | m{0.1\\textwidth} | m{0.1\\textwidth} | }
@@ -12,8 +13,7 @@ const header = `\\begin{table}[H]
 `
 const devices = {
     '5500U' : 'Laptop',
-    'E5-2689' : 'Workstation',
-    '8370C' : 'Action'
+    'E5-2689' : 'Workstation'
 }
 
 function comaprator(al, bl)
@@ -66,7 +66,7 @@ function dev(dev)
         }        
     }
 
-    return 'Unknown'
+    return 'Action'
 }
 
 function s(num)
@@ -81,18 +81,38 @@ function s(num)
     }
 }
 
-fs.open(__dirname + '/../measurement.csv')
-.then(file => fs.readFile(file))
-.then(input => {
-    let lines = input.toString().split('\n')
+fs.readdir(`${__dirname}/../gen`)
+.then(files => files.filter(file => file.indexOf('.csv') >= 0))
+.then(files => Promise.all(files.map(file => fs.readFile(`${__dirname}/../gen/${file}`)))) 
+.then(contents => 
+{
+    const sum = new Array()
+    
+    for(const content of contents)
+    {
+        const lines = content.toString().split('\n')
+        lines.shift() // remove header
+        for (const l of lines) 
+        {
+            if(l != '')
+            {
+                sum.push(l)
+            }
+        }
+    }
+    return sum
+})
+.then(lines => {
+    
     let sum = new String()
 
     let str = new String(header)
     let i = 0
     let page = 1
 
-    lines.shift() // remove header
+    
     lines = lines.filter(s => s != '')
+    lines = lines.filter(s => s.indexOf(';') >= 0)
     lines.sort(comaprator)
     for (const line of lines) 
     {
@@ -101,7 +121,7 @@ fs.open(__dirname + '/../measurement.csv')
         str += '\\hline\n'
         i++
 
-        if(i > tablesize)
+        if(i > rows)
         {
             str += `\\end{tabular}
             \\caption{Runtime measurement - Page ${page++}.}
@@ -121,8 +141,8 @@ fs.open(__dirname + '/../measurement.csv')
     `
     sum += str
 
-    console.log('table.tex content generated')
+    console.log('gen/table.texgen generated')
     return sum
 })
-.then(out => fs.writeFile(__dirname + '/../table.tex', out))
+.then(out => fs.writeFile(__dirname + '/../gen/table.tex', out))
 .catch(err => console.error(err))
