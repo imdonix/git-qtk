@@ -82,7 +82,7 @@ function s(num)
     }
 }
 
-fs.readdir(__dirname + + '/../gen')
+fs.readdir(__dirname + '/../gen')
 .then(files => files.filter(file => file.indexOf('.csv') >= 0))
 .then(files => Promise.all(files.map(file => fs.readFile(file))))
 .then(contents => 
