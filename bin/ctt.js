@@ -2,7 +2,7 @@
 // Convert runtime CSVs into Latex table for thesis
 
 const fs = require('fs').promises
-const tablesize = rows
+const rows = 40
 
 const header = `\\begin{table}[H]
 \\centering
