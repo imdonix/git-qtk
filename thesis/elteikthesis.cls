@@ -28,6 +28,8 @@
 \RequirePackage{etoolbox}
 \RequirePackage{xparse}
 \RequirePackage{ifthen}
+\RequirePackage{pdfpages}
+% ------------------------------
 
 % ------------------------------
 % Processing parameters
