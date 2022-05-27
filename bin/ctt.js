@@ -1,8 +1,9 @@
 #! /usr/bin/env node
-// Convert CSV into Latex table for runtime
+// Convert runtime CSVs into Latex table for thesis
 
 const fs = require('fs').promises
-const tablesize = 6*6
+const tablesize = rows
+
 const header = `\\begin{table}[H]
 \\centering
 \\begin{tabular}{ | m{0.15\\textwidth} | m{0.16\\textwidth} | m{0.25\\textwidth} | m{0.1\\textwidth} | m{0.1\\textwidth} | m{0.1\\textwidth} | }
@@ -81,10 +82,24 @@ function s(num)
     }
 }
 
-fs.open(__dirname + '/../measurement.csv')
-.then(file => fs.readFile(file))
-.then(input => {
-    let lines = input.toString().split('\n')
+fs.readdir(__dirname + + '/../gen')
+.then(files => files.filter(file => file.indexOf('.csv') >= 0))
+.then(files => Promise.all(files.map(file => fs.readFile(file))))
+.then(contents => 
+{
+    const lines = new Array()
+    for(const content of contents)
+    {
+        const inp = input.toString().split('\n')
+        for (const l of inp) 
+        {
+            lines.push(l)
+        }
+    }
+    return lines
+})
+.then(lines => {
+    
     let sum = new String()
 
     let str = new String(header)
@@ -101,7 +116,7 @@ fs.open(__dirname + '/../measurement.csv')
         str += '\\hline\n'
         i++
 
-        if(i > tablesize)
+        if(i > rows)
         {
             str += `\\end{tabular}
             \\caption{Runtime measurement - Page ${page++}.}

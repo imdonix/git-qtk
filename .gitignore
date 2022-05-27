@@ -1,9 +1,14 @@
+# Project #
+
 # Runtime tests
+gen/
+
+# Test repositories
 example/
 CodeCompass/
 git/
-measurement.csv
-table.tex
+
+# Node.js #
 
 # Logs
 logs

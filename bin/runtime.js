@@ -16,12 +16,13 @@ const tests = [
 ]
 
 const examples = path.join(__dirname, '../examples');
-const outfile = path.join(__dirname, '../measurement.csv');
+const cpu = os.cpus()[0].model.split(' ').join('-')
+const outfile = path.join(__dirname, `../gen/${cpu}.csv`);
 
 function tracker2log(repo,query,tracker)
 {
     let res = [
-        os.cpus()[0].model,
+        cpu,
         repo,
         query,
         tracker.commits,
