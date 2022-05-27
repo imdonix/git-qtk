@@ -4,7 +4,7 @@ on: push
 
 jobs:
   int:
-    name: 'Run tests & runtime measurement'
+    name: 'Test & Runtime & Thesis'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v1
