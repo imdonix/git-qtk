@@ -113,6 +113,7 @@ fs.readdir(`${__dirname}/../gen`)
 
     
     lines = lines.filter(s => s != '')
+    lines = lines.filter(s => s.indexOf(';') >= 0)
     lines.sort(comaprator)
     for (const line of lines) 
     {
