@@ -82,9 +82,9 @@ function s(num)
     }
 }
 
-fs.readdir(__dirname + '/../gen')
+fs.readdir(`${__dirname}/../gen`)
 .then(files => files.filter(file => file.indexOf('.csv') >= 0))
-.then(files => Promise.all(files.map(file => fs.readFile(file))))
+.then(files => Promise.all(files.map(file => fs.readFile(`{__dirname}/../gen/${file}`)))) 
 .then(contents => 
 {
     const sum = new Array()
@@ -141,5 +141,5 @@ fs.readdir(__dirname + '/../gen')
     console.log('gen/table.texgen generated')
     return sum
 })
-.then(out => fs.writeFile(__dirname + '/../gen/table.texgen', out))
+.then(out => fs.writeFile(__dirname + '/../gen/table.tex', out))
 .catch(err => console.error(err))
