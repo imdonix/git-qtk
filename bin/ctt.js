@@ -91,7 +91,7 @@ fs.readdir(`${__dirname}/../gen`)
     
     for(const content of contents)
     {
-        const lines = input.toString().split('\n')
+        const lines = content.toString().split('\n')
         lines.shift() // remove header
         for (const l of lines) 
         {
