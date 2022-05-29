@@ -1,6 +1,6 @@
 {
   "name": "git-qtk",
-  "version": "0.3.2",
+  "version": "1.0.0",
   "description": "A toolkit which provides you a quick and easy way to extract metadata from git-based repositories.",
   "main": "app.js",
   "directories": {
