@@ -40,4 +40,4 @@ Unit tests are implemented with the mocha framework:
 
 ### Runtime measurement
 The runtime measurement will run multiple scripts on multiple repositories.  
-`npm run runtime` -> `./mesurement.csv`
+`npm run runtime` -> `./gen/[CPU name].csv`
