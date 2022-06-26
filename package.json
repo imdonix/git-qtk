@@ -13,7 +13,7 @@
     "ctt": "node ./bin/ctt.js"
   },
   "bin": {
-    "git-qtk": "./bin/main.js --max_old_space_size=8192"
+    "git-qtk": "./bin/main.js"
   },
   "repository": {
     "type": "git",
@@ -38,7 +38,7 @@
     "unzipper": "^0.10.11"
   },
   "engines": {
-    "node": "14.19.0",
-    "npm": "6.14.16"
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
   }
 }
