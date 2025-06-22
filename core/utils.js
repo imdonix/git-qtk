@@ -80,10 +80,10 @@ function abs()
 function loadPlugins()
 {
     const plugins = new Array()
-    const paths = fs.readdirSync(`${__dirname}/../plugins`)
+    const paths = fs.readdirSync(`${__dirname}/plugins`)
     for (const file of paths) 
     {
-        const Class = require(`${__dirname}/../plugins/${file}`)
+        const Class = require(`${__dirname}/plugins/${file}`)
         plugins.push(new Class())
     }
 

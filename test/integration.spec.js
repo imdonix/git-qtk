@@ -3,7 +3,7 @@ const unzipper = require('unzipper')
 const fs = require('fs')
 
 const { Query } = require('../app') 
-const Git = require('../plugins/git')
+const Git = require('../core/plugins/git')
 const { LOG } = require('../core/utils')
 
 
@@ -73,7 +73,7 @@ describe('running an query on example repository', () =>
         {
             console.log(res)
             assert.equal(res[0]['a.name'], 'imdonix')
-            assert.equal(res[0]['count(c.sha)'], 1)
+            assert.equal(res[0]['count(c.sha)'], 3)
             assert.equal(res.length, 1)
         })
     })

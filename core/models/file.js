@@ -1,4 +1,4 @@
-const Model = require('../core/model')
+const Model = require('../model')
 
 class File extends Model
 {

@@ -19,7 +19,7 @@ class Plugin
     async init() { abs() }
 
     //run for each commit
-    async parse(db, commit) { abs() }
+    parse(db, commit) { abs() }
 
     //run at the end of the parsing
     async post() { abs() }

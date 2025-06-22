@@ -1,4 +1,4 @@
-const Model = require('../core/model')
+const Model = require('../model')
 
 class Commit extends Model
 {
@@ -23,14 +23,14 @@ class Commit extends Model
         return 'sha'
     }
 
-    parse(input, set)
+    parse(commit)
     { 
         return {
-            sha: input.sha(),
-            author: input.author().email(),
-            date: input.date(),
-            message: input.message(),
-            changes: [...set]
+            sha: commit.hash,
+            author: commit.author.email,
+            date: new Date(commit.authorDate),
+            message: commit.message,
+            changes: [...commit.files]
         }
     }
 

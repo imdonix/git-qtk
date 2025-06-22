@@ -7,7 +7,7 @@
     "test": "./test"
   },
   "scripts": {
-    "start": "node app.js",
+    "dev": "node app.js",
     "test": "mocha --timeout 10000",
     "runtime": "node --max_old_space_size=12288 ./bin/runtime.js",
     "ctt": "node ./bin/ctt.js"
@@ -30,7 +30,6 @@
   "homepage": "https://github.com/imdonix/git-qtk#readme",
   "dependencies": {
     "cli-table": "^0.3.11",
-    "nodegit": "^0.27.0",
     "yaml": "^1.10.2"
   },
   "devDependencies": {
@@ -38,7 +37,6 @@
     "unzipper": "^0.10.11"
   },
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.0.0"
+    "node": ">=22.0.0"
   }
 }

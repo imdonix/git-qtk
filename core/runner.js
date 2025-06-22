@@ -20,7 +20,7 @@ async function runner()
             const pred = wrap(task.expression, ['__o', '__f'])
             const before = cache.length;
             cache = cache.filter(r => pred(r, this.functions))
-            this.logger.log(`Filtering: P${task.id}(${task.bind.join(', ')}) => ${task.part} | [${readable(before)} -> ${readable(cache.length)}]`)
+            this.logger.log(`[Runner] Filtering: P${task.id}(${task.bind.join(', ')}) => ${task.part} | [${readable(before)} -> ${readable(cache.length)}]`)
             task.finished = true
         }
 
@@ -108,7 +108,7 @@ function j2(logger, db, from, join, added, cache, next, task, funs)
         //Join on
         added.add(w.on)
         tmp = joinOn(db, from, cache, w)
-        logger.log(`Join on: |-> ${w.on} (by ${w.with}) | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+        logger.log(`[Runner] Join on: |-> ${w.on} (by ${w.with}) | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
     }
     else
     {
@@ -117,14 +117,14 @@ function j2(logger, db, from, join, added, cache, next, task, funs)
         {
             //Join pred
             tmp = joinBy(db, from, cache, w, funs, task)
-            logger.log(`Join with: P${task.id}(${task.bind.join(', ')}) -> ${w} | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+            logger.log(`[Runner] Join with: P${task.id}(${task.bind.join(', ')}) -> ${w} | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
             task.finished = true
         }
         else
         {
             //Join with
             tmp = joinWith(db, from, cache, w)
-            logger.log(`Join with: -> ${w} | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
+            logger.log(`[Runner] Join with: -> ${w} | [${readable(cache.length)} -> ${readable(tmp.length)}]`)
         }
     }
 

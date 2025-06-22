@@ -1,4 +1,4 @@
-const Model = require('../core/model')
+const Model = require('../model')
 
 class Author extends Model
 {
@@ -20,11 +20,11 @@ class Author extends Model
         return 'email'
     }
 
-    parse(input)
+    parse(commit)
     { 
         return {
-            email: input.email(),
-            name: input.name()
+            email: commit.author.email,
+            name: commit.author.name
         }
     }
 

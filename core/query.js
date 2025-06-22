@@ -1,7 +1,6 @@
 
 const fs = require('fs')
 const yaml = require('yaml')
-const Git = require('nodegit')
 
 const Plugin = require('./plugin')
 const Database = require('./database')
@@ -9,6 +8,7 @@ const Database = require('./database')
 const runner = require('./runner')
 const post = require('./post')
 
+const { gitVersion, gitOpen, gitClone, gitFetch } = require('./api')
 const { getRepoFromURL, loadModels, loadPlugins } = require('./utils')
 const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin, parseStart } = require('./parse')
 
@@ -26,7 +26,7 @@ const params = {
         type: 'string',
         description: "Relative path to the script on load&run",
         keys: ['s', 'script'],
-        required : false,
+        required : true,
         or: ['yaml']
     },
 
@@ -186,16 +186,20 @@ class Query
         const name = getRepoFromURL(this.query.repository)
         const path = this.query.root ? `${this.query.root}/${name}` : `./${name}`
 
+        const version = await gitVersion()
+        this.logger.log(`[${version}]`)
+
         if(!this.query.clean)
         {
             try
             {
-                this.repo = await Git.Repository.open(path)
+                this.repo = await gitOpen(path)
+                this.logger.log(`[Open] Repository '${path}' found!`)
                 return
             }
             catch(err)
             {
-                this.logger.log(`Repository '${name}' not found!`)
+                this.logger.log(`[Open] Repository '${name}' not found! ${err}`)
             }
         }
         else
@@ -203,18 +207,18 @@ class Query
             try
             {
                 fs.rmSync(path, { recursive: true, force: true })
-                this.logger.log(`Repository '${name}' deleted!`)
+                this.logger.log(`[Open] Repository '${name}' deleted!`)
             }
             catch(err)
             {
-                this.logger.log(`Repository '${name}' not found!`)
+                this.logger.log(`[Open] Repository '${name}' not found!`)
             }
         }       
 
         try
         {
-            this.logger.log(`Cloning ${this.query.repository} ...`)
-            this.repo = await Git.Clone(this.query.repository, path)
+            this.logger.log(`[Open] Cloning ${this.query.repository} ...`)
+            this.repo = await gitClone(this.query.repository, path)
             return
         }
         catch(err)
@@ -233,41 +237,16 @@ class Query
 
     async fetch()
     {
-        let head;
-        
-        if(this.query.start)
-        {
-            head = await this.repo.getCommit(this.query.start)
-        }
-        else
-        {
-            head = await this.repo.getHeadCommit()
-        }
-        
-        let visited = new Set()
-        let queue = new Array()
+        let visited = 0
+        await gitFetch(this.repo, (commit) => {
+            console.log(commit)
+            visited++
+            this.plugins.map(plugin => plugin.parse(this.db, commit))
+        })
 
-        queue.push(head)
-        while(queue.length > 0)
-        {
-            let commit = queue.shift()
-            let sha = commit.sha()
-
-            if(!visited.has(sha))
-            {
-                visited.add(sha)
-                
-                //Run parse on all plugin async
-                await Promise.all(this.plugins.map(plugin => plugin.parse(this.db, commit)))
-
-                let parents = await commit.getParents()
-                queue.push(...parents)
-            }
-        }
-
-        this.logger.log(`${visited.size} commit are parsed`)
-        this.tracker['commits'] = visited.size
-        return visited.size
+        this.logger.log(`[Parser] ${visited} commit are parsed`)
+        this.tracker['commits'] = visited
+        return visited
     }
 
     async post()
@@ -340,15 +319,10 @@ function filterUnusedPlugins(plugins, from)
 
 function usePlugins(query)
 {
-    const before = query.plugins.length
-    
     if(!query.query.full)
     {
         query.plugins = filterUnusedPlugins(query.plugins, query.from)
     }
-
-    query.logger.log(`${before} of ${query.plugins.length} plugin will be used`)
-    
 }
 
 function populateFunctions(query)

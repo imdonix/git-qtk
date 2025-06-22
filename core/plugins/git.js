@@ -1,4 +1,4 @@
-const Plugin = require('../core/plugin')
+const Plugin = require('../plugin')
 
 const Author = require('../models/author')
 const Commit = require('../models/commit')
@@ -30,36 +30,23 @@ class Git extends Plugin
         this.filecache = new Map()
     }
 
-    async parse(db, commit)
+    parse(db, commit)
     {
-        let sha = commit.sha()
+        db.add(this.auth, this.auth.parse(commit))
+        db.add(this.commit, this.commit.parse(commit))
 
-        let changed = new Array()
-        let diffs = await commit.getDiff()
-        for (const dif of diffs) 
-        {
-            for (let i = 0; i < dif.numDeltas(); i++) 
-            {
-                let delta = dif.getDelta(i)
-                changed.push(delta.newFile().path())
-            }    
-        }
-
-        db.add(this.auth, this.auth.parse(commit.author()))
-        db.add(this.commit, this.commit.parse(commit, changed))
-
-        for (const file of changed) 
+        for (const file of commit.files) 
         {
             if(this.filecache.has(file))
             {
-                this.filecache.get(file).modified = sha
+                this.filecache.get(file).modified = commit.hash
             }
             else
             {
                 this.filecache.set(file, {
                     path: file,
-                    created : sha,
-                    modified: sha
+                    created : commit.hash,
+                    modified: commit.hash
                 })
             }
         }
