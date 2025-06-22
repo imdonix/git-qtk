@@ -239,7 +239,6 @@ class Query
     {
         let visited = 0
         await gitFetch(this.repo, (commit) => {
-            console.log(commit)
             visited++
             this.plugins.map(plugin => plugin.parse(this.db, commit))
         })
