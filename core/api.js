@@ -96,7 +96,7 @@ function gitFetch(repo, commitHandler)
         if (!prefixMatch) throw new Error('Invalid person line: ' + line)
 
         const rest = line.substring(prefixMatch[0].length)
-        const emailMatch = rest.match(/<([^>]+)>$/)
+        const emailMatch = rest.match(/<([^>]*)>$/)
         if (emailMatch) 
         {
             const email = emailMatch[1]

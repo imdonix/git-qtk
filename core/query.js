@@ -243,7 +243,7 @@ class Query
             this.plugins.map(plugin => plugin.parse(this.db, commit))
         })
 
-        this.logger.log(`[Parser] ${visited} commit are parsed`)
+        this.logger.log(`[Parser] ${visited} commits have been parsed.`)
         this.tracker['commits'] = visited
         return visited
     }
