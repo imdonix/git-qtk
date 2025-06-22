@@ -26,12 +26,6 @@ jobs:
         run: npm run runtime
       - name: Generate runtime measurement table
         run: npm run ctt
-      - name: Compile LaTeX document
-        uses: xu-cheng/latex-action@v2
-        with:
-          working_directory: thesis
-          root_file: thesis_en.tex
-          latexmk_shell_escape: true
       - name: Upload the compiled pdf & csv
         uses: actions/upload-artifact@v4
         with:
