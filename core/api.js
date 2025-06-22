@@ -84,8 +84,6 @@ function gitFetch(repo, commitHandler)
 {
     const git = spawn('git', ['log', '--all', '--pretty=fuller', '--name-only'], { cwd : repo })
 
-    console.log(['git', 'log', '--all', '--pretty=fuller', '--name-only'].join(' '))
-
     const rl = readline.createInterface({
         input: git.stdout,
         output: process.stdout,
