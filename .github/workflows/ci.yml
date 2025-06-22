@@ -7,17 +7,17 @@ jobs:
     name: 'Test & Runtime & Thesis'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '14'
-      - uses: actions/checkout@v2
+          node-version: '22'
       - name: 'Cache node_modules'
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-v14-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-v22-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-v14-
+            ${{ runner.os }}-node-v22-
       - name: Install Dependencies
         run: npm install
       - name: Run tests
@@ -33,7 +33,7 @@ jobs:
           root_file: thesis_en.tex
           latexmk_shell_escape: true
       - name: Upload the compiled pdf & csv
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v4
         with:
           name: thesis
           path: |
