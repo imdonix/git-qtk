@@ -10,33 +10,27 @@
   },
   "homepage": "https://github.com/imdonix/git-qtk#readme",
   "type": "module",
-  
   "directories": {
     "test": "./test"
   },
-
   "scripts": {
     "test": "mocha --timeout 10000"
   },
-
   "bin": {
     "git-qtk": "./bin/main.js"
   },
-
   "repository": {
     "type": "git",
     "url": "git+https://github.com/imdonix/git-qtk.git"
   },
-
   "keywords": [
     "git",
     "query",
     "metadata",
     "commit"
   ],
-
   "dependencies": {
-    "cli-table": "^0.3.11",
+    "cli-table3": "^0.6.5",
     "yaml": "^1.10.2"
   },
   "devDependencies": {
