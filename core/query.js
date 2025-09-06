@@ -14,6 +14,8 @@ import { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup,
 import { trim, short, has } from './functions.js'
 import { count, max, min, sum } from './reductors.js'
 
+import { COMMITS_FROM } from './builtin.js'
+
 export const params = {
     
     repository : {
@@ -70,6 +72,8 @@ export class Query
 {
     constructor(input, logger)
     {
+        console.log(COMMITS_FROM)
+
         if(!input)
         {
             throw new Error("Input script has not been passed!")
