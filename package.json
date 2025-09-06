@@ -3,34 +3,38 @@
   "version": "1.1.1",
   "description": "Offers a fast and intuitive way to query metadata from Git-based repositories, including commits, authors, and files, using a custom SQL-like Query Language.",
   "main": "app.js",
-  "directories": {
-    "test": "./test"
-  },
-  "scripts": {
-    "dev": "node app.js",
-    "test": "mocha --timeout 10000",
-    "runtime": "node --max_old_space_size=12288 ./bin/runtime.js",
-    "ctt": "node ./bin/ctt.js"
-  },
-  "bin": {
-    "git-qtk": "./bin/main.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/imdonix/git-qtk.git"
-  },
-  "keywords": [
-    "git",
-    "query",
-    "metadata",
-    "commit"
-  ],
   "author": "imdonix",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/imdonix/git-qtk/issues"
   },
   "homepage": "https://github.com/imdonix/git-qtk#readme",
+  "type": "module",
+  
+  "directories": {
+    "test": "./test"
+  },
+
+  "scripts": {
+    "test": "mocha --timeout 10000"
+  },
+
+  "bin": {
+    "git-qtk": "./bin/main.js"
+  },
+
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imdonix/git-qtk.git"
+  },
+
+  "keywords": [
+    "git",
+    "query",
+    "metadata",
+    "commit"
+  ],
+
   "dependencies": {
     "cli-table": "^0.3.11",
     "yaml": "^1.10.2"

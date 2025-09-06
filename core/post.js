@@ -1,6 +1,6 @@
-const { WILDCARD, wrap } = require('./utils')
+import { WILDCARD, wrap } from './utils.js'
 
-async function post()
+export async function post()
 {
     const ordered = order(this.result, this.order, this.functions)
     const grouped = group(ordered, this.group)
@@ -158,5 +158,3 @@ function select(input, select, group, funs, reductors, fields)
     return selected
     
 }
-
-module.exports = post

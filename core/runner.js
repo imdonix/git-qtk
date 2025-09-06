@@ -1,6 +1,8 @@
-const { MEMORY_THRESHOLD, wrap, readable } = require('./utils')
+import { MEMORY_THRESHOLD, wrap, readable } from './utils.js'
 
-async function runner()
+
+
+export async function runner()
 {
     let cache = [new Object()]
     const added = new Set()
@@ -229,6 +231,3 @@ function joinBy(db, from, cache, model, funs, task)
 
     return tmp
 }
-
-
-module.exports = runner

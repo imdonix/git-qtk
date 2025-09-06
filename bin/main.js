@@ -1,13 +1,14 @@
-#! /usr/bin/env node
-const Table = require('cli-table');
-const fs = require('fs')
-const path = require('path')
-const yaml = require('yaml')
-const { cli } = require('../core/cli')
-const { Query, params } = require('../core/query')
-const { loadPlugins, WILDCARD } = require('../core/utils')
-const readline = require('readline');
-const { gitVersion } = require('../core/api');
+#!/usr/bin/env node
+
+import fs from 'fs'
+import path from 'path'
+
+import Table from 'cli-table'
+
+import { cli } from '../core/cli.js'
+import { Query, params } from '../core/query.js'
+import { WILDCARD } from '../core/utils.js'
+import { gitVersion } from '../core/api.js'
 
 const global = {
     version : {
@@ -48,12 +49,12 @@ const global = {
 
     if(input.version)
     {
-        const package = JSON.parse(fs.readFileSync(`${__dirname}/../package.json`, 'utf8'))
+        const pck = JSON.parse(fs.readFileSync(`${__dirname}/../package.json`, 'utf8'))
 
         try
         {
             const git = await gitVersion()
-            console.log(`v${package.version} using [${git}]`)
+            console.log(`v${pck.version} using [${git}]`)
         }
         catch(err)
         {

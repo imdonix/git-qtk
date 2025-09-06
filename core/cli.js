@@ -3,7 +3,7 @@ const processors = {
     bool : toggleProcessor
 }
 
-function cli(args, params)
+export function cli(args, params)
 {
     let query = new Object();
 
@@ -52,5 +52,3 @@ function toggleProcessor(query, param, args)
 {
     query[param] = true;
 }
-
-module.exports = { cli }

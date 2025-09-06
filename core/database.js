@@ -1,14 +1,15 @@
-class Database
+/*
+in-memory database stores models mapped to their keys.
+*/
+
+export class Database
 {
-    constructor(plugins)
+    constructor(models)
     {
         this.models = new Object()
-        for (const plugin of plugins)
+        for (const model of models) 
         {
-            for (const model of plugin.models()) 
-            {
-                this.models[model.name()] = new Map()
-            }
+            this.models[model.name()] = new Map()
         }
     }
 
@@ -53,5 +54,3 @@ class Database
     }
 
 }
-
-module.exports = Database

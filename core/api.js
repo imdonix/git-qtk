@@ -1,11 +1,11 @@
-const { spawn, exec } = require('child_process')
-const readline = require('readline');
+import { spawn, exec } from 'child_process'
+import readline from 'readline'
 
-function gitVersion()
+export function gitVersion()
 {
     return new Promise((res, rej) => {
         exec('git -v', (err, stdout, stderr) => {
-
+            
             // Check that the process could be opened
             if(err)
             {
@@ -24,7 +24,7 @@ function gitVersion()
     })
 }
 
-function gitOpen(path)
+export function gitOpen(path)
 {
     return new Promise((res, rej) => {
         exec(`git rev-parse --is-inside-work-tree -C "${path}"`, (err, stdout, stderr) => {
@@ -61,7 +61,7 @@ function gitOpen(path)
     })
 }
 
-function gitClone(repository, path)
+export function gitClone(repository, path)
 {
     return new Promise((res, rej) => {
         exec(`git clone "${repository}" "${path}"`, (err, stdout, stderr) => {
@@ -80,7 +80,7 @@ function gitClone(repository, path)
     })
 }
 
-function gitFetch(repo, commitHandler)
+export function gitFetch(repo, commitHandler)
 {
     const git = spawn('git', ['log', '--all', '--pretty=fuller', '--name-only'], { cwd : repo })
 
@@ -220,5 +220,3 @@ function gitFetch(repo, commitHandler)
     })
 
 }
-
-module.exports = { gitVersion, gitOpen, gitClone, gitFetch }

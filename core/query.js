@@ -1,18 +1,20 @@
 
-const fs = require('fs')
-const yaml = require('yaml')
+import fs from 'fs'
+import yaml from 'yaml'
 
-const Plugin = require('./plugin')
-const Database = require('./database')
+import { Git, Author, Commit, File } from './git.js'
+import { Database } from './database.js'
 
-const runner = require('./runner')
-const post = require('./post')
+import { runner } from './runner.js'
+import { post } from './post.js'
+import { gitVersion, gitOpen, gitClone, gitFetch } from './api.js'
+import { getRepoFromURL, LOG } from './utils.js'
+import { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin, parseStart } from './parse.js'
 
-const { gitVersion, gitOpen, gitClone, gitFetch } = require('./api')
-const { getRepoFromURL, loadModels, loadPlugins } = require('./utils')
-const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin, parseStart } = require('./parse')
+import { trim, short, has } from './functions.js'
+import { count, max, min, sum } from './reductors.js'
 
-const params = {
+export const params = {
     
     repository : {
         type: 'string',
@@ -64,45 +66,29 @@ const params = {
 
 }
 
-class Query
+export class Query
 {
-    constructor(input, logger, extension)
+    constructor(input, logger)
     {
+        if(!input)
+        {
+            throw new Error("Input script has not been passed!")
+        }
+
+        this.logger = logger ? logger : LOG.STD
+
         this.tracker = new Object()
         
-        if(input)
-        {
-            this.query = input
-        }
-        else
-        {
-            throw new Error("Input params must be passed!")
-        }
+        this.models = [ Author, Commit, File ]
+        this.functions = { trim, short, has }
+        this.reductors = { count, max, min, sum }
 
-        this.plugins = loadPlugins()
-        if(extension)
-        {
-            for (const plug of extension) 
-            {
-                if(plug instanceof Plugin)
-                {
-                    this.plugins.push(plug)
-                }
-            }
-        }
-        populateFunctions(this)
-        populateReductors(this)
+        this.db = new Database(this.models)
+        this.plugin = new Git()
+        this.plugin.init(this.db)
 
-        this.models = loadModels(this.plugins)
+        this.query = input
 
-        if(logger)
-        {
-            this.logger = logger
-        }
-        else
-        {
-            this.logger = console
-        }   
 
         this.validate()
     }
@@ -118,8 +104,6 @@ class Query
 
     async load()
     {
-        this.db = new Database(this.plugins)
-
         if(this.query.yaml)
         {
             this.yaml = this.query.yaml
@@ -137,10 +121,7 @@ class Query
             this.query.full = true
         }        
 
-        usePlugins(this)
-
         await this.track(this.openRepository)
-        await this.track(this.init)
         await this.track(this.fetch)
         await this.track(this.post)
   
@@ -227,34 +208,25 @@ class Query
         }
     }
 
-    init()
-    {
-        for (const plugin of this.plugins) 
-        {
-            plugin.init(this.db)
-        }
-    }
-
     async fetch()
     {
         let visited = 0
+
         await gitFetch(this.repo, (commit) => {
             visited++
-            this.plugins.map(plugin => plugin.parse(this.db, commit))
+            this.plugin.parse(this.db, commit)
         })
 
         this.logger.log(`[Parser] ${visited} commits have been parsed.`)
         this.tracker['commits'] = visited
+
         return visited
     }
 
     async post()
     {
-        for (const plugin of this.plugins) 
-        {
-            plugin.post(this.db)
-        }
 
+        this.plugin.post(this.db)
         this.db.finalize()
     }
 
@@ -298,54 +270,3 @@ class Query
         return this.db
     }
 }
-
-function filterUnusedPlugins(plugins, from)
-{
-    const filtered = new Array()
-    for (const plugin of plugins) 
-    {
-        for (const [_, value] of from) 
-        {
-            if(plugin.models().find(model => model == value))
-            {
-                filtered.push(plugin)
-                break;
-            }
-        }
-    }
-    return filtered
-}
-
-function usePlugins(query)
-{
-    if(!query.query.full)
-    {
-        query.plugins = filterUnusedPlugins(query.plugins, query.from)
-    }
-}
-
-function populateFunctions(query)
-{
-    query.functions = new Object()
-    for (const plugin of query.plugins) 
-    {
-        for (const fun of plugin.functions()) 
-        {
-            query.functions[fun.name] = fun
-        }
-    }
-}
-
-function populateReductors(query)
-{
-    query.reductors = new Object()
-    for (const plugin of query.plugins) 
-    {
-        for (const fun of plugin.reductors()) 
-        {
-            query.reductors[fun.name] = fun
-        }
-    }
-}
-
-module.exports = { Query, params, usePlugins } 

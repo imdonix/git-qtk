@@ -1,8 +1,8 @@
-const { WILDCARD, OPERATOR, decompose } = require('./utils')
+import { WILDCARD, OPERATOR, decompose } from './utils.js'
 
 const JOIN = /([a-zA-Z][a-zA-Z1-9._]*\.[a-zA-Z][a-zA-Z1-9._]*)\s*==\s*([a-zA-Z][a-zA-Z1-9._]*\.[a-zA-Z][a-zA-Z1-9._]*)/g
 
-function parseStart(query)
+export function parseStart(query)
 {
     if(!query.yaml.hasOwnProperty('start') || query.yaml['start'] == null )
     {
@@ -14,7 +14,7 @@ function parseStart(query)
     }
 }
 
-function parseFrom(query)
+export function parseFrom(query)
 {
     if(!query.yaml.hasOwnProperty('from') || query.yaml['from'] == null )
     {
@@ -61,7 +61,7 @@ function parseFrom(query)
     }
 }
 
-function parseSelect(query)
+export function parseSelect(query)
 {
     if(!query.yaml.hasOwnProperty('select') || query.yaml['select'] == null )
     {
@@ -87,7 +87,7 @@ function parseSelect(query)
 
 }
 
-function parseWhere(query)
+export function parseWhere(query)
 {
     let expression = 'true'
     if(query.yaml.hasOwnProperty('where') && query.yaml['where'])
@@ -117,7 +117,7 @@ function parseWhere(query)
    
 }
 
-function parseLimit(query)
+export function parseLimit(query)
 {
     if(!query.yaml.hasOwnProperty('limit'))
     {
@@ -139,7 +139,7 @@ function parseLimit(query)
     }
 }
 
-function parseOrder(query)
+export function parseOrder(query)
 {
     if(!query.yaml.hasOwnProperty('order') || query.yaml['order'] == null)
     {
@@ -185,7 +185,7 @@ function parseOrder(query)
     }
 }
 
-function parseGroup(query)
+export function parseGroup(query)
 {
     if(!query.yaml.hasOwnProperty('group') || query.yaml['group'] == null)
     {
@@ -205,7 +205,7 @@ function parseGroup(query)
     }
 }
 
-function parseJoin(query)
+export function parseJoin(query)
 {
     const join = new Array()
     // parsing the join from where
@@ -268,6 +268,7 @@ function parseJoin(query)
 
 function insFunctionBinding(query, expression)
 {
+    console.log(query)
     for(const [key, _] of Object.entries(query.functions))
     {
         expression = expression.replace(new RegExp(`${key}\\(`, 'g'), `${WILDCARD.SP}f.${key}(` )
@@ -323,6 +324,3 @@ function simplify(input, joins)
 
     return input
 }
-
-
-module.exports = { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin, parseStart }
