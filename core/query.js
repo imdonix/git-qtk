@@ -85,11 +85,10 @@ export class Query
         {
             this.yaml = this.openQuery()
             parseRepository(this)
-            parseFrom(this)
         }
         else
         {
-            console.log("TODO ERROR")
+            throw new Error("Query is invalid without a script.")
         }
 
         await this.track(this.openRepository)

@@ -6,7 +6,7 @@ export function parseRepository(query)
 {
     if(!query.yaml.hasOwnProperty('repo') || query.yaml['repo'] == null )
     {
-        throw new Error("The query must define: 'repo'")
+        throw new Error("Missing field from script [repo]")
     }
 
     query.repository = query.yaml['repo']
@@ -16,7 +16,7 @@ export function parseFrom(query)
 {
     if(!query.yaml.hasOwnProperty('from') || query.yaml['from'] == null )
     {
-        throw new Error("The query must define: 'from'")
+        throw new Error("Missing field from script [from]")
     }
 
     query.from = new Map()
@@ -63,7 +63,7 @@ export function parseSelect(query)
 {
     if(!query.yaml.hasOwnProperty('select') || query.yaml['select'] == null )
     {
-        throw new Error("The query must define: 'select'")
+        throw new Error("Missing field from script [select]")
     }
 
     query.select = new Array()
