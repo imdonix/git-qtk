@@ -2,18 +2,6 @@ import { WILDCARD, OPERATOR, decompose } from './utils.js'
 
 const JOIN = /([a-zA-Z][a-zA-Z1-9._]*\.[a-zA-Z][a-zA-Z1-9._]*)\s*==\s*([a-zA-Z][a-zA-Z1-9._]*\.[a-zA-Z][a-zA-Z1-9._]*)/g
 
-export function parseStart(query)
-{
-    if(!query.yaml.hasOwnProperty('start') || query.yaml['start'] == null )
-    {
-        query.start = null
-    }
-    else
-    {
-        query.start = query.yaml['start']
-    }
-}
-
 export function parseFrom(query)
 {
     if(!query.yaml.hasOwnProperty('from') || query.yaml['from'] == null )
@@ -79,9 +67,9 @@ export function parseSelect(query)
         }
 
         let exp = candidate
-        exp = insFieldBinding(query, exp)
-        exp = insFunctionBinding(query, exp)
-        exp = insReductorBinding(query, exp)
+        exp = insertFieldBinding(query, exp)
+        exp = insertFunctionBinding(query, exp)
+        exp = insertReductorBinding(query, exp)
         query.select.push([exp, candidate])
     }
 
@@ -97,7 +85,7 @@ export function parseWhere(query)
 
     if(query.join)
     {
-        expression = simplify(expression, query.join)
+        expression = clearJoinRelatedConjuction(expression, query.join)
     }
 
     let id = 0
@@ -107,8 +95,8 @@ export function parseWhere(query)
         let finished = false
         let expression = part.trim()
         let bind = findBinding(query, part)
-        expression = insFieldBinding(query, expression)
-        expression = insFunctionBinding(query, expression)
+        expression = insertFieldBinding(query, expression)
+        expression = insertFunctionBinding(query, expression)
         
         id++
         return { id, part, expression, bind, finished }
@@ -178,8 +166,8 @@ export function parseOrder(query)
             throw new Error("The order must be set as 'model.field DESC/ASC'")
         }
 
-        expression = insFieldBinding(query, expression)
-        expression = insFunctionBinding(query, expression)
+        expression = insertFieldBinding(query, expression)
+        expression = insertFunctionBinding(query, expression)
         query.order = [expression, op]
         
     }
@@ -266,17 +254,6 @@ export function parseJoin(query)
     query.join = join
 }
 
-function insFunctionBinding(query, expression)
-{
-    console.log(query)
-    for(const [key, _] of Object.entries(query.functions))
-    {
-        expression = expression.replace(new RegExp(`${key}\\(`, 'g'), `${WILDCARD.SP}f.${key}(` )
-    }
-
-    return expression
-}
-
 
 function findBinding(query, expression)
 {
@@ -293,7 +270,17 @@ function findBinding(query, expression)
     return binds
 }
 
-function insReductorBinding(query, expression)
+function insertFunctionBinding(query, expression)
+{
+    for(const [key, _] of Object.entries(query.functions))
+    {
+        expression = expression.replace(new RegExp(`${key}\\(`, 'g'), `${WILDCARD.SP}f.${key}(` )
+    }
+
+    return expression
+}
+
+function insertReductorBinding(query, expression)
 {
     for(const [key, _] of Object.entries(query.reductors))
     {
@@ -304,7 +291,7 @@ function insReductorBinding(query, expression)
 }
 
 
-function insFieldBinding(query, expression)
+function insertFieldBinding(query, expression)
 {
     for(const field of query.fields)
     {
@@ -315,7 +302,7 @@ function insFieldBinding(query, expression)
     return expression
 }
 
-function simplify(input, joins)
+function clearJoinRelatedConjuction(input, joins)
 {
     for (const join of joins) 
     {

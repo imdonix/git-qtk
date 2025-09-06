@@ -9,7 +9,7 @@ import { runner } from './runner.js'
 import { post } from './post.js'
 import { gitVersion, gitOpen, gitClone, gitFetch } from './api.js'
 import { getRepoFromURL, LOG } from './utils.js'
-import { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin, parseStart } from './parse.js'
+import { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin } from './parse.js'
 
 import { trim, short, has } from './functions.js'
 import { count, max, min, sum } from './reductors.js'
@@ -107,13 +107,11 @@ export class Query
         if(this.query.yaml)
         {
             this.yaml = this.query.yaml
-            parseStart(this)
             parseFrom(this)
         }
         else if (this.query.script)
         {
             this.yaml = this.openQuery()
-            parseStart(this)
             parseFrom(this)
         }
         else
