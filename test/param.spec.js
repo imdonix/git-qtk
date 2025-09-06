@@ -1,6 +1,7 @@
-const assert = require('assert');
-const { LOG } = require('../core/utils')
-const { Query, params } = require('../core/query')
+import assert from 'assert'
+
+import { Query, params } from '../core/query.js'
+import { LOG } from '../core/utils.js'
 
 describe('check valid query inputs', () =>
 {

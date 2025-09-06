@@ -1,10 +1,11 @@
-const assert = require('assert');
-const unzipper = require('unzipper')
-const fs = require('fs')
+import assert from 'assert'
+import fs from 'fs'
 
-const { Query } = require('../app') 
-const Git = require('../core/plugins/git')
-const { LOG } = require('../core/utils')
+import unzipper from 'unzipper'
+
+import { Query } from '../core/query.js'
+import { Author, Commit, File } from '../core/git.js'
+import { LOG } from '../core/utils.js'
 
 
 describe('running an query on example repository', () =>
@@ -19,7 +20,7 @@ describe('running an query on example repository', () =>
     })
 
     it('database contains all model', () => {
-        let models = (new Git()).models()
+        let models = [ Author, Commit, File ]
         for (const model of models) 
         {
             it(`${model.name()} model view`, () => 
@@ -94,4 +95,4 @@ describe('running an query on example repository', () =>
         })
     })
 
-  });
+  })

@@ -1,7 +1,8 @@
-const assert = require('assert');
-const { LOG, OPERATOR, WILDCARD } = require('../core/utils')
-const { Query, params, usePlugins } = require('../core/query')
-const { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseJoin, parseStart } = require('../core/parse')
+import assert from 'assert'
+
+import { Query, params } from '../core/query.js'
+import { LOG, OPERATOR, WILDCARD } from '../core/utils.js'
+import { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseJoin } from '../core/parse.js'
 
 describe('Validate query', () =>
 {
@@ -423,18 +424,6 @@ describe('Validate query', () =>
 
         })
 
-    })
-
-    describe('when parsing the: start', () => 
-    {
-        it('should work', () =>
-        {
-            let query = new Query(params, LOG.VOID)
-            query.yaml = { start : 'valami' , from: 'author a', where: '1 == 1' }
-            parseStart(query)
-
-            assert.equal(query.start, 'valami')
-        })
     })
     
 })
