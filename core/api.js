@@ -1,3 +1,7 @@
+/*
+Simplified API via child_process to access and parse Git command line
+*/
+
 import { spawn, exec } from 'child_process'
 import readline from 'readline'
 

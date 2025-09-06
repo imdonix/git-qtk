@@ -2,6 +2,7 @@
 
 import fs from 'fs'
 import path from 'path'
+import url from 'url'
 
 import Table from 'cli-table'
 
@@ -9,6 +10,10 @@ import { cli } from '../core/cli.js'
 import { Query, params } from '../core/query.js'
 import { WILDCARD } from '../core/utils.js'
 import { gitVersion } from '../core/api.js'
+
+import SCRIPTS from '../core/builtin.js'
+
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 const global = {
     version : {
@@ -23,16 +28,10 @@ const global = {
         keys: ['h', 'help']
     },
 
-    plugin : {
+    builtin : {
         type: 'bool',
-        description: "List all the built in plugins",
-        keys: ['p', 'plugin']
-    },
-
-    example : {
-        type: 'bool',
-        description: "List the example queries",
-        keys: ['e', 'example']
+        description: "List the builtin query scripts",
+        keys: ['b', 'builtin']
     },
 
     csv : {
@@ -47,142 +46,116 @@ const global = {
     const merge = {...global, ...params}
     const input = cli(process.argv, merge)
 
-    if(input.version)
-    {
-        const pck = JSON.parse(fs.readFileSync(`${__dirname}/../package.json`, 'utf8'))
+    if(input.version)                                       version() 
+    else if(input.help || Object.keys(input).length == 0)   help(merge) 
+    else if(input.builtin)                                  builtin() 
+    else if(input.script)                                   script(input) 
+})();
 
-        try
-        {
-            const git = await gitVersion()
-            console.log(`v${pck.version} using [${git}]`)
-        }
-        catch(err)
-        {
-            console.error(`Valid Git executable not found, make sure its added to PATH (${err})`)
-        }
-        
+
+async function version()
+{
+    const pck = JSON.parse(fs.readFileSync(`${__dirname}/../package.json`, 'utf8'))
+
+    try
+    {
+        const git = await gitVersion()
+        console.log(`git-qtk: v${pck.version} [using ${git}]`)
     }
-    else if(input.help || Object.keys(input).length == 0)
+    catch(err)
     {
-        const table = new Table({
-            head: ['option', 'key(s)', 'description' ]
-        });
-
-        for (const [key, value] of Object.entries(merge)) 
-        {
-            const realkey = value.keys.map(k => `-${k}`).join(', ')
-            table.push([key, realkey, value.description])
-        }
-
-        console.log(table.toString())
+        console.error(`Valid Git executable not found, make sure it's added to PATH (${err})`)
     }
-    else if(input.plugin)
+}
+
+async function help(merge) 
+{
+    const table = new Table({
+        head: ['option', 'key(s)', 'description' ]
+    });
+
+    for (const [key, value] of Object.entries(merge)) 
     {
-        const plugins = loadPlugins()
-        for (const plugin of plugins) 
+        const realkey = value.keys.map(k => `-${k}`).join(', ')
+        table.push([key, realkey, value.description])
+    }
+
+    console.log(table.toString())
+}
+
+async function builtin() 
+{
+    const table = new Table({
+        head : ['Name', 'Descriptions', 'Script']
+    })
+
+    for (const script of Object.values(SCRIPTS)) 
+    {
+        const clean = script.script.split('\n').filter(line => line).join('\n')
+        table.push([script.name, script.desc, clean]) 
+    }
+
+    console.log(table.toString())
+}
+
+async function script(input)
+{
+    const query = new Query(input, console)
+
+    try
+    {
+        query.validate()
+
+
+        await query.load()
+        const result = await query.run()
+
+        console.log(`[Time] Opening : ${query.tracker.openRepository}s`)
+        console.log(`[Time] Parsing : ${query.tracker.init + query.tracker.fetch + query.tracker.post}s`)
+        console.log(`[Time] Query : ${query.tracker.runner}s`)
+
+        if(res.length > 0)
         {
-            for (const model of plugin.models()) 
+            const template = res[0]
+
+            if(input.csv)
+            {
+                let str = Object.keys(template).join(WILDCARD.SEP).concat(WILDCARD.NL)
+                for(const rec of res)
+                {
+                    str = str.concat(Object.values(rec).join(WILDCARD.SEP).concat(WILDCARD.NL))
+                }
+                fs.writeFileSync(input.csv, str)
+            }
+            else
             {
                 const table = new Table({
-                    head: [plugin.name(), 'model', 'key', 'type', 'description' ]
-                });
-
-                for (const [field, type] of Object.entries(model.model())) 
+                    head: Object.keys(template)
+                })
+    
+                for(const rec of res)
                 {
-                    table.push(['*', model.name(), field, type[0], type[1]])
+                    table.push(Object.values(rec))
                 }
 
                 console.log(table.toString())
-
             }
         }
+        else
+        {
+            console.log('The query result is empty!')
+        }
     }
-    else if(input.example)
+    catch(err)
     {
-        const examples = path.join(__dirname, '../examples');
-        const all = fs.readdirSync(examples)
-        for (const examplePath of all) 
+        if(err.message)
         {
-            const table = new Table();
-
-            const file = fs.readFileSync(path.join(__dirname, '../examples' , examplePath), 'utf8')
-            const example = yaml.parse(file)
-
-            for (const kp of Object.entries(example)) 
-            {
-                table.push(kp)
-            }
-
-            console.log(table.toString())
+            console.error(`Error: ${err.message}`)
+        }
+        else
+        {
+            console.error(`Something went wrong.`)
+            console.trace(err)
         }
     }
-    else if(input.script)
-    {
-        const query = new Query(input, console);
-
-        try
-        {
-            query.validate()
-
-            Promise.resolve()
-            .then(() => query.load())   
-            .then(() => query.run())
-            .then(res => {
-        
-                console.log(`[Time] Opening : ${query.tracker.openRepository}s`)
-                console.log(`[Time] Parsing : ${query.tracker.init + query.tracker.fetch + query.tracker.post}s`)
-                console.log(`[Time] Query : ${query.tracker.runner}s`)
-
-                if(res.length > 0)
-                {
-                    const template = res[0]
-
-                    if(input.csv)
-                    {
-                        let str = Object.keys(template).join(WILDCARD.SEP).concat(WILDCARD.NL)
-                        for(const rec of res)
-                        {
-                            str = str.concat(Object.values(rec).join(WILDCARD.SEP).concat(WILDCARD.NL))
-                        }
-                        fs.writeFileSync(input.csv, str)
-                    }
-                    else
-                    {
-                        const table = new Table({
-                            head: Object.keys(template)
-                        });
-            
-                        for(const rec of res)
-                        {
-                            table.push(Object.values(rec))
-                        }
-
-                        console.log(table.toString())
-                    }
-                }
-                else
-                {
-                    console.log('The query result is empty!')
-                }
-            })
-            .catch(err => 
-            {
-                if(err.message)
-                {
-                    console.error(`Error: ${err.message}`)
-                }
-                else
-                {
-                    console.error(`Something went wrong`)
-                }
-                
-                throw err
-            })
-        }
-        catch(err)
-        {
-            console.error(err.message)
-        }
-    }
-
-})();
+}

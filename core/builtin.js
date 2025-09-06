@@ -8,3 +8,8 @@ select: commit.sha
 where: author.email == commit.author && has(author.email, {email})
 `
 }
+
+
+export default { 
+    COMMITS_FROM 
+}
