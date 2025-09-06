@@ -4,7 +4,7 @@ import fs from 'fs'
 import path from 'path'
 import url from 'url'
 
-import Table from 'cli-table'
+import Table from 'cli-table3'
 
 import { cli } from '../core/cli.js'
 import { Query, params } from '../core/query.js'
@@ -114,16 +114,16 @@ async function script(input)
         console.log(`[Time] Parsing : ${query.tracker.init + query.tracker.fetch + query.tracker.post}s`)
         console.log(`[Time] Query : ${query.tracker.runner}s`)
 
-        if(res.length > 0)
+        if(result.length > 0)
         {
-            const template = res[0]
+            const template = result[0]
 
             if(input.csv)
             {
                 let str = Object.keys(template).join(WILDCARD.SEP).concat(WILDCARD.NL)
-                for(const rec of res)
+                for(const rec of result)
                 {
-                    str = str.concat(Object.values(rec).join(WILDCARD.SEP).concat(WILDCARD.NL))
+                    str = str.concat(Object.values(rec).map(str => str.replace('\n', '')).join(WILDCARD.SEP).concat(WILDCARD.NL))
                 }
                 fs.writeFileSync(input.csv, str)
             }
@@ -133,7 +133,7 @@ async function script(input)
                     head: Object.keys(template)
                 })
     
-                for(const rec of res)
+                for(const rec of result)
                 {
                     table.push(Object.values(rec))
                 }
@@ -151,6 +151,7 @@ async function script(input)
         if(err.message)
         {
             console.error(`Error: ${err.message}`)
+            console.trace(err)
         }
         else
         {

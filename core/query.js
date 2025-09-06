@@ -9,7 +9,7 @@ import { runner } from './runner.js'
 import { post } from './post.js'
 import { gitVersion, gitOpen, gitClone, gitFetch } from './api.js'
 import { getRepoFromURL, LOG } from './utils.js'
-import { parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin } from './parse.js'
+import { parseRepository, parseFrom, parseSelect, parseWhere, parseLimit, parseOrder, parseGroup, parseJoin } from './parse.js'
 
 import { trim, short, has } from './functions.js'
 import { count, max, min, sum } from './reductors.js'
@@ -18,17 +18,9 @@ import { COMMITS_FROM } from './builtin.js'
 
 export const params = {
     
-    repository : {
-        type: 'string',
-        description: "The repository relative 'URL' or 'folder name' where you want to run the query",
-        keys: ['r', 'repository'],
-        required : true,
-        or: []
-    },
-    
     script : {
         type: 'string',
-        description: "Relative path to the script on load&run",
+        description: "Relative path to the script on execute",
         keys: ['s', 'script'],
         required : true,
         or: ['yaml']
@@ -50,30 +42,12 @@ export const params = {
         or: []
     },
 
-    full : {
-        type: 'bool',
-        description: "Use all available plugin when parsing the history ",
-        keys: ['f', 'full'],
-        required : false,
-        or: []
-    },
-
-    yaml : {
-        type: 'string',
-        description: "Manualy set the script from string",
-        keys: ['yaml'],
-        required : false,
-        or: []
-    }
-
 }
 
 export class Query
 {
     constructor(input, logger)
     {
-        console.log(COMMITS_FROM)
-
         if(!input)
         {
             throw new Error("Input script has not been passed!")
@@ -93,7 +67,6 @@ export class Query
 
         this.query = input
 
-
         this.validate()
     }
 
@@ -108,20 +81,16 @@ export class Query
 
     async load()
     {
-        if(this.query.yaml)
-        {
-            this.yaml = this.query.yaml
-            parseFrom(this)
-        }
-        else if (this.query.script)
+        if (this.query.script)
         {
             this.yaml = this.openQuery()
+            parseRepository(this)
             parseFrom(this)
         }
         else
         {
-            this.query.full = true
-        }        
+            console.log("TODO ERROR")
+        }
 
         await this.track(this.openRepository)
         await this.track(this.fetch)
@@ -160,13 +129,13 @@ export class Query
         }
         catch(_)
         {
-            throw new Error('The script file does not exist')
+            throw new Error(`The script file could not be opened! [${this.query.script}]`)
         }
     }
 
     async openRepository()
-    {
-        const name = getRepoFromURL(this.query.repository)
+    {  
+        const name = getRepoFromURL(this.repository)
         const path = this.query.root ? `${this.query.root}/${name}` : `./${name}`
 
         const version = await gitVersion()

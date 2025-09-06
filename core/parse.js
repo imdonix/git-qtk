@@ -2,6 +2,16 @@ import { WILDCARD, OPERATOR, decompose } from './utils.js'
 
 const JOIN = /([a-zA-Z][a-zA-Z1-9._]*\.[a-zA-Z][a-zA-Z1-9._]*)\s*==\s*([a-zA-Z][a-zA-Z1-9._]*\.[a-zA-Z][a-zA-Z1-9._]*)/g
 
+export function parseRepository(query)
+{
+    if(!query.yaml.hasOwnProperty('repo') || query.yaml['repo'] == null )
+    {
+        throw new Error("The query must define: 'repo'")
+    }
+
+    query.repository = query.yaml['repo']
+}
+
 export function parseFrom(query)
 {
     if(!query.yaml.hasOwnProperty('from') || query.yaml['from'] == null )
