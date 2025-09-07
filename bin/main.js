@@ -6,12 +6,12 @@ import url from 'url'
 
 import Table from 'cli-table3'
 
-import { cli } from '../core/cli.js'
-import { Query, params } from '../core/query.js'
-import { WILDCARD } from '../core/utils.js'
-import { gitVersion } from '../core/api.js'
+import { cli } from '../lib/core/cli.js'
+import { Query, params } from '../lib/core/query.js'
+import { WILDCARD } from '../lib/core/utils.js'
+import { gitVersion } from '../lib/core/api.js'
 
-import SCRIPTS from '../core/builtin.js'
+import SCRIPTS from '../lib/core/builtin.js'
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 

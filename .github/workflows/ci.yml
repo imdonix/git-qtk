@@ -4,7 +4,7 @@ on: push
 
 jobs:
   int:
-    name: 'Test & Runtime & Thesis'
+    name: 'Test'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,15 +22,3 @@ jobs:
         run: npm install
       - name: Run tests
         run: npm run test
-      - name: Run runtime measurement
-        run: npm run runtime
-      - name: Generate runtime measurement table
-        run: npm run ctt
-      - name: Upload the compiled pdf & csv
-        uses: actions/upload-artifact@v4
-        with:
-          name: thesis
-          path: |
-            thesis/thesis_en.pdf
-            gen/*.csv
-          if-no-files-found: error
