@@ -86,13 +86,12 @@ async function help(merge)
 async function builtin() 
 {
     const table = new Table({
-        head : ['Name', 'Descriptions', 'Script']
+        head : ['Name', 'Descriptions']
     })
 
     for (const script of Object.values(SCRIPTS)) 
     {
-        const clean = script.script.split('\n').filter(line => line).join('\n')
-        table.push([script.name, script.desc, clean]) 
+        table.push([script.name, script.desc]) 
     }
 
     console.log(table.toString())

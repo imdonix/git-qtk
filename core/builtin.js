@@ -1,14 +1,12 @@
-export const COMMITS_FROM = {
-    name : 'commitsFrom',
+const COMMITS_FROM = {
+    name : 'commits-from',
     desc : 'Get a single author commits from a repository',
-    script : `
-repo: {repo}
-from: author; commit
-select: commit.sha
-where: author.email == commit.author && has(author.email, {email})
-`
-}
 
+    repo : '{repo}',
+    from : 'author; commit',
+    select : 'commit.sha; commit.message',
+    where : 'author.email == commit.author && has(author.email, "{email}")',
+}
 
 export default { 
     COMMITS_FROM 

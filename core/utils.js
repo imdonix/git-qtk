@@ -82,8 +82,7 @@ export function wrap(body, params)
     
     try
     {
-        const f = eval(`${header} => { return ${body} }`)
-        return f
+        return eval(`${header} => { return ${body} }`)
     }
     catch(err)
     {

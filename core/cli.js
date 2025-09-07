@@ -5,20 +5,34 @@ const processors = {
 
 export function cli(args, params)
 {
-    let query = new Object();
+    const query = new Object()
+    query.params = new Array()
 
     while(args.length > 0)
     {
         let key = args.shift()
-        let par = findParam(key.substring(1), params);
-        if(par)
+
+        const variable = key.split('=')
+        if(variable.length == 2)
         {
-            let type = params[par].type
-            processors[type](query, par, args)
+            const [k, v] = variable
+            if(k && v)
+            {
+                query.params[k] = v
+            } 
+        }
+        else
+        {
+            let par = findParam(key.substring(1), params)
+            if(par)
+            {
+                let type = params[par].type
+                processors[type](query, par, args)
+            }
         }
     }
 
-    return query;
+    return query
 }
 
 function findParam(key, params)

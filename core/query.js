@@ -14,7 +14,7 @@ import { parseRepository, parseFrom, parseSelect, parseWhere, parseLimit, parseO
 import { trim, short, has } from './functions.js'
 import { count, max, min, sum } from './reductors.js'
 
-import { COMMITS_FROM } from './builtin.js'
+import builtin from './builtin.js'
 
 export const params = {
     
@@ -81,7 +81,23 @@ export class Query
 
     async load()
     {
-        if (this.query.script)
+        /* Fetch builtin script if found */
+        for(const bs of Object.values(builtin))
+        {
+            if(bs.name === this.query.script)
+            {
+                this.yaml = bs
+                break
+            }
+        }
+
+        /* Script is builtin */
+        if (this.yaml)
+        {
+            parseRepository(this)
+        }
+        /* Script is path */
+        else if (this.query.script)
         {
             this.yaml = this.openQuery()
             parseRepository(this)

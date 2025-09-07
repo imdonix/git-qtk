@@ -1,6 +1,7 @@
 import { WILDCARD, OPERATOR, decompose } from './utils.js'
 
 const JOIN = /([a-zA-Z][a-zA-Z1-9._]*\.[a-zA-Z][a-zA-Z1-9._]*)\s*==\s*([a-zA-Z][a-zA-Z1-9._]*\.[a-zA-Z][a-zA-Z1-9._]*)/g
+const VAR = /{([a-zA-Z_$][a-zA-Z0-9_$]*)}/g
 
 export function parseRepository(query)
 {
@@ -9,7 +10,7 @@ export function parseRepository(query)
         throw new Error("Missing field from script [repo]")
     }
 
-    query.repository = query.yaml['repo']
+    query.repository = resolveParameters(query, query.yaml['repo'])
 }
 
 export function parseFrom(query)
@@ -18,6 +19,8 @@ export function parseFrom(query)
     {
         throw new Error("Missing field from script [from]")
     }
+
+    const resolved = resolveParameters(query, query.yaml.from)
 
     query.from = new Map()
     const insert = (key, val) =>
@@ -32,7 +35,7 @@ export function parseFrom(query)
         }
     }
 
-    const cs = query.yaml.from.split(WILDCARD.SEP).map(str => str.trim())
+    const cs = resolved.split(WILDCARD.SEP).map(str => str.trim())
     for (const o of cs) 
     {
         const splitted = o.split(' ').map(str => str.trim())
@@ -66,8 +69,10 @@ export function parseSelect(query)
         throw new Error("Missing field from script [select]")
     }
 
+    const resolved = resolveParameters(query, query.yaml.select)
+
     query.select = new Array()
-    const cs = query.yaml.select.split(WILDCARD.SEP).map(str => str.trim())
+    const cs = resolved.split(WILDCARD.SEP).map(str => str.trim())
     for (const candidate of cs) 
     {
         //Check wildcards
@@ -90,7 +95,7 @@ export function parseWhere(query)
     let expression = 'true'
     if(query.yaml.hasOwnProperty('where') && query.yaml['where'])
     {
-        expression = query.yaml['where'].toString()
+        expression = resolveParameters(query, query.yaml['where'].toString()) 
     }
 
     if(query.join)
@@ -123,7 +128,7 @@ export function parseLimit(query)
     }
     else
     {
-        query.limit = parseInt(query.yaml['limit'])
+        query.limit = parseInt(resolveParameters(query, query.yaml.limit))
 
         if(Number.isNaN(query.limit))
         {
@@ -145,7 +150,7 @@ export function parseOrder(query)
     }
     else
     {
-        const inp = query.yaml['order'].toString()
+        const inp = resolveParameters(query, query.yaml.order)
         
         let expression = inp
         let op = OPERATOR.LESS
@@ -191,7 +196,7 @@ export function parseGroup(query)
     }
     else
     {
-        const selector = query.yaml['group'].toString()
+        const selector = resolveParameters(query, query.yaml.group)
         if(query.fields.find(field => field[0] == selector))
         {
             query.group = selector
@@ -209,7 +214,7 @@ export function parseJoin(query)
     // parsing the join from where
     if(query.yaml.hasOwnProperty('where') && query.yaml['where'] != null)
     {   
-        let input = query.yaml['where']
+        let input = resolveParameters(query, query.yaml.where)
         for (const inp of input.matchAll(JOIN)) 
         {
             const exp = inp[0]
@@ -300,7 +305,6 @@ function insertReductorBinding(query, expression)
     return expression
 }
 
-
 function insertFieldBinding(query, expression)
 {
     for(const field of query.fields)
@@ -320,4 +324,24 @@ function clearJoinRelatedConjuction(input, joins)
     }
 
     return input
+}
+
+function resolveParameters(query, expression)
+{
+    let filled = expression
+
+    for(const match of expression.matchAll(VAR))
+    {
+        const key = match[1]
+        if(Object.hasOwn(query.query.params, key))
+        {
+            filled = filled.replaceAll(`{${key}}`, query.query.params[key])
+        }
+        else
+        {
+            throw new Error(`Script uses '${key}' parameter but its not given in command line [param=value]`)
+        }        
+    }
+
+    return filled
 }
