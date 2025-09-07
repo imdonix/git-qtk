@@ -128,7 +128,7 @@ export function parseLimit(query)
     }
     else
     {
-        query.limit = parseInt(resolveParameters(query, query.yaml.limit))
+        query.limit = parseInt(resolveParameters(query, query.yaml.limit.toString()))
 
         if(Number.isNaN(query.limit))
         {

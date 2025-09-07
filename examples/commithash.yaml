@@ -1,4 +1,0 @@
-name: All commit hash
-from: commit c
-select: short(c.sha)
-limit: 10

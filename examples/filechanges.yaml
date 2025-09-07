@@ -1,5 +1,0 @@
-name: How many times a file in the 'bin/' directory with a '.js' extension has been changed.
-from: file f; commit c
-select: f.path; count(c.sha)
-where: c.changes.indexOf(f.path) >= 0 && f.path.indexOf('.js') >= 0 && f.path.substring(0,4) === 'bin/'
-group: f.path

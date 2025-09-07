@@ -1,5 +1,0 @@
-repo: soma
-name: Get a single person commits in the repository
-from: author; commit
-select: commit.sha; commit.message
-where: author.email == commit.author

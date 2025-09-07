@@ -1,4 +1,0 @@
-name: Who changed the file which is a header and the author email starts with the letter 'G'
-from: author a; commit c; file f
-select: f.path; a.name; short(c.date) 
-where: f.modified == c.sha && f.path.indexOf('.h') > 0  && c.author == a.email && c.author[0].toUpperCase() == 'G'

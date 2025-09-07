@@ -1,4 +1,0 @@
-name: Limits of where
-from: author a2; author a1
-select: $
-where: a1.name == 'imdonix' && (a2.name == 'imdonix' && true || true) || false && "str" == "str" && (a1.name == 'imdonix' && (a2.name == 'imdonix' && true || true) || false && "str" == "str")
