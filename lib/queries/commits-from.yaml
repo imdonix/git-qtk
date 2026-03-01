@@ -1,0 +1,5 @@
+name: commits-from
+desc: Get a single author commits from a repository
+from: author; commit
+select: commit.sha; commit.message
+where: author.email == commit.author && has(author.email, "{email}")

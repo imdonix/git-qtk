@@ -1,0 +1,8 @@
+name: top-authors
+desc: Rank authors by their commit count
+from: author; commit
+select: author.name; count(commit.sha)
+where: author.email == commit.author
+group: author.email
+order: count(commit.sha) DESC
+limit: "{limit}"

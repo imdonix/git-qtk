@@ -1,0 +1,6 @@
+name: message-search
+desc: Search for commits with a specific keyword in the message
+from: commit
+select: short(commit.sha); short(commit.date); commit.author; commit.message
+where: has(commit.message, "{keyword}")
+order: commit.date DESC

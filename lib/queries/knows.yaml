@@ -1,0 +1,6 @@
+name: knows
+desc: Get a single author commits from a repository
+from: author; commit
+select: author.email; count(commit.sha)
+where: author.email == commit.author && has(commit.changes, "{path}")
+group: author.email

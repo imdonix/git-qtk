@@ -1,0 +1,7 @@
+name: author-work
+desc: List all files an author has worked on and how many times
+from: author; commit; file
+select: file.path; count(commit.sha)
+where: author.email == commit.author && has(commit.changes, file.path) && author.email == "{email}"
+group: file.path
+order: count(commit.sha) DESC

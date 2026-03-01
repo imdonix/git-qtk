@@ -1,0 +1,8 @@
+name: hot-files
+desc: List the most frequently modified files
+from: commit; file
+select: file.path; count(commit.sha)
+where: has(commit.changes, file.path)
+group: file.path
+order: count(commit.sha) DESC
+limit: "{limit}"

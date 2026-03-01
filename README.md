@@ -8,35 +8,21 @@ The Git Query Toolkit (git-qtk) offers a fast and intuitive way to query metadat
 
 1. [Git](https://git-scm.com/downloads) must be installed.
 2. Install the toolkit via npm: `npm install https://github.com/imdonix/git-qtk --global`
-3. Check that the installation was successful: `git-qtk -v`
-4. Create a query script file: `nano jschanges.yaml` (see [Query Language](#query-language) documentation below).
-``` yaml
-# How many times a file in the 'bin/' directory with a '.js' extension has been changed.
-from: file f; commit c
-select: f.path; count(c.sha)
-where: c.changes.indexOf(f.path) >= 0 && f.path.indexOf('.js') >= 0 && f.path.substring(0,4) === 'bin/'
-group: f.path
-```
-5. Run `git-qtk -s .\jschanges.yaml -r https://github.com/imdonix/git-qtk`
+3. Check that the installation was successful: `gitq -v`
+4. Run `gitq -s hot-files limit=4`
 ``` bash
->> git-qtk -s .\jschanges.yaml -r https://github.com/imdonix/git-qtk 
-[git version 2.45.0.windows.1]
-[Open] Repository './git-qtk' found!
-[Parser] 311 commit are parsed
-[Runner] Join with: P2(f) -> f | [init -> 39]
-[Runner] Filtering: P3(f) => f.path.substring(0,4) === 'bin/' | [39 -> 3]
-[Runner] Join with: -> c | [3 -> 933]
-[Runner] Filtering: P1(f, c) => c.changes.indexOf(f.path) >= 0 | [933 -> 61]
-[Time] <1s
-┌────────────────┬──────────────┐
-│ f.path         │ count(c.sha) │
-├────────────────┼──────────────┤
-│ bin/main.js    │ 23           │
-├────────────────┼──────────────┤
-│ bin/ctt.js     │ 12           │
-├────────────────┼──────────────┤
-│ bin/runtime.js │ 26           │
-└────────────────┴──────────────┘
+>> gitq -s hot-files limit=4
+┌───────────────────────────┬───────────────────┐
+│ file.path                 │ count(commit.sha) │
+├───────────────────────────┼───────────────────┤
+│ README.md                 │ 11                │
+├───────────────────────────┼───────────────────┤
+│ doc/usecases.md           │ 8                 │
+├───────────────────────────┼───────────────────┤
+│ examples/howmuchwork.yaml │ 8                 │
+├───────────────────────────┼───────────────────┤
+│ examples/whoonlast.yaml   │ 10                │
+└───────────────────────────┴───────────────────┘
 >>
 ```
 

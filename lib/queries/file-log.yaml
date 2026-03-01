@@ -1,0 +1,6 @@
+name: file-log
+desc: Get the commit history of a specific file
+from: commit
+select: short(commit.sha); short(commit.date); commit.author; commit.message
+where: has(commit.changes, "{path}")
+order: commit.date DESC
